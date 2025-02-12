@@ -4,3 +4,6 @@ item cost table: /rpm/fin_plan
 
 item effort table: /rpm/cap_plan
 ![image](https://github.com/user-attachments/assets/80636e18-ddcf-4858-a9d4-e882526482b0)
+
+
+![image](https://github.com/user-attachments/assets/a5a4574c-72f4-4349-bbd3-225dfd16416e)

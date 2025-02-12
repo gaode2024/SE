@@ -7,3 +7,4 @@ item effort table: /rpm/cap_plan
 
 
 ![image](https://github.com/user-attachments/assets/a5a4574c-72f4-4349-bbd3-225dfd16416e)
+![image](https://github.com/user-attachments/assets/08e95776-0bc5-4832-89bb-ad76c749c17f)

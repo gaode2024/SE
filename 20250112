@@ -1,3 +1,9 @@
 PR Setting  table:  ZCON_PFMT_PRPL
 V1DK908826       DTSRB2T      CPMP-367:S4H:CPM:CPM:ABAP:Adjust forecast overload issues
 https://www.saps4hana.cn:44300/sap/bc/gui/sap/its/webgui/&sap-client=110&sap-language=ZH#
+
+Dropdown for Initiative: ZCON_PFM_DDL_I_INITIATIVE
+Dropdown for Planning field:ZCON_CPM_DDL_I_PLFLD
+Header Service: HeaderSet
+Hierarchy Service: HierarchySet
+Categroy/Group/Year: ZCON_PFM_DDL_I_YGRP

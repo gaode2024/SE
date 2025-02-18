@@ -4,6 +4,7 @@ https://www.saps4hana.cn:44300/sap/bc/gui/sap/its/webgui/&sap-client=110&sap-lan
 
 Dropdown for Initiative: ZCON_PFM_DDL_I_INITIATIVE
 Dropdown for Planning field:ZCON_CPM_DDL_I_PLFLD
-Header Service: HeaderSet
-Hierarchy Service: HierarchySet
+Header Service: HeaderSet Parameters:Initiativeguid/Planningfield
+Hierarchy Service: HierarchySet Parameters:Initiativeguid/Planningfield
 Categroy/Group/Year: ZCON_PFM_DDL_I_YGRP
+

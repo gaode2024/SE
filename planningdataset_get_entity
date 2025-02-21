@@ -1,0 +1,207 @@
+  METHOD planningdataset_get_entity.
+
+    DATA:
+             lv_portfolioguid TYPE inm_tv_guid
+             ,lv_initiativeguid TYPE inm_tv_guid
+             ,lv_initiativeid TYPE inm_tv_extid
+             ,lv_initiativetype TYPE /rpm/tv_item_id
+             ,lv_planningfield  TYPE zcpm_plan_field
+             ,lr_fin_plantype  TYPE RANGE OF /rpm/tv_fin_view
+             ,ls_hierarchy_data  TYPE zcon_pfms_pr_plan_hierarchy
+             ,lt_hierarchy_data  TYPE zcon_pfmtt_pr_plan_hierarchy
+             ,lt_fin_b_details TYPE /rpm/tt_fin_b_details
+             ,lt_fin_b_detail TYPE /rpm/tt_fin_b_details
+             ,ls_fin_b_detail TYPE /rpm/ts_fin_b_details
+             ,lt_fin_details TYPE /rpm/tt_fin_details
+             ,lt_fin_detail TYPE /rpm/tt_fin_details
+             ,ls_fin_detail TYPE /rpm/ts_fin_details
+             ,lt_cap_b_details TYPE /rpm/tt_cap_b_details
+             ,lt_cap_b_detail TYPE /rpm/tt_cap_b_details
+             ,ls_cap_b_detail TYPE /rpm/ts_cap_b_details
+             ,lt_cap_details TYPE /rpm/tt_cap_details
+             ,lt_cap_detail TYPE /rpm/tt_cap_details
+             ,ls_cap_detail TYPE /rpm/ts_cap_details
+             ,ls_planning_data TYPE zcon_pfms_pr_plan_planningdata
+             ,lt_planning_data TYPE TABLE OF zcon_pfms_pr_plan_planningdata
+             ,lr_group TYPE RANGE OF /rpm/tv_extid
+             ,lr_viewtype TYPE RANGE OF zepfm_viewtype
+       .
+*    Convert Input Data
+    LOOP AT it_key_tab ASSIGNING FIELD-SYMBOL(<ls_key_tab>).
+      CASE <ls_key_tab>-name.
+        WHEN gc_mgw_name_initiativeguid.
+          lv_initiativeguid = <ls_key_tab>-value.
+        WHEN gc_mgw_name_planningfield.
+          lv_planningfield = <ls_key_tab>-value.
+      ENDCASE.
+    ENDLOOP.
+
+    er_entity-initiativeguid = lv_initiativeguid.
+    er_entity-planningfield = lv_planningfield.
+
+    SELECT SINGLE * FROM zcon_pfm_ddl_i_initiative
+      INTO @DATA(ls_initiative)
+      WHERE InitiativeGuid = @lv_initiativeguid.
+
+    IF sy-subrc <> 0.
+      "Error message
+    ENDIF.
+    lv_portfolioguid = ls_initiative-portfolioguid.
+*    IF lv_initiativetype EQ gc_item_type_op.
+*      APPEND  VALUE #( sign = 'I' option = 'EQ' low = gc_fin_view_op_plan ) TO lr_fin_plantype.
+*      APPEND  VALUE #( sign = 'I' option = 'EQ' low = gc_fin_view_resource_plan ) TO lr_fin_plantype.
+*    ELSEIF lv_initiativetype EQ gc_item_type_sp.
+*      APPEND  VALUE #( sign = 'I' option = 'EQ' low = gc_fin_view_sp_plan ) TO lr_fin_plantype.
+*      APPEND  VALUE #( sign = 'I' option = 'EQ' low = gc_fin_view_resource_plan ) TO lr_fin_plantype.
+*    ENDIF.
+    SELECT * FROM zcon_pfm_ddl_i_ygrp INTO TABLE @DATA(lt_ygrp)
+      WHERE initiativeid = @ls_initiative-initiativeid.
+    IF sy-subrc = 0.
+      SELECT DISTINCT groupid FROM @lt_ygrp AS _grp INTO TABLE @DATA(lt_group).
+      lr_group = VALUE #(  FOR wa_group IN lt_group ( sign = 'I' option = 'EQ' low = wa_group-groupid )  ).
+      SELECT DISTINCT viewtype FROM @lt_ygrp AS _grp INTO TABLE @DATA(lt_viewtype).
+*      lr_viewtype = VALUE #(  FOR wa_viewtype IN lt_viewtype ( sign = 'I' option = 'EQ' low = wa_viewtype-viewtype )  ).
+    ENDIF.
+
+    CALL METHOD read_hierarchy_data
+      EXPORTING
+        iv_initiativeguid = lv_initiativeguid
+        iv_planningfield  = lv_planningfield
+      IMPORTING
+        et_hierarchy_data = lt_hierarchy_data.
+    LOOP AT lt_hierarchy_data INTO ls_hierarchy_data.
+      IF ls_hierarchy_data-objecttype EQ /rpm/cl_co=>sc_ot_bucket.
+        CALL METHOD read_bucket_fin_plan
+          EXPORTING
+            iv_portfolio_guid = lv_portfolioguid
+            iv_object_guid    = ls_hierarchy_data-objectguid
+          IMPORTING
+*           ev_rc             =
+            et_fin_b_details  = lt_fin_b_detail.
+        APPEND LINES OF lt_fin_b_detail TO lt_fin_b_details.
+        CLEAR lt_fin_b_detail.
+        CALL METHOD read_bucket_cap_plan
+          EXPORTING
+            iv_portfolio_guid = lv_portfolioguid
+            iv_object_guid    = ls_hierarchy_data-objectguid
+          IMPORTING
+*           ev_rc             =
+            et_cap_b_details  = lt_cap_b_detail.
+        APPEND LINES OF lt_cap_b_detail TO lt_cap_b_details.
+        CLEAR lt_cap_b_detail.
+      ELSEIF ls_hierarchy_data-objecttype EQ /rpm/cl_co=>sc_ot_item.
+        CALL METHOD read_item_fin_plan
+          EXPORTING
+            iv_portfolio_guid = lv_portfolioguid
+            iv_object_guid    = ls_hierarchy_data-objectguid
+          IMPORTING
+*           ev_rc             =
+            et_fin_details    = lt_fin_detail.
+        APPEND LINES OF lt_fin_detail TO lt_fin_details.
+        CLEAR lt_fin_detail.
+        CALL METHOD read_item_cap_plan
+          EXPORTING
+            iv_portfolio_guid = lv_portfolioguid
+            iv_object_guid    = ls_hierarchy_data-objectguid
+          IMPORTING
+*           ev_rc             =
+            et_cap_details    = lt_cap_detail.
+        APPEND LINES OF lt_cap_detail TO lt_cap_details.
+        CLEAR lt_cap_detail.
+      ENDIF.
+    ENDLOOP.
+    "Bucket Financial planning
+    LOOP AT lt_fin_b_details INTO ls_fin_b_detail.
+      IF ls_fin_b_detail-plan_data[] IS NOT INITIAL.
+        LOOP AT ls_fin_b_detail-plan_data INTO DATA(ls_plan_data) WHERE plan_type IN lr_viewtype.
+          MOVE-CORRESPONDING ls_plan_data TO ls_planning_data.
+          ls_planning_data-viewtype = ls_plan_data-plan_type.
+          READ TABLE ls_fin_b_detail-groups INTO DATA(ls_fin_b_group) WITH KEY guid = ls_plan_data-guid.
+          IF sy-subrc = 0 AND ls_fin_b_group-external_id IN lr_group.
+            ls_planning_data-group_id = ls_fin_b_group-external_id.
+            ls_planning_data-changed_on = ls_fin_b_group-changed_on.
+            READ TABLE ls_fin_b_detail-categories INTO DATA(ls_fin_b_category) WITH KEY guid = ls_fin_b_group-parent_guid.
+            IF sy-subrc = 0.
+              ls_planning_data-category = ls_fin_b_category-external_id.
+              ls_planning_data-objectguid = ls_fin_b_category-parent_guid.
+              ls_planning_data-objecttype = /rpm/cl_co=>sc_ot_bucket.
+              APPEND ls_planning_data TO lt_planning_data.
+              CLEAR ls_planning_data.
+            ENDIF.
+          ENDIF.
+        ENDLOOP.
+      ELSE.
+      ENDIF.
+    ENDLOOP.
+    "Bucket Capacity Planning
+    LOOP AT lt_cap_b_details INTO ls_cap_b_detail.
+      LOOP AT ls_cap_b_detail-plan_data INTO ls_plan_data WHERE plan_type IN lr_viewtype.
+        MOVE-CORRESPONDING ls_plan_data TO ls_planning_data.
+        ls_planning_data-viewtype = ls_plan_data-plan_type.
+        READ TABLE ls_cap_b_detail-groups INTO DATA(ls_cap_b_group) WITH KEY guid = ls_plan_data-guid.
+        IF sy-subrc = 0 AND ls_fin_b_group-external_id IN lr_group.
+          ls_planning_data-group_id = ls_cap_b_group-external_id.
+          ls_planning_data-changed_on = ls_cap_b_group-changed_on.
+          READ TABLE ls_cap_b_detail-categories INTO DATA(ls_cap_b_category) WITH KEY guid = ls_cap_b_group-parent_guid.
+          IF sy-subrc = 0.
+            ls_planning_data-category = ls_cap_b_category-external_id.
+            ls_planning_data-objectguid = ls_cap_b_category-parent_guid.
+            ls_planning_data-objecttype = /rpm/cl_co=>sc_ot_bucket.
+            APPEND ls_planning_data TO lt_planning_data.
+            CLEAR ls_planning_data.
+          ENDIF.
+        ENDIF.
+      ENDLOOP.
+    ENDLOOP.
+    "Item Financial Planning
+    LOOP AT lt_fin_details INTO ls_fin_detail.
+      LOOP AT ls_fin_detail-plan_data INTO ls_plan_data WHERE plan_type IN lr_viewtype.
+        MOVE-CORRESPONDING ls_plan_data TO ls_planning_data.
+        ls_planning_data-viewtype = ls_plan_data-plan_type.
+        READ TABLE ls_fin_detail-groups INTO DATA(ls_fin_group) WITH KEY guid = ls_plan_data-guid.
+        IF sy-subrc = 0 AND ls_fin_b_group-external_id IN lr_group.
+          ls_planning_data-group_id = ls_fin_group-external_id.
+          ls_planning_data-changed_on = ls_fin_group-changed_on.
+          READ TABLE ls_fin_detail-categories INTO DATA(ls_fin_category) WITH KEY guid = ls_fin_group-parent_guid.
+          IF sy-subrc = 0.
+            ls_planning_data-category = ls_fin_category-external_id.
+            ls_planning_data-objectguid = ls_fin_category-parent_guid.
+            ls_planning_data-objecttype = /rpm/cl_co=>sc_ot_bucket.
+            APPEND ls_planning_data TO lt_planning_data.
+            CLEAR ls_planning_data.
+          ENDIF.
+        ENDIF.
+      ENDLOOP.
+    ENDLOOP.
+    "Item Capacity Planning
+    LOOP AT lt_cap_details INTO ls_cap_detail.
+      LOOP AT ls_cap_detail-plan_data INTO ls_plan_data WHERE plan_type IN lr_viewtype.
+        MOVE-CORRESPONDING ls_plan_data TO ls_planning_data.
+        ls_planning_data-viewtype = ls_plan_data-plan_type.
+        READ TABLE ls_cap_detail-groups INTO DATA(ls_cap_group) WITH KEY guid = ls_plan_data-guid.
+        IF sy-subrc = 0 AND ls_fin_b_group-external_id IN lr_group.
+          ls_planning_data-group_id = ls_cap_group-external_id.
+          ls_planning_data-changed_on = ls_cap_group-changed_on.
+          READ TABLE ls_cap_detail-categories INTO DATA(ls_cap_category) WITH KEY guid = ls_cap_group-parent_guid.
+          IF sy-subrc = 0.
+            ls_planning_data-category = ls_cap_category-external_id.
+            ls_planning_data-objectguid = ls_cap_category-parent_guid.
+            ls_planning_data-objecttype = /rpm/cl_co=>sc_ot_bucket.
+            APPEND ls_planning_data TO lt_planning_data.
+            CLEAR ls_planning_data.
+          ENDIF.
+        ENDIF.
+      ENDLOOP.
+    ENDLOOP.
+
+    SORT lt_planning_data BY objectguid category group_id period.
+*   Serializes ABAP object to JSON
+    CALL METHOD /ui2/cl_json=>serialize
+      EXPORTING
+        data        = lt_planning_data
+        compress    = abap_false
+        pretty_name = /ui2/cl_json=>pretty_mode-camel_case
+      RECEIVING
+        r_json      = er_entity-data.
+
+  ENDMETHOD.

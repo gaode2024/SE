@@ -11,3 +11,8 @@ Categroy/Group/Year: ZCON_PFM_DDL_I_YGRP
 V1DK908893       DTSRB2T      CFINJSD-1420:S4H:CPM:V1Q Refresh Issue Fix(TOC)
 CFINJSD-4210
 V1DK908909       DTSRB2T      CFINJSD-4210:S4H:CPM:V1Q Refresh Issue Fix(TOC)
+
+{"Initiativeguid":"6775689e-1a46-1edf-baa0-1a5a2732ce04","Planningfield":"PL002","Data":"[{\"amount\":11,\"category\":\"ZC01\",\"changedOn\":\"20250225024049\",\"currency\":\"FTE\",\"groupId\":\"ZC0100\",\"objectguid\":\"Z3VonhpGHt+ym8vnkT2t8g==\",\"objecttype\":\"RBH\",\"period\":202501,\"unit\":\"FTE\",\"viewtype\":\"11\"},{\"amount\":22,\"category\":\"ZF02\",\"changedOn\":\"20250225024051\",\"currency\":\"€\",\"groupId\":\"ZF0201\",\"objectguid\":\"Z3VonhpGHt+ym8vnkT2t8g==\",\"objecttype\":\"RBH\",\"period\":202501,\"unit\":\"€\",\"viewtype\":\"11\"},{\"amount\":33,\"category\":\"ZF02\",\"changedOn\":\"20250225024053\",\"currency\":\"€\",\"groupId\":\"ZF0202\",\"objectguid\":\"Z3VonhpGHt+ym8vnkT2t8g==\",\"objecttype\":\"RBH\",\"period\":202501,\"unit\":\"€\",\"viewtype\":\"11\"}]"}
+ 
+PlanningDataSet(Initiativeguid=guid'6775689e-1a46-1edf-baa0-1a5a2732ce04',Planningfield='PL002')
+ 

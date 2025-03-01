@@ -16,3 +16,7 @@ V1DK908909       DTSRB2T      CFINJSD-4210:S4H:CPM:V1Q Refresh Issue Fix(TOC)
  
 PlanningDataSet(Initiativeguid=guid'6775689e-1a46-1edf-baa0-1a5a2732ce04',Planningfield='PL002')
  
+SELECT DISTINCT _head~gjahr, _head~fictr , _head~cmmtitem, _view~pi,_view~zdatefrom,_view~zdateto
+    FROM @et_head AS _head
+    INNER JOIN  @lt_view AS _view ON _head~gjahr = _view~gjahr
+    INTO TABLE @DATA(lt_head_view)

@@ -20,3 +20,13 @@ SELECT DISTINCT _head~gjahr, _head~fictr , _head~cmmtitem, _view~pi,_view~zdatef
     FROM @et_head AS _head
     INNER JOIN  @lt_view AS _view ON _head~gjahr = _view~gjahr
     INTO TABLE @DATA(lt_head_view)
+DATA(lt_head_view) = VALUE ty_result_table(
+    FOR ls_head IN et_head
+    FOR ls_view IN lt_view WHERE ( gjahr = ls_head-gjahr )
+    ( gjahr      = ls_head-gjahr
+      fictr      = ls_head-fictr
+      cmmtitem   = ls_head-cmmtitem
+      pi         = ls_view-pi
+      zdatefrom  = ls_view-zdatefrom
+      zdateto    = ls_view-zdateto )
+).

@@ -11,14 +11,8 @@ public section.
     exporting
       !ET_RESULT type ZCON_CPMT_MP_MULTI_RESULT
       !ET_MESSAGES type FPMGB_T_MESSAGES .
-  class-methods GET_RESULT_DATA1
-    importing
-      !IT_SELECTION_PARAM type /IWBEP/T_MGW_SELECT_OPTION
-    exporting
-      !ET_RESULT type ZCON_CPMT_MP_MULTI_RESULT
-      !ET_MESSAGES type FPMGB_T_MESSAGES .
   PROTECTED SECTION.
-  PRIVATE SECTION.
+private section.
 ENDCLASS.
 
 
@@ -50,1071 +44,14 @@ CLASS ZDE_CL_CON_CPM_MP_MULTI_UTIL IMPLEMENTATION.
 *  Description              : Add Fields (Projectuuid/PlanId/VersionId)
 *  Workbench                : V1DK905918
 *-------------------------------------------------------------------------------------------------------------------
-    IF 1 = 2.
-      CALL METHOD get_result_data1
-        EXPORTING
-          it_selection_param = it_selection_param
-        IMPORTING
-          et_result          = et_result
-          et_messages        = et_messages.
-      RETURN.
-    ENDIF.
-    DATA:
-      lv_acc_spec_id  TYPE /cpd/auth_acc_spec_id,
-      lt_access_type  TYPE /cpd/auth_t_acc_spec_id,
-      lt_authorize    TYPE /cpd/auth_t_acc_spec_list,
-      ls_authorize    TYPE /cpd/auth_s_acc_spec_list,
-      ls_result	      TYPE zcon_cpms_mp_multi_result,
-      ls_data	        TYPE zcon_cpms_mp_multi_result,
-      lt_data	        TYPE zcon_cpmt_mp_multi_result,
-      lt_plan         TYPE  TABLE OF zcon_cpms_pw_cube_r01_plan,
-      lv_tabix        TYPE i,
-      lt_month_names  TYPE STANDARD TABLE OF t247,
-      ls_month_names  TYPE t247,
-      ls_plan         TYPE  zcon_cpms_pw_cube_r01_plan,
-      lv_pua_id       TYPE /cpd/pws_ws_bu_partner,
-      lv_period_from  TYPE zereportingperiod,
-      lv_period_to    TYPE zereportingperiod,
-      lv_search_value TYPE  string VALUE '*',
-      lv_date         TYPE dats,
-      lv_pct          TYPE zecostvariance,
-      lv_pct_str      TYPE string,
-      lt_data_bp      TYPE /cpd/cl_pws_ws_ui_utility=>tt_result_table,
-      ls_result_bp    TYPE /cpd/cl_pws_ws_ui_utility=>ts_result_table.
-
-    FIELD-SYMBOLS:
-      <lt_plan> TYPE ANY TABLE,
-      <ls_plan> TYPE any,
-      <ls_data> TYPE zcon_cpms_mp_multi_result.
-    DATA:
-      lr_projectid                TYPE RANGE OF zeprojectid,
-      lr_wbsid                    TYPE RANGE OF ps_posid,
-      lr_projectstatus            TYPE RANGE OF zeprojectstatus,
-      lr_serviceorganization      TYPE RANGE OF zeserviceorganization,
-      lr_createdby                TYPE RANGE OF /bofu/user_id_created_by,
-      lr_projectuuid              TYPE RANGE OF /bobf/conf_key,
-      lr_projectcontroller        TYPE RANGE OF zeprojectcontroller,
-      lr_projectmanager           TYPE RANGE OF zeprojectmanager,
-      lr_deputypc                 TYPE RANGE OF zedeputypc,
-      lr_deputypm                 TYPE RANGE OF zedeputypm,
-      lr_systemlead               TYPE RANGE OF zesyslead,
-      lr_customervisibility       TYPE RANGE OF zcustomer_vis,
-      lr_planningfield            TYPE RANGE OF zeplanningfield,
-      lr_subplanningfield         TYPE RANGE OF zesubplanningfield,
-      lr_techcentercentralenabler TYPE RANGE OF zetechcentercentralenabler,
-      lr_subsystem                TYPE RANGE OF zesubsystem,
-      lr_externalcooperation      TYPE RANGE OF zext_cooper,
-      lr_cooperationdetail        TYPE RANGE OF zcooper_detail,
-      lr_planoption               TYPE RANGE OF zcpm_planopt,
-      lr_kostl                    TYPE RANGE OF kostl,
-      lr_lifnr                    TYPE RANGE OF lifnr,
-      lv_reportingtype            TYPE  zereportingtype,
-      lv_reportingview            TYPE  zereportingview,
-      lv_reportingperiod          TYPE  zereportingperiod.
-    DATA:
-      lr_bukrs        TYPE RANGE OF ps_pbukr,
-      ls_input_commit TYPE zfm_commit_in_s,
-      ls_input_actual TYPE zfm_actual_in_s,
-      ls_input_budget TYPE zfm_bgtdoc_in_s,
-      lt_budget_tra   TYPE zfm_bgtdoc_out_t,
-      lt_budget_rel   TYPE zfm_bgtdoc_out_t,
-      ls_budget       TYPE zfm_bgtdoc_out_s,
-      lt_actual       TYPE zfm_actual_out_t,
-      ls_actual       TYPE zfm_actual_out_s,
-      lt_commit       TYPE zfm_commit_out_t,
-      ls_commit       TYPE zfm_commit_out_s
-      .
-    DATA :
-      lt_keyfig  TYPE      rsd_t_dta_pro,
-      lt_char    TYPE      rsd_t_dta_pro,
-      lr_plan    TYPE      REF TO  data,
-      lt_message TYPE      bsanly_t_message,
-      ls_range   TYPE      rsdri_s_range,
-      lt_range   TYPE      rsdri_t_range.
-    CONSTANTS:
-      lc_div_zero                 TYPE char30 VALUE '#DIV/0!',
-      lc_lstar_2000               TYPE lstar VALUE '2000',
-      lc_bprole                   TYPE bu_partnerrole VALUE 'BUP003',
-      lc_roleid_z001              TYPE /cpd/pws_ws_role_id VALUE 'Z001',
-      lc_roleid_z002              TYPE /cpd/pws_ws_role_id VALUE 'Z002',
-      lc_roleid_z003              TYPE /cpd/pws_ws_role_id VALUE 'Z003',
-      lc_roleid_z004              TYPE /cpd/pws_ws_role_id VALUE 'Z004',
-      lc_roleid_z005              TYPE /cpd/pws_ws_role_id VALUE 'Z005',
-      lc_separator                TYPE char1 VALUE ';',
-      lc_forecast_status_0ini     TYPE /cpd/pfp_forecast_st_id VALUE '0INI',
-      lc_forecast_status_0inp     TYPE /cpd/pfp_forecast_st_id VALUE '0INP',
-      lc_forecast_status_0com     TYPE /cpd/pfp_forecast_st_id VALUE '0COM',
-      lc_uom                      TYPE  msehi VALUE 'H',
-      lc_budtype                  TYPE  char4 VALUE 'RL00',
-      lc_reportingtype_proj       TYPE  zereportingtype VALUE 'T01',
-      lc_reportingtype_prps       TYPE  zereportingtype VALUE 'T02',
-      lc_reportingtype_ftyp       TYPE  zereportingtype VALUE 'T03',
-      lc_reportingtype_fres       TYPE  zereportingtype VALUE 'T04',
-      lc_reportingview_overview   TYPE  zereportingview VALUE 'V01',
-      lc_reportingview_monthly    TYPE  zereportingview VALUE 'V02',
-      lc_version_type_id          TYPE  /cpd/pfp_ver_type_id VALUE 'PLAN',
-      lc_plan_structure           TYPE  /cpd/pfp_structure VALUE 'E',
-      lc_domname_struct_sel       TYPE domname VALUE '/CPD/PFP_STRUCT_SEL',
-      lc_projectid                TYPE char30 VALUE 'Projectid',
-      lc_wbsid                    TYPE char30 VALUE 'Wbsid',
-      lc_projectstatus            TYPE char30 VALUE 'Projectstatus',
-      lc_serviceorganization      TYPE char30 VALUE 'Serviceorganization',
-      lc_createdby                TYPE char30 VALUE 'Createdby',
-      lc_projectcontroller        TYPE char30 VALUE 'Projectcontroller',
-      lc_projectmanager	          TYPE char30 VALUE 'Projectmanager',
-      lc_deputypc	                TYPE char30 VALUE 'Deputypc',
-      lc_deputypm	                TYPE char30 VALUE 'Deputypm',
-      lc_systemlead	              TYPE char30 VALUE 'Systemlead',
-      lc_customervisibility       TYPE char30 VALUE 'Customervisibility',
-      lc_planningfield            TYPE char30 VALUE 'Planningfield',
-      lc_subplanningfield	        TYPE char30 VALUE 'Subplanningfield',
-      lc_techcentercentralenabler	TYPE char30 VALUE 'Techcentercentralenabler',
-      lc_subsystem                TYPE char30 VALUE 'Subsystem',
-      lc_externalcooperation      TYPE char30 VALUE 'Externalcooperation',
-      lc_cooperationdetail        TYPE char30 VALUE 'Cooperationdetail',
-      lc_planoption               TYPE char30 VALUE 'Planoption',
-      lc_reportingtype            TYPE char30 VALUE 'Reportingtype',
-      lc_reportingview            TYPE char30 VALUE 'Reportingview',
-      lc_reportingperiod          TYPE char30 VALUE 'Reportingperiod'.
-* delete
-    DATA:
-      lv_start_time TYPE timestampl,
-      lv_end_time   TYPE timestampl,
-      lv_diff       TYPE timestampl.
-    GET TIME STAMP FIELD lv_start_time.
-* delete
-    lv_period_from = sy-datum(6).
-    lv_period_to = sy-datum(6).
-    IF it_selection_param[] IS INITIAL.
-*      ls_mess-msgid       = 'ZCON_CPM'.
-*      ls_mess-msgno       = 000.
-*      ls_mess-severity    = 'W'.
-*      ls_mess-parameter_1    = 'it takes long time without selection parameter.'.
-*      APPEND ls_mess TO et_messages.
-    ENDIF.
-*   Get Project Stage Description
-    SELECT DISTINCT engagementprojectstage AS stage, engagementprojectstagetext AS description FROM i_engagementprojectstagetext AS status INTO TABLE  @DATA(lt_projstage) WHERE language = @sy-langu.
-*   Get Resource Type Description
-    SELECT DISTINCT res_type_id,description FROM zcon_cpm_ddl_i_pwrtyp INTO TABLE  @DATA(lt_restyp).
-    IF sy-subrc = 0.
-      SORT lt_restyp BY res_type_id.
-
-*   Based on Resource Type's UoM
-      SELECT DISTINCT a~res_type_id, a~uom ,a~unitofmeasurelongname AS text
-      INTO  TABLE @DATA(lt_uomt)
-      FROM zcon_cpm_ddl_i_pwuom AS a       "#EC CI_SUBRC"#EC CI_NOWHERE
-      FOR ALL ENTRIES IN @lt_restyp
-      WHERE res_type_id = @lt_restyp-res_type_id.
-      IF sy-subrc = 0.
-        SORT lt_uomt BY res_type_id uom.
-      ENDIF.
-
-    ENDIF.
-*   Based on Resource Type's Resource/Resource Description
-    SELECT DISTINCT resource_id,description,res_type_id FROM zcon_cpm_ddl_i_pwres INTO TABLE  @DATA(lt_res).
-*   Get the connection between Resource Type and Commitment Item
-    SELECT DISTINCT                                       "#EC CI_SUBRC
-      a~res_type,
-      a~fipex
-    INTO TABLE @DATA(lt_fipex)
-    FROM zconv_fm_res_typ AS a
-    INNER JOIN /cpd/fc_rty AS b ON a~res_type = b~res_type_id.
-    IF sy-subrc = 0.
-      SORT lt_fipex BY res_type fipex.
-      DELETE ADJACENT DUPLICATES FROM lt_fipex COMPARING ALL FIELDS.
-    ENDIF.
-
-    CALL FUNCTION 'MONTH_NAMES_GET'
-      EXPORTING
-        language    = 'E'
-      TABLES
-        month_names = lt_month_names.
-    "   Forecast status text
-    SELECT DISTINCT EngagementProjectReviewStatus AS status, EngagementProjReviewStatusText AS text FROM i_engmntprojfinplanstatustext INTO TABLE @DATA(lt_forecast_status_desc)
-      WHERE Language = @sy-langu.
-*   Convert Input Data
-    LOOP AT it_selection_param INTO DATA(ls_selection_param).
-      IF ls_selection_param-property EQ lc_projectid.
-        lr_projectid = CORRESPONDING #( ls_selection_param-select_options ).
-      ELSEIF ls_selection_param-property EQ lc_wbsid.
-        lr_wbsid = CORRESPONDING #( ls_selection_param-select_options ).
-      ELSEIF ls_selection_param-property EQ lc_projectstatus.
-        lr_projectstatus = CORRESPONDING #( ls_selection_param-select_options ).
-      ELSEIF ls_selection_param-property EQ lc_serviceorganization.
-        lr_serviceorganization = CORRESPONDING #( ls_selection_param-select_options ).
-      ELSEIF ls_selection_param-property EQ lc_createdby.
-        lr_createdby = CORRESPONDING #( ls_selection_param-select_options ).
-      ELSEIF ls_selection_param-property EQ lc_projectcontroller.
-        lr_projectcontroller = CORRESPONDING #( ls_selection_param-select_options ).
-      ELSEIF ls_selection_param-property EQ lc_projectmanager.
-        lr_projectmanager = CORRESPONDING #( ls_selection_param-select_options ).
-      ELSEIF ls_selection_param-property EQ lc_deputypc.
-        lr_deputypc = CORRESPONDING #( ls_selection_param-select_options ).
-      ELSEIF ls_selection_param-property EQ lc_deputypm.
-        lr_deputypm = CORRESPONDING #( ls_selection_param-select_options ).
-      ELSEIF ls_selection_param-property EQ lc_systemlead.
-        lr_systemlead = CORRESPONDING #( ls_selection_param-select_options ).
-      ELSEIF ls_selection_param-property EQ lc_externalcooperation.
-        lr_externalcooperation = CORRESPONDING #( ls_selection_param-select_options ).
-      ELSEIF ls_selection_param-property EQ lc_cooperationdetail.
-        lr_cooperationdetail = CORRESPONDING #( ls_selection_param-select_options ).
-      ELSEIF ls_selection_param-property EQ lc_customervisibility.
-        lr_customervisibility = CORRESPONDING #( ls_selection_param-select_options ).
-      ELSEIF ls_selection_param-property EQ lc_planningfield.
-        lr_planningfield = CORRESPONDING #( ls_selection_param-select_options ).
-      ELSEIF ls_selection_param-property EQ lc_subplanningfield.
-        lr_subplanningfield = CORRESPONDING #( ls_selection_param-select_options ).
-      ELSEIF ls_selection_param-property EQ lc_techcentercentralenabler.
-        lr_techcentercentralenabler = CORRESPONDING #( ls_selection_param-select_options ).
-      ELSEIF ls_selection_param-property EQ lc_subsystem.
-        lr_subsystem = CORRESPONDING #( ls_selection_param-select_options ).
-      ELSEIF ls_selection_param-property EQ lc_planoption.
-        lr_planoption = CORRESPONDING #( ls_selection_param-select_options ).
-      ELSEIF ls_selection_param-property EQ lc_reportingtype.
-        lv_reportingtype = ls_selection_param-select_options[ 1 ]-low.
-      ELSEIF ls_selection_param-property EQ lc_reportingview.
-        lv_reportingview = ls_selection_param-select_options[ 1 ]-low.
-      ELSEIF ls_selection_param-property EQ lc_reportingperiod.
-        IF ls_selection_param-select_options IS NOT INITIAL.
-          lv_period_from = ls_selection_param-select_options[ 1 ]-low+0(6).
-          lv_period_to = ls_selection_param-select_options[ 1 ]-low+7(6).
-        ENDIF.
-      ENDIF.
-    ENDLOOP.
-
-*   Get Project/team/reporting attributes Detail Based on Importing Filters
-    SELECT DISTINCT
-          hdr~mp_id AS projectid,
-          hdr~created_by AS createdby,
-          hdr~org_id,
-          hdr~mp_type,
-          hdr~mp_stage AS projectstatus,
-          hdr~proj_mgr_bupa_id,
-          hdr~project_type,
-          hdr~start_date AS startdate,
-          hdr~end_date AS enddate,
-          hdr~zzdev_status,
-          hdr~zzboard_name,
-          hdr~zzboard_date AS boarddate,
-          hdr~zzcustomer_vis,
-          hdr~zzcontract_typ,
-          hdr~zzplan_field,
-          hdr~zzsub_planfield,
-          hdr~zztech_center,
-          hdr~zzsub_system,
-          hdr~db_key,
-
-          item~mp_itm_otyp,
-          item~mp_item_okey,
-          orgt~org_unit_desc AS serviceorganization,
-
-
-          extcpnvh~externalcooperationname  AS externalcooperation,
-          cpndetvh~cooperationdetailname  AS cooperationdetail,
-          plfldt~planningfieldname  AS planningfield,
-          subpft~subplanningfieldname  AS subplanningfield,
-          tecctt~techcentercentralenablername  AS techcentercentralenabler,
-          subsyt~subsystemname  AS subsystem,
-          devstat~text AS developmentstatus,
-          boardnm~text AS boardname,
-          custvis~text AS customervisibility,
-          contyp~text AS contracttype,
-
-          wbselementdata~wbselementinternalid,
-          wbselementdata~wbselementexternalid AS wbsid,
-
-          wbselementdata~wbselement,
-          wbselementdata~wbsdescription AS wbsname,
-          wbselementdata~wbselementobject,
-          wbselementdata~controllingarea,
-          wbselementdata~responsiblecostcenter AS respcostcenter,
-
-          r_z001~engagementprojectteamrole AS croleid,
-          controller~employmentinternalid  AS projectcontroller,
-
-          r_z002~engagementprojectteamrole AS mroleid,
-          manager~employmentinternalid  AS projectmanager,
-
-          r_z003~engagementprojectteamrole AS dcroleid,
-          deputypc~employmentinternalid  AS deputypc,
-
-          r_z004~engagementprojectteamrole AS dmroleid,
-          deputypm~employmentinternalid  AS deputypm,
-
-          r_z005~engagementprojectteamrole AS slroleid,
-          systemlead~employmentinternalid  AS systemlead,
-
-
-          hdrt~text AS projectname
-     FROM /cpd/d_mp_hdr AS hdr
-     LEFT OUTER JOIN /cpd/pwsc_orgidt AS orgt ON hdr~org_id = orgt~org_unit_id AND orgt~spras = @sy-langu
-     LEFT OUTER JOIN /cpd/d_mp_hdr_s AS hdrt ON hdr~db_key = hdrt~parent_key
-     LEFT OUTER JOIN zcon_cpm_ddl_c_extcpnvh AS extcpnvh ON hdr~zzext_cooper = extcpnvh~externalcooperation
-     LEFT OUTER JOIN zcon_cpm_ddl_c_cpndetvh AS cpndetvh ON hdr~zzext_cooper = cpndetvh~externalcooperation AND hdr~zzcooper_detail = cpndetvh~cooperationdetail
-     LEFT OUTER JOIN zcon_cpm_ddl_i_plfldt AS plfldt ON hdr~zzplan_field = plfldt~planningfield AND plfldt~language = @sy-langu
-     LEFT OUTER JOIN zcon_cpm_ddl_i_subpft AS subpft ON hdr~zzsub_planfield = subpft~subplanningfield AND subpft~language = @sy-langu
-     LEFT OUTER JOIN zcon_cpm_ddl_i_tecctt AS tecctt ON hdr~zztech_center = tecctt~techcentercentralenabler AND tecctt~language = @sy-langu
-     LEFT OUTER JOIN zcon_cpm_ddl_i_subsyt AS subsyt ON hdr~zzsub_system = subsyt~subsystem AND subsyt~language = @sy-langu
-     LEFT OUTER JOIN zcon_cpm_ddl_i_devstat AS devstat  ON  hdr~zzdev_status = devstat~low
-     LEFT OUTER JOIN zcon_cpm_ddl_i_boardnm AS boardnm  ON  hdr~zzboard_name = boardnm~low
-     LEFT OUTER JOIN zcon_cpm_ddl_i_custvis AS custvis  ON  hdr~zzcustomer_vis = custvis~low
-     LEFT OUTER JOIN zcon_cpm_ddl_i_contyp AS contyp  ON  hdr~zzcontract_typ = contyp~low
-     LEFT OUTER JOIN /cpd/d_mp_item AS item ON hdr~db_key = item~parent_key AND item~mp_itm_otyp = @zde_cl_con_cpm_ps_object_link=>gc_ps_obj_link_0wbs
-     LEFT OUTER JOIN prps ON item~mp_item_okey = prps~objnr
-     LEFT OUTER JOIN prhi ON prps~pspnr = prhi~up
-     LEFT OUTER JOIN i_wbselementdata AS wbselementdata ON prhi~posnr = wbselementdata~wbselementinternalid AND wbselementdata~wbselementhierarchylevel = 2
-     LEFT OUTER JOIN i_engagementprojectteam AS team      ON hdr~db_key = team~engagementprojectuuid
-     LEFT OUTER JOIN i_engagementprojectteamrole AS r_z001  ON team~engagementprojectteamuuid = r_z001~engagementprojectteamuuid AND r_z001~engagementprojectteamrole = @lc_roleid_z001
-     LEFT OUTER JOIN i_engmtprojteammember AS teammember1  ON r_z001~engagementprojectteamroleuuid = teammember1~engagementprojectteamroleuuid
-     LEFT OUTER JOIN i_engagementprojectmember AS controller  ON teammember1~engagementprojectmemberuuid = controller~engagementprojectmemberuuid AND controller~BusinessPartnerMemberType = @lc_bprole
-     LEFT OUTER JOIN i_engagementprojectteamrole AS r_z002  ON team~engagementprojectteamuuid = r_z002~engagementprojectteamuuid AND r_z002~engagementprojectteamrole = @lc_roleid_z002
-     LEFT OUTER JOIN i_engmtprojteammember AS teammember2  ON r_z002~engagementprojectteamroleuuid = teammember2~engagementprojectteamroleuuid
-     LEFT OUTER JOIN i_engagementprojectmember AS manager  ON teammember2~engagementprojectmemberuuid = manager~engagementprojectmemberuuid AND manager~BusinessPartnerMemberType = @lc_bprole
-     LEFT OUTER JOIN i_engagementprojectteamrole AS r_z003  ON team~engagementprojectteamuuid = r_z003~engagementprojectteamuuid AND r_z003~engagementprojectteamrole = @lc_roleid_z003
-     LEFT OUTER JOIN i_engmtprojteammember AS teammember3  ON r_z003~engagementprojectteamroleuuid = teammember3~engagementprojectteamroleuuid
-     LEFT OUTER JOIN i_engagementprojectmember AS deputypc  ON teammember3~engagementprojectmemberuuid = deputypc~engagementprojectmemberuuid AND deputypc~BusinessPartnerMemberType = @lc_bprole
-     LEFT OUTER JOIN i_engagementprojectteamrole AS r_z004  ON team~engagementprojectteamuuid = r_z004~engagementprojectteamuuid AND r_z004~engagementprojectteamrole = @lc_roleid_z004
-     LEFT OUTER JOIN i_engmtprojteammember AS teammember4  ON r_z004~engagementprojectteamroleuuid = teammember4~engagementprojectteamroleuuid
-     LEFT OUTER JOIN i_engagementprojectmember AS deputypm  ON teammember4~engagementprojectmemberuuid = deputypm~engagementprojectmemberuuid AND deputypm~BusinessPartnerMemberType = @lc_bprole
-     LEFT OUTER JOIN i_engagementprojectteamrole AS r_z005  ON team~engagementprojectteamuuid = r_z005~engagementprojectteamuuid AND r_z005~engagementprojectteamrole = @lc_roleid_z005
-     LEFT OUTER JOIN i_engmtprojteammember AS teammember5  ON r_z005~engagementprojectteamroleuuid = teammember5~engagementprojectteamroleuuid
-     LEFT OUTER JOIN i_engagementprojectmember AS systemlead  ON teammember5~engagementprojectmemberuuid = systemlead~engagementprojectmemberuuid AND systemlead~BusinessPartnerMemberType = @lc_bprole
-     WHERE hdr~mp_id IN @lr_projectid
-     AND   hdr~mp_stage IN @lr_projectstatus
-     AND   hdr~org_id IN @lr_serviceorganization
-     AND   hdr~created_by IN @lr_createdby
-     AND   controller~employmentinternalid IN @lr_projectcontroller
-     AND   manager~employmentinternalid IN @lr_projectmanager
-     AND   deputypc~employmentinternalid IN @lr_deputypc
-     AND   deputypm~employmentinternalid IN @lr_deputypm
-     AND   systemlead~employmentinternalid IN @lr_systemlead
-     AND   substring( hdr~start_date,1,6 ) <= @lv_period_to
-     AND   substring( hdr~end_date,1,6 ) >=  @lv_period_from
-     AND   hdr~zzcustomer_vis IN @lr_customervisibility
-     AND   hdr~zzplan_field IN @lr_planningfield
-     AND   hdr~zzsub_planfield IN @lr_subplanningfield
-     AND   hdr~zztech_center IN @lr_techcentercentralenabler
-     AND   hdr~zzsub_system IN @lr_subsystem
-     AND   hdr~zzext_cooper IN @lr_externalcooperation
-     AND   hdr~zzcooper_detail IN @lr_cooperationdetail
-     AND   wbselementdata~WBSElementExternalID IN @lr_wbsid
-     INTO TABLE @DATA(lt_proj).
-    IF sy-subrc = 0.
-*     Project UUID
-      lr_projectuuid = VALUE #( FOR wa_proj IN lt_proj ( sign = 'I' option = 'EQ' low = wa_proj-db_key ) ).
-      SORT lr_projectuuid BY low.
-      DELETE ADJACENT DUPLICATES FROM lr_projectuuid COMPARING low.
-*     Get Multi Deputy Manager/Deputy Controller in project teams
-      SELECT DISTINCT
-          team~engagementprojectuuid AS projuuid,
-          teamrole~engagementprojectteamrole AS teamrole,
-          STRING_AGG( projectmember~employmentinternalid,';' )  AS employmentinternalids ,
-          COUNT( projectmember~employmentinternalid ) AS counts
-       FROM i_engagementprojectteam AS team
-       INNER JOIN i_engagementprojectteamrole AS teamrole ON team~engagementprojectteamuuid = teamrole~engagementprojectteamuuid
-       INNER JOIN i_engmtprojteammember AS teammember  ON teamrole~engagementprojectteamroleuuid = teammember~engagementprojectteamroleuuid
-       INNER JOIN i_engagementprojectmember AS projectmember  ON teammember~engagementprojectmemberuuid = projectmember~engagementprojectmemberuuid AND projectmember~BusinessPartnerMemberType = @lc_bprole
-       WHERE teamrole~engagementprojectteamrole IN ( @lc_roleid_z003,@lc_roleid_z004 )
-       AND team~engagementprojectuuid IN @lr_projectuuid
-       GROUP BY team~engagementprojectuuid,teamrole~engagementprojectteamrole
-       INTO TABLE @DATA(lt_deputymc).
-      IF sy-subrc = 0.
-        SORT lt_deputymc BY projuuid teamrole.
-        DELETE lt_deputymc WHERE counts <= 1.
-      ENDIF.
-*     Get Project's Owner
-      SELECT DISTINCT userid AS createdby,username FROM zcon_cpm_ddl_c_mpuser FOR ALL ENTRIES IN @lt_proj
-        WHERE userid = @lt_proj-createdby
-        INTO TABLE @DATA(lt_user).
-*     Project Manager/Project Controller/Deputy Project Controller/Deputy Project Manager/System Lead Description
-      SELECT DISTINCT businesspartner,businesspartnerfullname FROM i_mstrprojbpcontact
-      INNER JOIN @lt_proj AS proj ON businesspartner = proj~projectmanager
-      OR  businesspartner = proj~projectcontroller
-      OR  businesspartner = proj~deputypm
-      OR  businesspartner = proj~deputypc
-      OR  businesspartner = proj~systemlead
-      WHERE businesspartnerrole = @lc_bprole
-      INTO TABLE @DATA(lt_mp_bp).
-
-*     Import Company Code,Funds Center,Commitment Item,Fiscal Year Get Actual Quantity and Actual Cost
-*     Company Code
-      lr_bukrs = VALUE #( FOR wa_proj IN lt_proj ( sign = 'I' option = 'EQ' low = wa_proj-controllingarea ) ).
-      SORT lr_bukrs BY low.
-      DELETE ADJACENT DUPLICATES FROM lr_bukrs COMPARING low.
-      DELETE lr_bukrs WHERE low IS INITIAL.
-      ls_input_actual-fikrs  = lr_bukrs.
-*     Funds Center
-      ls_input_actual-fictr  = VALUE #( FOR wa_proj IN lt_proj ( sign = 'I' option = 'EQ' low = wa_proj-wbsid ) ).
-      SORT ls_input_actual-fictr BY low ASCENDING.
-      DELETE ADJACENT DUPLICATES FROM ls_input_actual-fictr COMPARING low.
-      DELETE ls_input_actual-fictr WHERE low IS INITIAL.
-*     Commitment Item
-      LOOP AT lt_fipex INTO DATA(ls_fipex).
-        APPEND VALUE #( sign = 'I' option = 'EQ'  low = ls_fipex-fipex ) TO ls_input_actual-cmmtitem.
-      ENDLOOP.
-*     Fiscal Year
-      APPEND VALUE #( sign = 'I' option = 'BT'  low = lv_period_from(4) high = lv_period_to(4) ) TO ls_input_actual-gjahr.
-*     Get Actual Quantity and Actual Cost
-      IF ls_input_actual-fictr IS NOT INITIAL.
-        CALL FUNCTION 'ZFM_DERIVE_ACTUAL'
-          EXPORTING
-            is_input  = ls_input_actual
-          IMPORTING
-            et_output = lt_actual.
-        SORT lt_actual BY fistl.
-        DELETE  lt_actual WHERE fistl IS INITIAL.
-*     Import Company Code,Funds Center,Commitment Item,Fiscal Year  Get Commitment.
-        MOVE-CORRESPONDING ls_input_actual TO ls_input_commit.
-        CALL FUNCTION 'ZFM_DERIVE_COMMIT'
-          EXPORTING
-            is_input  = ls_input_commit
-          IMPORTING
-            et_output = lt_commit.
-        SORT lt_commit BY fistl.
-        DELETE  lt_commit WHERE fistl IS INITIAL.
-        IF lv_reportingtype NE lc_reportingtype_fres.
-*       Import Company Code,Funds Center,Commitment Item,Fiscal Year  Get Released Budget
-          MOVE-CORRESPONDING ls_input_actual TO ls_input_budget.
-          APPEND VALUE #( sign = 'I' option = 'EQ'  low = 'R1' ) TO ls_input_budget-valtype.
-          CALL FUNCTION 'ZFM_GET_BUDGET_DETAIL'
-            EXPORTING
-              is_input  = ls_input_budget
-            IMPORTING
-              et_output = lt_budget_rel.
-          SORT lt_budget_rel BY fundsctr.
-          DELETE  lt_budget_rel WHERE fundsctr IS INITIAL.
-*       Import Company Code,Funds Center,Commitment Item,Fiscal Year Get Transferred Budget
-          CLEAR ls_input_budget-valtype.
-          APPEND VALUE #( sign = 'I' option = 'EQ'  low = 'B1' ) TO ls_input_budget-valtype.
-          CALL FUNCTION 'ZFM_GET_BUDGET_DETAIL'
-            EXPORTING
-              is_input  = ls_input_budget
-            IMPORTING
-              et_output = lt_budget_tra.
-          SORT lt_budget_tra BY fundsctr.
-          DELETE  lt_budget_tra WHERE fundsctr IS INITIAL.
-*       Import Funds Center,Commitment Item,Fiscal Year Get  Target Budget
-          SELECT DISTINCT gjahr,fictr,fipex,ztarget FROM zcont_fm_tar_val
-            FOR ALL ENTRIES IN @lt_fipex WHERE fipex = @lt_fipex-fipex
-            AND fictr IN @ls_input_budget-fictr
-            AND gjahr IN @ls_input_budget-gjahr
-            INTO TABLE @DATA(lt_budget_tar).
-          IF sy-subrc = 0.
-            SORT lt_budget_tar BY fictr.
-            DELETE  lt_budget_tar WHERE fictr IS INITIAL.
-          ENDIF.
-        ENDIF.
-      ENDIF.
-
-*     Get Financial Plan & Version Information
-      SELECT DISTINCT                         "#EC CI_FAE_LINES_ENSURED
-        s2~plan_id,
-        s2~external_id,
-        s2~mp_id_int,
-        s2~status_id AS plan_status,
-        s2~sel_structure,
-        s2~period_end_forecast_status,
-        s2~forecast_period,
-        s2~zzplan_option,
-        s3~ddtext AS plan_hierarchy,
-        s4~description AS fc_desc,
-        s5~text AS planoptionname,
-
-        s1~version_id,
-        s1~description,
-        s1~status_id,
-        s1~plan_forecast_year,
-        s1~plan_forecast_period,
-        s1~version_type,
-        s1~zzcomment
-
-
-        FROM /cpd/d_pfp_pv AS s1
-        INNER JOIN /cpd/d_pfp_ph AS s2 ON s1~parent_key = s2~db_key
-        LEFT JOIN dd07v AS s3  ON  s2~sel_structure = s3~domvalue_l AND s3~domname = @lc_domname_struct_sel AND s3~ddlanguage = @sy-langu
-        LEFT JOIN /cpd/fc_status_t AS s4  ON  s2~period_end_forecast_status = s4~status_id  AND s4~spras = @sy-langu
-        LEFT JOIN zcon_cpm_ddl_i_planopt AS s5  ON  s2~zzplan_option = s5~low
-        FOR ALL ENTRIES IN @lt_proj
-        WHERE  s1~version_type = @lc_version_type_id
-          AND  s2~mp_id_int = @lt_proj-db_key
-          AND  s2~sel_structure = @lc_plan_structure
-          AND  s2~zzplan_option IN @lr_planoption
-        INTO TABLE @DATA(lt_pfp_pv)
-  .
-      IF sy-subrc = 0.
-*        Import Plan ID,Version ID, Calendar Month Get Plan Quantity and Plan Cost.
-        LOOP AT lt_pfp_pv INTO DATA(ls_pfp_pv).
-          ls_range-chanm  = /cpd/cl_pfp_constants=>gc_fpoid. "Name Of Characteristic
-          ls_range-sign   = 'I'.                 "Include
-          ls_range-compop = 'EQ'.                "Operator
-          ls_range-low    = ls_pfp_pv-plan_id.
-          APPEND ls_range TO lt_range.
-          CLEAR ls_range.
-
-          ls_range-chanm  = /cpd/cl_pfp_constants=>gc_fver. "Name Of Characteristic
-          ls_range-sign   = 'I'.                 "Include
-          ls_range-compop = 'EQ'.                "Operator
-          ls_range-low    = ls_pfp_pv-version_id.
-          APPEND ls_range TO lt_range.
-          CLEAR ls_range.
-        ENDLOOP.
-
-        "Pass filter for Calendar Month
-        ls_range-chanm  = /cpd/cl_pfp_constants=>gc_calmonth. "Name Of Characteristic
-        ls_range-sign   = 'I'.                 "Include
-        ls_range-compop = 'BT'.                "Operator
-        ls_range-low    = lv_period_from.
-        ls_range-high    = lv_period_to.
-        APPEND ls_range TO lt_range.
-        CLEAR ls_range.
-        SORT lt_range BY chanm sign compop low high.
-        DELETE ADJACENT DUPLICATES FROM lt_range COMPARING chanm sign compop low high.
-
-*       Get Plan Quantity and Plan Cost
-        CALL FUNCTION 'ZDE_CON_CPM_FM_FP_READ_DATA'
-          EXPORTING
-            it_range = lt_range
-          IMPORTING
-            io_data  = lr_plan.
-
-        ASSIGN lr_plan->* TO <lt_plan>.
-        IF sy-subrc = 0.
-          lt_plan = CORRESPONDING #( <lt_plan> ).
-          SORT lt_plan BY /cpd/fpid
-                          /cpd/fpoid
-                          /cpd/fver
-                          /cpd/frtyp
-                          /cpd/fres
-                          zcpm_vdor
-                          /cpd/cstcnt
-                          /cpd/ftcur
-                          /cpd/fuom
-                          0calmonth
-                          .
-          IF lv_reportingtype EQ lc_reportingtype_fres.
-            DELETE lt_plan WHERE /cpd/fqty = 0 AND /cpd/ftca = 0.
-          ELSE.
-            DELETE lt_plan WHERE /cpd/fqty = 0 AND /cpd/ftca = 0 AND /cpd/fetca = 0.
-          ENDIF.
-        ENDIF.
-      ENDIF.
-    ENDIF.
-
-    lv_acc_spec_id = /cpd/cl_common_access_constant=>gc_auth_mp_milestone_read.
-    APPEND /cpd/cl_common_access_constant=>gc_auth_mp_milestone_read TO lt_access_type.
-
-    LOOP AT lt_proj INTO DATA(ls_proj)
-      GROUP BY ( projectid = ls_proj-projectid wbsid = ls_proj-wbsid ).
-      CLEAR lt_authorize.
-*    Verify permissions
-      CALL FUNCTION '/CPD/AUTH_CHECK_MP_ACCESS'
-        EXPORTING
-          iv_mp_key      = ls_proj-db_key
-          it_access_type = lt_access_type
-        IMPORTING
-          et_authorized  = lt_authorize.
-      READ TABLE lt_authorize INTO ls_authorize WITH KEY acc_spec_id = lv_acc_spec_id.
-      IF sy-subrc <> 0.
-        CONTINUE.
-      ENDIF.
-      MOVE-CORRESPONDING ls_proj TO ls_data.
-      ls_data-projectuuid = ls_proj-db_key."Project GUID
-      READ TABLE lt_pfp_pv INTO ls_pfp_pv WITH KEY  mp_id_int = ls_proj-db_key.
-      IF sy-subrc = 0.
-        ls_data-planid = ls_pfp_pv-plan_id."Plan id
-        ls_data-versionid = ls_pfp_pv-version_id."Version id
-        ls_data-planoption = ls_pfp_pv-planoptionname."Plan Option
-        ls_data-forecastcomment = ls_pfp_pv-zzcomment."Forecast comment
-        IF ls_pfp_pv-plan_forecast_year > 0 AND ls_pfp_pv-plan_forecast_period > 0.
-          "Forecast period
-          ls_data-forecastperiod+0(4) = ls_pfp_pv-plan_forecast_year .
-          ls_data-forecastperiod+4(2) = ls_pfp_pv-plan_forecast_period+1(2) .
-          "Forecast status
-          IF ls_pfp_pv-period_end_forecast_status NE lc_forecast_status_0ini.
-            ls_data-forecaststatus = ls_pfp_pv-period_end_forecast_status.
-          ENDIF.
-          IF ls_data-forecaststatus IS INITIAL.
-            ls_data-forecaststatus = lc_forecast_status_0inp.
-          ENDIF.
-        ENDIF.
-      ELSE.
-        IF lr_planoption IS NOT INITIAL.
-          CONTINUE.
-        ENDIF.
-      ENDIF.
-*     Get project controller name
-      IF ls_proj-projectcontroller IS NOT INITIAL.
-        READ TABLE lt_mp_bp INTO DATA(ls_mp_bp) WITH KEY businesspartner = ls_proj-projectcontroller.
-        IF sy-subrc EQ 0.
-          ls_data-projectcontroller = ls_mp_bp-businesspartnerfullname.
-        ENDIF.
-      ENDIF.
-*     Get project manager name
-      IF ls_proj-projectmanager IS NOT INITIAL.
-        READ TABLE lt_mp_bp INTO ls_mp_bp WITH KEY businesspartner = ls_proj-projectmanager.
-        IF sy-subrc EQ 0.
-          ls_data-projectmanager = ls_mp_bp-businesspartnerfullname.
-        ENDIF.
-      ENDIF.
-*     Get deputy project controller name
-      CLEAR: ls_data-deputypc.
-      READ TABLE lt_deputymc INTO DATA(ls_deputymc) WITH KEY projuuid = ls_proj-db_key  teamrole = lc_roleid_z003.
-      IF sy-subrc = 0.
-        SPLIT ls_deputymc-employmentinternalids AT lc_separator INTO TABLE DATA(lt_employmentinternalids).
-        LOOP AT lt_employmentinternalids INTO DATA(ls_employmentinternalid).
-          READ TABLE lt_mp_bp INTO ls_mp_bp WITH KEY businesspartner = ls_employmentinternalid.
-          IF sy-subrc EQ 0.
-            IF ls_data-deputypc IS NOT INITIAL.
-              CONCATENATE ls_data-deputypc lc_separator ls_mp_bp-businesspartnerfullname INTO ls_data-deputypc.
-            ELSE.
-              ls_data-deputypc = ls_mp_bp-businesspartnerfullname.
-            ENDIF.
-          ENDIF.
-        ENDLOOP.
-      ELSEIF ls_proj-deputypc IS NOT INITIAL.
-        READ TABLE lt_mp_bp INTO ls_mp_bp WITH KEY businesspartner = ls_proj-deputypc.
-        IF sy-subrc EQ 0.
-          ls_data-deputypc = ls_mp_bp-businesspartnerfullname.
-        ENDIF.
-      ENDIF.
-*     Get deputy project manager name
-      CLEAR: ls_data-deputypm.
-      READ TABLE lt_deputymc INTO ls_deputymc WITH KEY projuuid = ls_proj-db_key  teamrole = lc_roleid_z004.
-      IF sy-subrc = 0.
-        SPLIT ls_deputymc-employmentinternalids AT lc_separator INTO TABLE lt_employmentinternalids.
-        LOOP AT lt_employmentinternalids INTO ls_employmentinternalid.
-          READ TABLE lt_mp_bp INTO ls_mp_bp WITH KEY businesspartner = ls_employmentinternalid.
-          IF sy-subrc EQ 0.
-            IF ls_data-deputypm IS NOT INITIAL.
-              CONCATENATE ls_data-deputypm lc_separator ls_mp_bp-businesspartnerfullname INTO ls_data-deputypm.
-            ELSE.
-              ls_data-deputypm = ls_mp_bp-businesspartnerfullname.
-            ENDIF.
-          ENDIF.
-        ENDLOOP.
-      ELSEIF ls_proj-deputypm IS NOT INITIAL.
-        READ TABLE lt_mp_bp INTO ls_mp_bp WITH KEY businesspartner = ls_proj-deputypm.
-        IF sy-subrc EQ 0.
-          ls_data-deputypm = ls_mp_bp-businesspartnerfullname.
-        ENDIF.
-      ENDIF.
-*     Get system lead name
-      IF ls_proj-systemlead IS NOT INITIAL.
-        READ TABLE lt_mp_bp INTO ls_mp_bp WITH KEY businesspartner = ls_proj-systemlead.
-        IF sy-subrc EQ 0.
-          ls_data-systemlead = ls_mp_bp-businesspartnerfullname.
-        ENDIF.
-      ENDIF.
-      READ TABLE lt_plan TRANSPORTING NO FIELDS WITH KEY /cpd/fpid = ls_proj-wbselementobject.
-      IF sy-subrc = 0.
-        lv_tabix = sy-tabix.
-        "Plan cost/Plan quantity
-        LOOP AT lt_plan INTO ls_plan FROM lv_tabix WHERE /cpd/fpid = ls_proj-wbselementobject.
-          ls_data-calendarmonth =  ls_plan-0calmonth.
-          ls_data-resourcetypeid = ls_plan-/cpd/frtyp.
-          ls_data-resourceid = ls_plan-/cpd/fres.
-          ls_data-uom = ls_plan-/cpd/fuom.
-          ls_data-planquantity = ls_plan-/cpd/fqty.
-          ls_data-plancost = ls_plan-/cpd/ftca.
-          ls_data-costcenter = ls_plan-/cpd/cstcnt.
-          ls_data-vendor = ls_plan-zcpm_vdor.
-*          IF ls_data-calendarmonth >= sy-datum(6)."> ls_data-forecastperiod.
-*            ls_data-etccost = ls_plan-/cpd/fetca."forecast etc
-*          ENDIF.
-          ls_data-forecastcost = ls_plan-/cpd/fetca."forecast cost
-          ls_data-costvariance = ls_plan-/cpd/fetca - ls_data-plancost."forecast - plan
-
-          COLLECT ls_data INTO lt_data.
-          CLEAR:
-            ls_data-calendarmonth,
-            ls_data-resourcetypeid,
-            ls_data-resourceid,
-            ls_data-uom,
-            ls_data-planquantity,
-            ls_data-plancost,
-            ls_data-costcenter,
-            ls_data-vendor,
-            ls_data-forecastcost,
-            ls_data-costvariance
-            .
-        ENDLOOP.
-      ENDIF.
-
-      READ TABLE lt_actual TRANSPORTING NO FIELDS WITH KEY fistl = ls_proj-wbsid.
-      IF sy-subrc = 0.
-        lv_tabix = sy-tabix.
-        "Actual cost/Actual quantity
-        LOOP AT lt_actual INTO ls_actual FROM lv_tabix WHERE fistl EQ ls_proj-wbsid. "#EC CI_NESTED
-*          ls_data-calendarmonth =  ls_actual-gjahr && ls_actual-perio+1.
-          ls_data-calendarmonth =  ls_actual-zrpt_year && ls_actual-zrpt_monat.
-          READ TABLE lt_fipex INTO ls_fipex WITH KEY fipex = ls_actual-fipex.
-          IF sy-subrc = 0.
-            ls_data-resourcetypeid = ls_fipex-res_type.
-          ENDIF.
-          ls_data-actualcost = ls_actual-dmbtr.
-*          IF ls_data-calendarmonth < sy-datum(6)." <= ls_data-forecastperiod.
-*            ls_data-actualcostfc = ls_actual-dmbtr.
-*          ENDIF.
-          IF ls_actual-lstar NE lc_lstar_2000.
-            ls_data-actualquantity = ls_actual-zact_qty.
-            ls_data-resourceid = ls_actual-lstar.
-          ENDIF.
-*          ls_data-uom = ls_actual-zact_unit.
-          ls_data-vendor = ls_actual-lifnr.
-
-          ls_data-costcenter = ls_actual-kostl.
-*          READ TABLE lt_plan INTO ls_plan WITH KEY
-*                      /cpd/fpid = ls_proj-wbselementobject
-*                      0calmonth = ls_data-calendarmonth
-*                      /cpd/frtyp = ls_data-resourcetypeid
-*                      zcpm_vdor = ls_data-vendor
-*                      .
-*          IF sy-subrc = 0.
-*            ls_data-resourceid = ls_plan-/cpd/fres.
-*            ls_data-costcenter = ls_plan-/cpd/cstcnt.
-*          ENDIF.
-          COLLECT ls_data INTO lt_data.
-          CLEAR:
-            ls_data-calendarmonth,
-            ls_data-resourcetypeid,
-            ls_data-uom,
-            ls_data-actualquantity,
-            ls_data-actualcost,
-*            ls_data-actualcostfc,
-            ls_data-vendor,
-            ls_data-resourceid,
-            ls_data-costcenter.
-        ENDLOOP.
-      ENDIF.
-      READ TABLE lt_commit TRANSPORTING NO FIELDS WITH KEY fistl = ls_proj-wbsid.
-      IF sy-subrc = 0.
-        lv_tabix = sy-tabix.
-        "Commitment
-        LOOP AT lt_commit INTO ls_commit FROM lv_tabix WHERE fistl EQ ls_proj-wbsid. "#EC CI_NESTED
-*          ls_data-calendarmonth = ls_commit-gjahr && ls_commit-perio+1.
-          ls_data-calendarmonth =  ls_commit-zrpt_year && ls_commit-zrpt_monat.
-          READ TABLE lt_fipex INTO ls_fipex WITH KEY fipex = ls_commit-fipex.
-          IF sy-subrc = 0.
-            ls_data-resourcetypeid = ls_fipex-res_type.
-          ENDIF.
-          ls_data-vendor = ls_commit-lifnr.
-          ls_data-costcenter = ls_commit-kostl.
-          READ TABLE lt_plan INTO ls_plan WITH KEY
-                      /cpd/fpid = ls_proj-wbselementobject
-                      0calmonth = ls_data-calendarmonth
-                      /cpd/frtyp = ls_data-resourcetypeid
-                      zcpm_vdor = ls_data-vendor
-                      .
-          IF sy-subrc = 0.
-            ls_data-resourceid = ls_plan-/cpd/fres.
-*            ls_data-costcenter = ls_plan-/cpd/cstcnt.
-          ENDIF.
-          ls_data-commitment = ls_commit-fkbtr.
-          IF ls_commit-frgrl EQ '' AND ls_commit-refbt EQ '020'.
-            ls_data-pocommitment = ls_commit-fkbtr.
-*            IF ls_data-calendarmonth < sy-datum(6)." <= ls_data-forecastperiod.
-*              ls_data-pocommitmentfc = ls_commit-fkbtr.
-*            ENDIF.
-          ENDIF.
-          COLLECT ls_data INTO lt_data.
-          CLEAR:
-           ls_data-calendarmonth,
-           ls_data-resourcetypeid,
-           ls_data-uom,
-           ls_data-commitment,
-           ls_data-pocommitment,
-*           ls_data-pocommitmentfc,
-           ls_data-resourceid,
-           ls_data-costcenter.
-        ENDLOOP.
-      ENDIF.
-      READ TABLE lt_budget_rel TRANSPORTING NO FIELDS WITH KEY fundsctr = ls_proj-wbsid.
-      IF sy-subrc = 0.
-        lv_tabix = sy-tabix.
-        "Released Budget
-        LOOP AT lt_budget_rel INTO ls_budget FROM lv_tabix WHERE fundsctr EQ ls_proj-wbsid."AND budtype EQ lc_budtype. "#EC CI_NESTED
-          ls_data-calendarmonth = ls_budget-fiscyear && ls_budget-rpmax+1.
-          READ TABLE lt_fipex INTO ls_fipex WITH KEY fipex = ls_budget-cmmtitem.
-          IF sy-subrc = 0 .
-            ls_data-resourcetypeid = ls_fipex-res_type.
-          ENDIF.
-          ls_data-releasedbudget =  ls_budget-lvalx.
-
-          COLLECT ls_data INTO lt_data.
-
-          CLEAR:
-          ls_data-calendarmonth,
-          ls_data-resourcetypeid,
-          ls_data-uom,
-          ls_data-releasedbudget.
-        ENDLOOP.
-      ENDIF.
-      READ TABLE lt_budget_tra TRANSPORTING NO FIELDS WITH KEY fundsctr = ls_proj-wbsid.
-      IF sy-subrc = 0.
-        lv_tabix = sy-tabix.
-        "Transferred Budget
-        LOOP AT lt_budget_tra INTO ls_budget FROM lv_tabix WHERE fundsctr EQ ls_proj-wbsid. "#EC CI_NESTED
-          ls_data-calendarmonth = ls_budget-fiscyear && ls_budget-rpmax+1.
-          READ TABLE lt_fipex INTO ls_fipex WITH KEY fipex = ls_budget-cmmtitem.
-          IF sy-subrc = 0 .
-            ls_data-resourcetypeid = ls_fipex-res_type.
-          ENDIF.
-          ls_data-transferredbudget =  ls_budget-lvalx.
-
-          COLLECT ls_data INTO lt_data.
-
-          CLEAR:
-          ls_data-calendarmonth,
-          ls_data-resourcetypeid,
-          ls_data-uom,
-          ls_data-transferredbudget.
-        ENDLOOP.
-      ENDIF.
-      READ TABLE lt_budget_tar TRANSPORTING NO FIELDS WITH KEY fictr = ls_proj-wbsid.
-      IF sy-subrc = 0.
-        lv_tabix = sy-tabix.
-        "Target Budget
-        LOOP AT lt_budget_tar INTO DATA(ls_budget_tar) FROM lv_tabix WHERE fictr EQ ls_proj-wbsid. "#EC CI_NESTED
-          ls_data-calendarmonth = ls_budget_tar-gjahr && '01'.
-          READ TABLE lt_fipex INTO ls_fipex WITH KEY fipex = ls_budget_tar-fipex.
-          IF sy-subrc = 0 .
-            ls_data-resourcetypeid = ls_fipex-res_type.
-          ENDIF.
-          ls_data-targetbudget =  ls_budget_tar-ztarget.
-
-          COLLECT ls_data INTO lt_data.
-
-          CLEAR:
-          ls_data-calendarmonth,
-          ls_data-resourcetypeid,
-          ls_data-uom,
-          ls_data-targetbudget.
-        ENDLOOP.
-      ENDIF.
-      READ TABLE lt_data TRANSPORTING NO FIELDS WITH KEY projectid = ls_data-projectid wbsid = ls_data-wbsid.
-      IF sy-subrc <> 0.
-        APPEND ls_data TO lt_data.
-      ENDIF.
-
-      CLEAR ls_data.
-    ENDLOOP.
-    IF lt_data[] IS NOT INITIAL.
-*     Get Cost Center Description based on workbook cost center
-      lr_kostl  = VALUE #( FOR wa_data IN lt_data ( sign = 'I' option = 'EQ' low = wa_data-costcenter ) ).
-      SORT lr_kostl BY low.
-      DELETE ADJACENT DUPLICATES FROM lr_kostl COMPARING low.
-      SELECT DISTINCT cc~costcenter,cc~costcentername FROM i_costcentervh AS cc
-        INTO TABLE @DATA(lt_costcenter)
-        WHERE costcenter IN @lr_kostl.
-
-*     Get Vendor Description based on workbook vendor
-      lr_lifnr  = VALUE #( FOR wa_data IN lt_data ( sign = 'I' option = 'EQ' low = wa_data-vendor ) ).
-      SORT lr_lifnr BY low.
-      DELETE ADJACENT DUPLICATES FROM lr_lifnr COMPARING low.
-      SELECT DISTINCT vnd~supplier,vnd~suppliername FROM zcon_cpm_ddl_i_supplier  AS vnd
-        INTO TABLE @DATA(lt_supplier)
-        WHERE supplier IN @lr_lifnr.
-    ENDIF.
-    DEFINE convert_date.
-      lv_date = &1.
-      CALL FUNCTION 'CONVERT_DATE_TO_EXTERNAL'
-         EXPORTING
-           date_internal                  = lv_date
-         IMPORTING
-           date_external                  = &2
-         EXCEPTIONS
-           date_internal_is_invalid       = 1
-           OTHERS                         = 2
-      .
-    END-OF-DEFINITION.
-*    Data Formatting
-    LOOP AT lt_data INTO ls_data.
-      IF ls_data-startdate IS NOT INITIAL.
-        convert_date ls_data-startdate ls_data-startdate.
-      ENDIF.
-      IF ls_data-enddate IS NOT INITIAL.
-        convert_date ls_data-enddate ls_data-enddate.
-      ENDIF.
-      IF ls_data-boarddate IS NOT INITIAL.
-        convert_date ls_data-boarddate ls_data-boarddate.
-      ENDIF.
-      READ TABLE lt_user INTO DATA(ls_user) WITH KEY createdby = ls_data-createdby.
-      IF sy-subrc = 0.
-        ls_data-createdby = ls_user-username.
-      ENDIF.
-*     Cost center Description
-      READ TABLE lt_costcenter INTO DATA(ls_costcenter) WITH KEY costcenter = ls_data-costcenter.
-      IF sy-subrc = 0.
-        ls_data-costcenter = ls_costcenter-costcentername.
-      ENDIF.
-*     Resource type Description
-      READ TABLE lt_supplier INTO DATA(ls_supplier) WITH KEY supplier = ls_data-vendor.
-      IF sy-subrc = 0.
-        ls_data-vendor = ls_supplier-suppliername.
-      ENDIF.
-*     If UoM is empty, default to 'H'
-      IF ls_data-uom IS INITIAL.
-        ls_data-uom = lc_uom.
-      ENDIF.
-*     Resource type Description
-      READ TABLE lt_restyp INTO DATA(ls_restyp) WITH KEY res_type_id = ls_data-resourcetypeid.
-      IF sy-subrc = 0.
-        ls_data-resourcetype = ls_restyp-description.
-      ENDIF.
-*     UoM Description
-      READ TABLE lt_uomt INTO DATA(ls_uomt) WITH KEY uom = ls_data-uom.
-      IF sy-subrc = 0.
-        ls_data-uom = ls_uomt-text.
-      ENDIF.
-*     Resource Description
-      READ TABLE lt_res INTO DATA(ls_res) WITH KEY resource_id = ls_data-resourceid.
-      IF sy-subrc = 0.
-        ls_data-resourcename = ls_res-description.
-      ENDIF.
-*     Project status Description
-      READ TABLE lt_projstage INTO DATA(ls_projstage) WITH KEY stage = ls_data-projectstatus.
-      IF sy-subrc = 0.
-        ls_data-projectstatus = ls_projstage-description.
-      ENDIF.
-      "consumed
-      ls_data-consumed = ls_data-actualcost + ls_data-pocommitment.
-      "forecast consumed
-*      ls_data-consumedfc = ls_data-actualcostfc + ls_data-pocommitmentfc.
-      "available
-      ls_data-available = ls_data-releasedbudget - ls_data-consumed.
-      " forecast eac
-*      ls_data-eaccost = ls_data-actualcostfc + ls_data-etccost.
-*      ls_data-eaccost = ls_data-consumedfc + ls_data-etccost.
-      " forecast period
-      READ TABLE lt_month_names INTO ls_month_names WITH KEY mnr = ls_data-forecastperiod+4(2).
-      IF sy-subrc = 0.
-        CONCATENATE ls_month_names-ktx '-' ls_data-forecastperiod(4) INTO ls_data-forecastperiod.
-      ENDIF.
-      " forecast status
-      READ TABLE lt_forecast_status_desc INTO DATA(ls_forecast_status_desc) WITH KEY status = ls_data-forecaststatus.
-      IF sy-subrc = 0.
-        ls_data-forecaststatus = ls_forecast_status_desc-text.
-      ENDIF.
-
-      IF lv_reportingtype EQ lc_reportingtype_proj.
-        CLEAR:
-            ls_data-wbsid,
-            ls_data-wbsname,
-            ls_data-respcostcenter,
-            ls_data-resourcetypeid,
-            ls_data-resourcetype,
-            ls_data-resourceid,
-            ls_data-resourcename,
-            ls_data-costcenter,
-            ls_data-vendor.
-      ELSEIF lv_reportingtype EQ lc_reportingtype_prps.
-*        IF ls_data-wbsid IS INITIAL.
-*          CONTINUE.
-*        ENDIF.
-        CLEAR:
-            ls_data-resourcetypeid,
-            ls_data-resourcetype,
-            ls_data-resourceid,
-            ls_data-resourcename,
-            ls_data-costcenter,
-            ls_data-vendor.
-      ELSEIF lv_reportingtype EQ lc_reportingtype_ftyp.
-*        IF ls_data-resourcetypeid IS INITIAL.
-*          CONTINUE.
-*        ENDIF.
-        CLEAR:
-          ls_data-resourceid,
-          ls_data-resourcename,
-          ls_data-costcenter,
-          ls_data-vendor.
-      ELSEIF lv_reportingtype EQ lc_reportingtype_fres.
-        CLEAR:
-         ls_data-forecastperiod,
-         ls_data-forecaststatus,
-*         ls_data-actualcostfc,
-*         ls_data-pocommitmentfc,
-*         ls_data-consumedfc,
-*         ls_data-etccost,
-*         ls_data-eaccost,
-         ls_data-forecastcost,
-         ls_data-costvariance,
-         ls_data-forecastcomment,
-         ls_data-transferredbudget,
-         ls_data-targetbudget,
-         ls_data-releasedbudget,
-         ls_data-available .
-      ENDIF.
-
-      IF lv_reportingview EQ lc_reportingview_overview.
-        CLEAR:
-           ls_data-calendarmonth.
-      ELSEIF ls_data-calendarmonth IS NOT INITIAL.
-        IF ls_data-calendarmonth NOT BETWEEN lv_period_from AND lv_period_to.
-          CONTINUE.
-        ENDIF.
-*       Data formatting
-        CALL FUNCTION 'CONVERSION_EXIT_PERI6_OUTPUT'
-          EXPORTING
-            input  = ls_data-calendarmonth
-          IMPORTING
-            output = ls_data-calendarmonth.
-
-      ENDIF.
-
-      MOVE-CORRESPONDING ls_data TO ls_result.
-*     Summarize the numeric values based on the Key
-      COLLECT ls_result INTO et_result.
-    ENDLOOP.
-    IF lv_reportingtype NE lc_reportingtype_fres.
-      LOOP AT et_result ASSIGNING FIELD-SYMBOL(<ls_result>).
-        IF <ls_result>-plancost NE 0.
-          " forecast - plan in %
-          lv_pct = <ls_result>-costvariance / <ls_result>-plancost * 100.
-          <ls_result>-costvariancepct = lv_pct.
-          CONDENSE <ls_result>-costvariancepct NO-GAPS.
-        ELSE.
-          <ls_result>-costvariancepct = lc_div_zero.
-        ENDIF.
-
-      ENDLOOP.
-    ENDIF.
-* delete
-    GET TIME STAMP FIELD lv_end_time.
-    lv_diff =  lv_end_time - lv_start_time.
-* delete
-  ENDMETHOD.
-
-
-* <SIGNATURE>---------------------------------------------------------------------------------------+
-* | Static Public Method ZDE_CL_CON_CPM_MP_MULTI_UTIL=>GET_RESULT_DATA1
-* +-------------------------------------------------------------------------------------------------+
-* | [--->] IT_SELECTION_PARAM             TYPE        /IWBEP/T_MGW_SELECT_OPTION
-* | [<---] ET_RESULT                      TYPE        ZCON_CPMT_MP_MULTI_RESULT
-* | [<---] ET_MESSAGES                    TYPE        FPMGB_T_MESSAGES
-* +--------------------------------------------------------------------------------------</SIGNATURE>
-  METHOD get_result_data1.
 *-----------------------------------------------------------------------------------------------------------------
 *  Author                   : Baobao Gao – DTSRB2T
 *  Functional Owner         : Yanming Xu - AHOR2ME
-*  Date                     : 17/05/2024
+*  Date                     : 23/02/2024
 *  SAP Charm # / JIRA ID #  : CPMP-56
-*  Description              : Multi Project Report
-*  RICEFW ID                : CPM011
+*  Description              : Performance Opt
+*  Workbench                : V1DK908830
 *-------------------------------------------------------------------------------------------------------------------
-*-----------------------------------------------------------------------------------------------------------------
-*  Author                   : Baobao Gao – DTSRB2T
-*  Functional Owner         : Yanming Xu - AHOR2ME
-*  Date                     : 17/05/2024
-*  SAP Charm # / JIRA ID #  : CPMP-56
-*  Description              : Add Fields (Projectuuid/PlanId/VersionId)
-*  Workbench                : V1DK905918
-*-------------------------------------------------------------------------------------------------------------------
-* delete
-    DATA:
-      lv_start_time TYPE timestampl,
-      lv_end_time   TYPE timestampl,
-      lv_diff       TYPE timestampl.
-    GET TIME STAMP FIELD lv_start_time.
 * delete
     DATA:
       lv_acc_spec_id     TYPE /cpd/auth_acc_spec_id,
@@ -1124,6 +61,7 @@ CLASS ZDE_CL_CON_CPM_MP_MULTI_UTIL IMPLEMENTATION.
       ls_result	         TYPE zcon_cpms_mp_multi_result,
       ls_data	           TYPE zcon_cpms_mp_multi_result,
       lt_data	           TYPE zcon_cpmt_mp_multi_result,
+      lr_wbsid_del       TYPE RANGE OF zcon_cpms_mp_multi_result-wbsid,
       lt_data_actual     TYPE zcon_cpmt_mp_multi_result,
       lt_data_commit     TYPE zcon_cpmt_mp_multi_result,
       lt_data_budget_rel TYPE zcon_cpmt_mp_multi_result,
@@ -1138,7 +76,7 @@ CLASS ZDE_CL_CON_CPM_MP_MULTI_UTIL IMPLEMENTATION.
       lv_pua_id          TYPE /cpd/pws_ws_bu_partner,
       lv_period_from     TYPE zereportingperiod,
       lv_period_to       TYPE zereportingperiod,
-      lv_search_value    TYPE  string VALUE '*',
+      lv_search_value    TYPE string VALUE '*',
       lv_date            TYPE dats,
       lv_pct             TYPE zecostvariance,
       lv_pct_str         TYPE string,
@@ -1523,50 +461,83 @@ CLASS ZDE_CL_CON_CPM_MP_MULTI_UTIL IMPLEMENTATION.
       IF ls_input_actual-fictr IS NOT INITIAL.
         CALL FUNCTION 'ZFM_DERIVE_ACTUAL'
           EXPORTING
-            is_input  = ls_input_actual
+            is_input         = ls_input_actual
+            skip_piview_flag = abap_true
           IMPORTING
-            et_output = lt_actual.
-        SORT lt_actual BY fistl.
-        DELETE  lt_actual WHERE fistl IS INITIAL.
+            et_output        = lt_actual.
+
+        SELECT fistl,zrpt_year,zrpt_monat,fipex,dmbtr,zact_qty,lstar,lifnr,kostl
+        FROM @lt_actual AS actual
+        WHERE fistl IS NOT INITIAL
+        INTO TABLE @DATA(lt_actual_data).
+        IF sy-subrc = 0.
+          REFRESH: lt_actual.
+          SORT lt_actual_data BY fistl.
+        ENDIF.
 *     Import Company Code,Funds Center,Commitment Item,Fiscal Year  Get Commitment.
         MOVE-CORRESPONDING ls_input_actual TO ls_input_commit.
         CALL FUNCTION 'ZFM_DERIVE_COMMIT'
           EXPORTING
-            is_input  = ls_input_commit
+            is_input         = ls_input_commit
+            skip_piview_flag = abap_true
           IMPORTING
-            et_output = lt_commit.
-        SORT lt_commit BY fistl.
-        DELETE  lt_commit WHERE fistl IS INITIAL.
+            et_output        = lt_commit.
+
+        SELECT fistl,zrpt_year,zrpt_monat,fipex,fkbtr,lifnr,kostl,frgrl,refbt
+        FROM @lt_commit AS commit
+        WHERE fistl IS NOT INITIAL
+        INTO TABLE @DATA(lt_commit_data).
+        IF sy-subrc = 0.
+          REFRESH: lt_commit.
+          SORT lt_commit_data BY fistl.
+        ENDIF.
         IF lv_reportingtype NE lc_reportingtype_fres.
 *       Import Company Code,Funds Center,Commitment Item,Fiscal Year  Get Released Budget
           MOVE-CORRESPONDING ls_input_actual TO ls_input_budget.
           APPEND VALUE #( sign = 'I' option = 'EQ'  low = 'R1' ) TO ls_input_budget-valtype.
           CALL FUNCTION 'ZFM_GET_BUDGET_DETAIL'
             EXPORTING
-              is_input  = ls_input_budget
+              is_input         = ls_input_budget
+              skip_piview_flag = abap_true
             IMPORTING
-              et_output = lt_budget_rel.
-          SORT lt_budget_rel BY fundsctr.
-          DELETE  lt_budget_rel WHERE fundsctr IS INITIAL.
+              et_output        = lt_budget_rel.
+
+          SELECT fundsctr,fiscyear,rpmax,cmmtitem,lvalx
+          FROM @lt_budget_rel AS budget_rel
+          WHERE fundsctr IS NOT INITIAL
+          INTO TABLE @DATA(lt_budget_rel_data).
+          IF sy-subrc = 0.
+            REFRESH: lt_budget_rel.
+            SORT lt_budget_rel_data BY fundsctr.
+          ENDIF.
 *       Import Company Code,Funds Center,Commitment Item,Fiscal Year Get Transferred Budget
           CLEAR ls_input_budget-valtype.
           APPEND VALUE #( sign = 'I' option = 'EQ'  low = 'B1' ) TO ls_input_budget-valtype.
           CALL FUNCTION 'ZFM_GET_BUDGET_DETAIL'
             EXPORTING
-              is_input  = ls_input_budget
+              is_input         = ls_input_budget
+              skip_piview_flag = abap_true
             IMPORTING
-              et_output = lt_budget_tra.
-          SORT lt_budget_tra BY fundsctr.
-          DELETE  lt_budget_tra WHERE fundsctr IS INITIAL.
+              et_output        = lt_budget_tra.
+
+          SELECT fundsctr,fiscyear,rpmax,cmmtitem,lvalx
+            FROM @lt_budget_tra AS budget_tra
+            WHERE fundsctr IS NOT INITIAL
+            INTO TABLE @DATA(lt_budget_tra_data).
+          IF sy-subrc = 0.
+            REFRESH: lt_budget_tra.
+            SORT lt_budget_tra_data BY fundsctr.
+          ENDIF.
 *       Import Funds Center,Commitment Item,Fiscal Year Get  Target Budget
           SELECT DISTINCT gjahr,fictr,fipex,ztarget FROM zcont_fm_tar_val
             FOR ALL ENTRIES IN @lt_fipex WHERE fipex = @lt_fipex-fipex
             AND fictr IN @ls_input_budget-fictr
             AND gjahr IN @ls_input_budget-gjahr
-            INTO TABLE @DATA(lt_budget_tar).
+            AND fictr IS NOT INITIAL
+            INTO TABLE @DATA(lt_budget_tar)
+            .
           IF sy-subrc = 0.
             SORT lt_budget_tar BY fictr.
-            DELETE  lt_budget_tar WHERE fictr IS INITIAL.
           ENDIF.
         ENDIF.
       ENDIF.
@@ -1661,63 +632,24 @@ CLASS ZDE_CL_CON_CPM_MP_MULTI_UTIL IMPLEMENTATION.
           ELSE.
             DELETE lt_plan WHERE /cpd/fqty = 0 AND /cpd/ftca = 0 AND /cpd/fetca = 0.
           ENDIF.
+          SELECT /cpd/fpid,0calmonth AS calmonth,/cpd/frtyp,/cpd/fres,/cpd/fuom,/cpd/fqty,/cpd/ftca,/cpd/cstcnt,zcpm_vdor,/cpd/fetca
+            FROM @lt_plan AS plan
+            WHERE /cpd/fpid IS NOT INITIAL
+            INTO TABLE @DATA(lt_plan_data).
+          IF sy-subrc = 0.
+            REFRESH: lt_plan.
+            SORT lt_plan_data BY /cpd/fpid.
+            SELECT wbselementobject,wbsid FROM @lt_proj AS proj INTO TABLE @DATA(lt_proj_data).
+            IF sy-subrc = 0.
+              SORT lt_proj_data BY wbselementobject.
+            ENDIF.
+          ENDIF.
         ENDIF.
       ENDIF.
     ENDIF.
 
     lv_acc_spec_id = /cpd/cl_common_access_constant=>gc_auth_mp_milestone_read.
     APPEND /cpd/cl_common_access_constant=>gc_auth_mp_milestone_read TO lt_access_type.
-    DATA(lt_plan1) = lt_plan.
-    DATA(lt_actual1) = lt_actual.
-    DATA(lt_commit1) = lt_commit.
-    DATA(lt_budget_rel1) = lt_budget_rel.
-    DATA(lt_budget_tra1) = lt_budget_tra.
-    DATA(lt_budget_tar1) = lt_budget_tar.
-
-    LOOP AT lt_plan1 INTO ls_plan.
-      IF sy-tabix > 5.EXIT.ENDIF.
-      LOOP AT lt_proj ASSIGNING FIELD-SYMBOL(<ls_proj>).
-        IF  <ls_proj>-wbsid IS INITIAL.
-          <ls_proj>-wbsid = <ls_proj>-projectid && '.01'.
-          <ls_proj>-wbselementobject = ls_plan-/cpd/fpid.
-        ENDIF.
-        ls_plan-/cpd/fpid = <ls_proj>-wbselementobject.
-        APPEND ls_plan  TO lt_plan.
-      ENDLOOP.
-    ENDLOOP.
-    LOOP AT lt_actual1 INTO ls_actual.
-      LOOP AT lt_proj ASSIGNING <ls_proj>.
-        IF  <ls_proj>-wbsid IS INITIAL.
-          <ls_proj>-wbsid = <ls_proj>-projectid && '.01'.
-        ENDIF.
-        ls_actual-fistl = <ls_proj>-wbsid.
-        APPEND ls_actual  TO lt_actual.
-      ENDLOOP.
-    ENDLOOP.
-    LOOP AT lt_commit1 INTO ls_commit.
-      LOOP AT lt_proj ASSIGNING <ls_proj>.
-        ls_commit-fistl = <ls_proj>-wbsid.
-        APPEND ls_commit  TO lt_commit.
-      ENDLOOP.
-    ENDLOOP.
-    LOOP AT lt_budget_rel1 INTO DATA(ls_budget_rel1) .
-      LOOP AT lt_proj ASSIGNING <ls_proj>.
-        ls_budget_rel1-fundsctr = <ls_proj>-wbsid.
-        APPEND ls_budget_rel1  TO lt_budget_rel.
-      ENDLOOP.
-    ENDLOOP.
-    LOOP AT lt_budget_tra1 INTO DATA(ls_budget_tra1) .
-      LOOP AT lt_proj ASSIGNING <ls_proj>.
-        ls_budget_tra1-fundsctr = <ls_proj>-wbsid.
-        APPEND ls_budget_tra1  TO lt_budget_tra.
-      ENDLOOP.
-    ENDLOOP.
-    LOOP AT lt_budget_tar1 INTO DATA(ls_budget_tar1) .
-      LOOP AT lt_proj ASSIGNING <ls_proj>.
-        ls_budget_tar1-fictr = <ls_proj>-wbsid.
-        APPEND ls_budget_tar1 TO lt_budget_tar.
-      ENDLOOP.
-    ENDLOOP.
 
     LOOP AT lt_proj INTO DATA(ls_proj)
       GROUP BY ( projectid = ls_proj-projectid wbsid = ls_proj-wbsid ).
@@ -1826,38 +758,35 @@ CLASS ZDE_CL_CON_CPM_MP_MULTI_UTIL IMPLEMENTATION.
       CLEAR ls_data.
     ENDLOOP.
     SORT lt_data BY wbsid.
-    LOOP AT lt_plan INTO ls_plan.
-      READ TABLE lt_proj INTO ls_proj WITH KEY wbselementobject = ls_plan-/cpd/fpid BINARY SEARCH.
+
+    LOOP AT lt_plan_data INTO DATA(ls_plan_data).
+      READ TABLE lt_proj_data INTO DATA(ls_proj_data) WITH KEY wbselementobject = ls_plan_data-/cpd/fpid BINARY SEARCH.
       IF sy-subrc <> 0.CONTINUE.ENDIF.
-      READ TABLE lt_data INTO ls_data WITH KEY wbsid = ls_proj-wbsid BINARY SEARCH.
+      READ TABLE lt_data INTO ls_data WITH KEY wbsid = ls_proj_data-wbsid BINARY SEARCH.
       IF sy-subrc <> 0.CONTINUE.ENDIF.
-      ls_data-calendarmonth =  ls_plan-0calmonth.
-      ls_data-resourcetypeid = ls_plan-/cpd/frtyp.
-      ls_data-resourceid = ls_plan-/cpd/fres.
-      ls_data-uom = ls_plan-/cpd/fuom.
-      ls_data-planquantity = ls_plan-/cpd/fqty.
-      ls_data-plancost = ls_plan-/cpd/ftca.
-      ls_data-costcenter = ls_plan-/cpd/cstcnt.
-      ls_data-vendor = ls_plan-zcpm_vdor.
-      ls_data-forecastcost = ls_plan-/cpd/fetca."forecast cost
-      ls_data-costvariance = ls_plan-/cpd/fetca - ls_data-plancost."forecast - plan
+      APPEND VALUE #( sign = 'I' option = 'EQ'  low = ls_data-wbsid ) TO lr_wbsid_del.
+      ls_data-calendarmonth =  ls_plan_data-calmonth.
+      ls_data-resourcetypeid = ls_plan_data-/cpd/frtyp.
+      IF lv_reportingtype EQ lc_reportingtype_fres.
+        ls_data-resourceid = ls_plan_data-/cpd/fres.
+      ENDIF.
+      ls_data-uom = ls_plan_data-/cpd/fuom.
+      ls_data-planquantity = ls_plan_data-/cpd/fqty.
+      ls_data-plancost = ls_plan_data-/cpd/ftca.
+      ls_data-costcenter = ls_plan_data-/cpd/cstcnt.
+      ls_data-vendor = ls_plan_data-zcpm_vdor.
+      ls_data-forecastcost = ls_plan_data-/cpd/fetca."forecast cost
+      ls_data-costvariance = ls_plan_data-/cpd/fetca - ls_data-plancost."forecast - plan
       COLLECT ls_data INTO lt_data_plan.
       CLEAR ls_data.
     ENDLOOP.
 
-    SORT lt_plan BY /cpd/fpid 0calmonth /cpd/frtyp zcpm_vdor.
-    SELECT fistl,zrpt_year,zrpt_monat,fipex,dmbtr,zact_qty,lstar,lifnr,kostl
-      FROM @lt_actual AS actual
-      INTO TABLE @DATA(lt_actual_data).
-    IF sy-subrc = 0.
-      REFRESH: lt_actual.
-      SORT lt_actual_data BY fistl.
-    ENDIF.
-
+    SORT lt_plan_data BY /cpd/fpid calmonth /cpd/frtyp zcpm_vdor.
     "Actual cost/Actual quantity
     LOOP AT lt_actual_data INTO DATA(ls_actual_data).    "#EC CI_NESTED
       READ TABLE lt_data INTO ls_data WITH KEY wbsid = ls_actual_data-fistl BINARY SEARCH.
       IF sy-subrc <> 0.CONTINUE.ENDIF.
+      APPEND VALUE #( sign = 'I' option = 'EQ'  low = ls_data-wbsid ) TO lr_wbsid_del.
       ls_data-calendarmonth =  ls_actual_data-zrpt_year && ls_actual_data-zrpt_monat.
       READ TABLE lt_fipex INTO ls_fipex WITH KEY fipex = ls_actual_data-fipex.
       IF sy-subrc = 0.
@@ -1866,7 +795,9 @@ CLASS ZDE_CL_CON_CPM_MP_MULTI_UTIL IMPLEMENTATION.
       ls_data-actualcost = ls_actual_data-dmbtr.
       IF ls_actual_data-lstar NE lc_lstar_2000.
         ls_data-actualquantity = ls_actual_data-zact_qty.
-        ls_data-resourceid = ls_actual_data-lstar.
+        IF lv_reportingtype EQ lc_reportingtype_fres.
+          ls_data-resourceid = ls_actual_data-lstar.
+        ENDIF.
       ENDIF.
       ls_data-vendor = ls_actual_data-lifnr.
       ls_data-costcenter = ls_actual_data-kostl.
@@ -1874,17 +805,11 @@ CLASS ZDE_CL_CON_CPM_MP_MULTI_UTIL IMPLEMENTATION.
       CLEAR ls_data.
     ENDLOOP.
 
-    SELECT fistl,zrpt_year,zrpt_monat,fipex,fkbtr,lifnr,kostl,frgrl,refbt
-      FROM @lt_commit AS  commit
-      INTO TABLE @DATA(lt_commit_data).
-    IF sy-subrc = 0.
-      REFRESH: lt_commit.
-      SORT lt_commit_data BY fistl.
-    ENDIF.
     "Commitment
     LOOP AT lt_commit_data INTO DATA(ls_commit_data).
       READ TABLE lt_data INTO ls_data WITH KEY wbsid = ls_commit_data-fistl BINARY SEARCH.
       IF sy-subrc <> 0.CONTINUE.ENDIF.
+      APPEND VALUE #( sign = 'I' option = 'EQ'  low = ls_data-wbsid ) TO lr_wbsid_del.
       ls_data-calendarmonth =  ls_commit_data-zrpt_year && ls_commit_data-zrpt_monat.
       READ TABLE lt_fipex INTO ls_fipex WITH KEY fipex = ls_commit_data-fipex BINARY SEARCH.
       IF sy-subrc = 0.
@@ -1892,14 +817,16 @@ CLASS ZDE_CL_CON_CPM_MP_MULTI_UTIL IMPLEMENTATION.
       ENDIF.
       ls_data-vendor = ls_commit_data-lifnr.
       ls_data-costcenter = ls_commit_data-kostl.
-      READ TABLE lt_plan INTO ls_plan WITH KEY
-                  /cpd/fpid = ls_proj-wbselementobject
-                  0calmonth = ls_data-calendarmonth
-                  /cpd/frtyp = ls_data-resourcetypeid
-                  zcpm_vdor = ls_data-vendor BINARY SEARCH
-                  .
-      IF sy-subrc = 0.
-        ls_data-resourceid = ls_plan-/cpd/fres.
+      IF lv_reportingtype EQ lc_reportingtype_fres.
+        READ TABLE lt_plan_data INTO ls_plan_data WITH KEY
+                    /cpd/fpid = ls_proj-wbselementobject
+                    calmonth = ls_data-calendarmonth
+                    /cpd/frtyp = ls_data-resourcetypeid
+                    zcpm_vdor = ls_data-vendor BINARY SEARCH
+                    .
+        IF sy-subrc = 0.
+          ls_data-resourceid = ls_plan_data-/cpd/fres.
+        ENDIF.
       ENDIF.
       ls_data-commitment = ls_commit_data-fkbtr.
       IF ls_commit_data-frgrl EQ '' AND ls_commit_data-refbt EQ '020'.
@@ -1908,17 +835,12 @@ CLASS ZDE_CL_CON_CPM_MP_MULTI_UTIL IMPLEMENTATION.
       COLLECT ls_data INTO lt_data_commit.
       CLEAR ls_data.
     ENDLOOP.
-    SELECT fundsctr,fiscyear,rpmax,cmmtitem,lvalx
-      FROM @lt_budget_rel AS budget_rel
-      INTO TABLE @DATA(lt_budget_rel_data).
-    IF sy-subrc = 0.
-      REFRESH: lt_budget_rel.
-      SORT lt_budget_rel_data BY fundsctr.
-    ENDIF.
+
     "Released Budget
     LOOP AT lt_budget_rel_data INTO DATA(ls_budget_rel_data)."AND budtype EQ lc_budtype. "#EC CI_NESTED
       READ TABLE lt_data INTO ls_data WITH KEY wbsid = ls_budget_rel_data-fundsctr BINARY SEARCH.
       IF sy-subrc <> 0.CONTINUE.ENDIF.
+      APPEND VALUE #( sign = 'I' option = 'EQ'  low = ls_data-wbsid ) TO lr_wbsid_del.
       ls_data-calendarmonth = ls_budget_rel_data-fiscyear && ls_budget_rel_data-rpmax+1.
       READ TABLE lt_fipex INTO ls_fipex WITH KEY fipex = ls_budget_rel_data-cmmtitem.
       IF sy-subrc = 0 .
@@ -1930,17 +852,11 @@ CLASS ZDE_CL_CON_CPM_MP_MULTI_UTIL IMPLEMENTATION.
 
       CLEAR ls_data .
     ENDLOOP.
-    SELECT fundsctr,fiscyear,rpmax,cmmtitem,lvalx
-      FROM @lt_budget_tra AS budget_tra
-      INTO TABLE @DATA(lt_budget_tra_data).
-    IF sy-subrc = 0.
-      REFRESH: lt_budget_tra.
-      SORT lt_budget_tra_data BY fundsctr.
-    ENDIF.
     "Transferred Budget
     LOOP AT lt_budget_tra_data INTO DATA(ls_budget_tra_data). "#EC CI_NESTED
       READ TABLE lt_data INTO ls_data WITH KEY wbsid = ls_budget_tra_data-fundsctr BINARY SEARCH.
       IF sy-subrc <> 0.CONTINUE.ENDIF.
+      APPEND VALUE #( sign = 'I' option = 'EQ'  low = ls_data-wbsid ) TO lr_wbsid_del.
       ls_data-calendarmonth = ls_budget_tra_data-fiscyear && ls_budget_tra_data-rpmax+1.
       READ TABLE lt_fipex INTO ls_fipex WITH KEY fipex = ls_budget_tra_data-cmmtitem.
       IF sy-subrc = 0 .
@@ -1956,6 +872,7 @@ CLASS ZDE_CL_CON_CPM_MP_MULTI_UTIL IMPLEMENTATION.
     LOOP AT lt_budget_tar INTO DATA(ls_budget_tar).      "#EC CI_NESTED
       READ TABLE lt_data INTO ls_data WITH KEY wbsid = ls_budget_tar-fictr BINARY SEARCH.
       IF sy-subrc <> 0.CONTINUE.ENDIF.
+      APPEND VALUE #( sign = 'I' option = 'EQ'  low = ls_data-wbsid ) TO lr_wbsid_del.
       ls_data-calendarmonth = ls_budget_tar-gjahr && '01'.
       READ TABLE lt_fipex INTO ls_fipex WITH KEY fipex = ls_budget_tar-fipex.
       IF sy-subrc = 0 .
@@ -1967,30 +884,54 @@ CLASS ZDE_CL_CON_CPM_MP_MULTI_UTIL IMPLEMENTATION.
 
       CLEAR ls_data.
     ENDLOOP.
+    SORT lr_wbsid_del BY low.
+    DELETE lr_wbsid_del WHERE low = ''.
+    DELETE ADJACENT DUPLICATES FROM lr_wbsid_del COMPARING low.
+    IF lr_wbsid_del IS NOT INITIAL.
+      DELETE lt_data WHERE wbsid IN lr_wbsid_del.
+    ENDIF.
     APPEND LINES OF lt_data_plan TO lt_data.
     APPEND LINES OF lt_data_actual TO lt_data.
     APPEND LINES OF lt_data_commit TO lt_data.
     APPEND LINES OF lt_data_budget_rel TO lt_data.
     APPEND LINES OF lt_data_budget_tra TO lt_data.
     APPEND LINES OF lt_data_budget_tar TO lt_data.
+    SORT lt_data BY projectid wbsid calendarmonth.
 
     IF lt_data[] IS NOT INITIAL.
+*     Get Cost Center Description based on workbook response cost center
+*      SELECT DISTINCT respcostcenter FROM @lt_data AS _data WHERE respcostcenter IS NOT INITIAL INTO TABLE @DATA(lt_respcc).
+*      IF sy-subrc = 0.
+*        lr_kostl  = VALUE #( FOR wa_respcc IN lt_respcc ( sign = 'I' option = 'EQ' low = wa_respcc-respcostcenter ) ).
+*        SORT lr_kostl BY low.
+*        SELECT DISTINCT cc~costcenter,cc~costcentername FROM i_costcentervh AS cc
+*          INTO TABLE @DATA(lt_respcostcenter)
+*          WHERE costcenter IN @lr_kostl.
+*        IF sy-subrc = 0.SORT lt_respcostcenter BY costcenter.ENDIF.
+*      ENDIF.
+      IF lv_reportingtype EQ lc_reportingtype_fres.
 *     Get Cost Center Description based on workbook cost center
-      lr_kostl  = VALUE #( FOR wa_data IN lt_data ( sign = 'I' option = 'EQ' low = wa_data-costcenter ) ).
-      SORT lr_kostl BY low.
-      DELETE ADJACENT DUPLICATES FROM lr_kostl COMPARING low.
-      SELECT DISTINCT cc~costcenter,cc~costcentername FROM i_costcentervh AS cc
-        INTO TABLE @DATA(lt_costcenter)
-        WHERE costcenter IN @lr_kostl.
-      IF sy-subrc = 0.SORT lt_costcenter BY costcenter.ENDIF.
+        SELECT DISTINCT costcenter FROM @lt_data AS _data WHERE costcenter IS NOT INITIAL INTO TABLE @DATA(lt_cc).
+        IF sy-subrc = 0.
+          CLEAR lr_kostl.
+          lr_kostl  = VALUE #( FOR wa_cc IN lt_cc ( sign = 'I' option = 'EQ' low = wa_cc-costcenter ) ).
+          SORT lr_kostl BY low.
+          SELECT DISTINCT cc~costcenter,cc~costcentername FROM i_costcentervh AS cc
+            INTO TABLE @DATA(lt_costcenter)
+            WHERE costcenter IN @lr_kostl.
+          IF sy-subrc = 0.SORT lt_costcenter BY costcenter.ENDIF.
+        ENDIF.
 *     Get Vendor Description based on workbook vendor
-      lr_lifnr  = VALUE #( FOR wa_data IN lt_data ( sign = 'I' option = 'EQ' low = wa_data-vendor ) ).
-      SORT lr_lifnr BY low.
-      DELETE ADJACENT DUPLICATES FROM lr_lifnr COMPARING low.
-      SELECT DISTINCT vnd~supplier,vnd~suppliername FROM zcon_cpm_ddl_i_supplier  AS vnd
-        INTO TABLE @DATA(lt_supplier)
-        WHERE supplier IN @lr_lifnr.
-      IF sy-subrc = 0.SORT lt_supplier BY supplier.ENDIF.
+        SELECT DISTINCT vendor FROM @lt_data AS _data WHERE vendor IS NOT INITIAL INTO TABLE @DATA(lt_vnd).
+        IF sy-subrc = 0.
+          lr_lifnr  = VALUE #( FOR wa_vnd IN lt_vnd ( sign = 'I' option = 'EQ' low = wa_vnd-vendor ) ).
+          SORT lr_lifnr BY low.
+          SELECT DISTINCT vnd~supplier,vnd~suppliername FROM zcon_cpm_ddl_i_supplier  AS vnd
+            INTO TABLE @DATA(lt_supplier)
+            WHERE supplier IN @lr_lifnr.
+          IF sy-subrc = 0.SORT lt_supplier BY supplier.ENDIF.
+        ENDIF.
+      ENDIF.
     ENDIF.
     DEFINE convert_date.
       lv_date = &1.
@@ -2019,6 +960,11 @@ CLASS ZDE_CL_CON_CPM_MP_MULTI_UTIL IMPLEMENTATION.
       IF sy-subrc = 0.
         ls_data-createdby = ls_user-username.
       ENDIF.
+*     Resp.Cost center Description
+*      READ TABLE lt_respcostcenter INTO DATA(ls_respcostcenter) WITH KEY costcenter = ls_data-respcostcenter BINARY SEARCH.
+*      IF sy-subrc = 0.
+*        ls_data-respcostcenter = ls_respcostcenter-costcentername.
+*      ENDIF.
 *     Cost center Description
       READ TABLE lt_costcenter INTO DATA(ls_costcenter) WITH KEY costcenter = ls_data-costcenter BINARY SEARCH.
       IF sy-subrc = 0.
@@ -2143,6 +1089,7 @@ CLASS ZDE_CL_CON_CPM_MP_MULTI_UTIL IMPLEMENTATION.
       COLLECT ls_result INTO et_result.
       CLEAR:ls_data, ls_result.
     ENDLOOP.
+
     IF lv_reportingtype NE lc_reportingtype_fres.
       LOOP AT et_result ASSIGNING FIELD-SYMBOL(<ls_result>).
         IF <ls_result>-plancost NE 0.
@@ -2156,9 +1103,5 @@ CLASS ZDE_CL_CON_CPM_MP_MULTI_UTIL IMPLEMENTATION.
 
       ENDLOOP.
     ENDIF.
-* delete
-    GET TIME STAMP FIELD lv_end_time.
-    lv_diff =  lv_end_time - lv_start_time.
-* delete
   ENDMETHOD.
 ENDCLASS.

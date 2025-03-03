@@ -32,4 +32,4 @@ DATA(lt_head_view) = VALUE ty_result_table(
 ).
 
 Only allow edit PR plan if selected initiative status is "Released".
-
+Initiative is not released.

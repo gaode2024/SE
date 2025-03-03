@@ -30,3 +30,6 @@ DATA(lt_head_view) = VALUE ty_result_table(
       zdatefrom  = ls_view-zdatefrom
       zdateto    = ls_view-zdateto )
 ).
+
+Only allow edit PR plan if selected initiative status is "Released".
+

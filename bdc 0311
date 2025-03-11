@@ -1,0 +1,38 @@
+ CALL FUNCTION 'ZFM_UPD_WBS_L3'
+       EXPORTING
+         CTU                       = 'X'
+         MODE                      = 'N'
+         UPDATE                    = 'L'
+*         GROUP                     =
+*         USER                      =
+*         KEEP                      =
+*         HOLDDATE                  =
+         NODATA                    = '/'
+         PRPS_EXT_001              = 'D.10.00008'
+         POSID_002                 = 'D.10.00008'
+         POST1_003                 = 'CPM 2024071701'
+         PRART_004                 = 'D'
+         POSKI_005                 = 'D.10.00008'
+         VERNR_006                 = '1'
+         PLAKZ_007                 = 'X'
+         FKSTL_008                 = '1003010000'
+         FKOKR_009                 = 'CAR0'
+         AKSTL_010                 = '1001010000'
+         AKOKR_011                 = 'CAR0'
+         ABUKR_012                 = '7152'
+         POSID_013                 = 'D.10.00008'
+         POST1_014                 = 'CPM 2024071701'
+         ZZEXT_COOPER_015          = 'NONE'
+         ZZCOOPER_DETAIL_016       = 'TBD'
+         ZZDEV_STATUS_017          = 'D02'
+         ZZBOARD_NAME_018          = 'B001'
+         ZZBOARD_DATE_019          = '20.03.2025'
+         ZZCUSTOMER_VIS_020        = '01'
+         ZZPLAN_FIELD_021          = 'PL001'
+         ZZSUB_PLANFIELD_022       = 'SP001'
+         ZZTECH_CENTER_023         = 'TC001'
+         ZZSUB_SYSTEM_024          = 'SY001'
+       IMPORTING
+         SUBRC                     = lv_subrc
+       TABLES
+         MESSTAB                   = lt_msgs

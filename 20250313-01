@@ -1,0 +1,77 @@
+REPORT zcreate_csv_with_dialog.
+
+* 定义变量和内表
+DATA: lt_data      TYPE TABLE OF zmy_table,
+      ls_data      TYPE zmy_table,
+      lv_filename  TYPE string,
+      lv_file      TYPE string,
+      lv_header    TYPE string,
+      lv_line      TYPE string,
+      lt_fields    TYPE TABLE OF dfies,
+      ls_field     TYPE dfies,
+      lv_fieldname TYPE string,
+      lv_value     TYPE string.
+
+FIELD-SYMBOLS: <fs_value> TYPE any.
+
+* 1. 从数据库表中读取数据
+SELECT * FROM zmy_table INTO TABLE lt_data.
+
+* 2. 获取表字段信息
+CALL FUNCTION 'DDIF_FIELDINFO_GET'
+  EXPORTING
+    tabname   = 'ZMY_TABLE'
+  TABLES
+    dfies_tab = lt_fields.
+
+* 3. 弹出对话框让用户选择文件路径
+CALL FUNCTION 'GUI_FILE_SAVE_DIALOG'
+  EXPORTING
+    default_file_name = 'my_new_csv_file.csv'
+  CHANGING
+    filename          = lv_filename
+    path              = lv_file.
+
+IF lv_filename IS INITIAL.
+  WRITE: / '用户取消了操作。'.
+  RETURN.
+ENDIF.
+
+* 4. 打开文件并写入数据
+OPEN DATASET lv_filename FOR OUTPUT IN TEXT MODE ENCODING DEFAULT.
+
+IF sy-subrc = 0.
+  * 动态生成表头
+  LOOP AT lt_fields INTO ls_field.
+    IF lv_header IS INITIAL.
+      lv_header = |"{ ls_field-fieldname }"|. " 用双引号包裹字段名
+    ELSE.
+      lv_header = |{ lv_header };"{ ls_field-fieldname }"|. " 使用字符串模板拼接
+    ENDIF.
+  ENDLOOP.
+  TRANSFER lv_header TO lv_filename.
+
+  * 动态生成数据行
+  LOOP AT lt_data INTO ls_data.
+    CLEAR lv_line.
+    LOOP AT lt_fields INTO ls_field.
+      ASSIGN COMPONENT ls_field-fieldname OF STRUCTURE ls_data TO <fs_value>.
+      IF sy-subrc = 0.
+        lv_value = <fs_value>.
+        * 用双引号包裹字段值
+        IF lv_line IS INITIAL.
+          lv_line = |"{ lv_value }"|.
+        ELSE.
+          lv_line = |{ lv_line };"{ lv_value }"|. " 使用字符串模板拼接
+        ENDIF.
+      ENDIF.
+    ENDLOOP.
+    TRANSFER lv_line TO lv_filename.
+  ENDLOOP.
+
+  * 关闭文件
+  CLOSE DATASET lv_filename.
+  WRITE: / 'CSV文件已成功创建并写入数据:', lv_filename.
+ELSE.
+  WRITE: / '无法创建文件:', lv_filename.
+ENDIF.

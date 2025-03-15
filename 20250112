@@ -1,3 +1,6 @@
+Gjahr,Psphi,Fictr,Fipex,Zavail,Ztarget,Wtgxxx,ZtransBudget,ZreleaseBudget,Fkbtr,Zactual,Zconsumed,ZafterTrans,ZavailForRelease,
+ZafterRelease,ZavailForReduction,Bukrs,Zcomments,Kostl,Posid,Fikrs,Display,Pstrt,Pende,ZpoApvAmt
+
 InitiativeGuid=6775689e-1a46-1edf-bd84-515d57d04e0f&Planningfield=PL002
 PR Setting  table:  ZCON_PFMT_PRPL
 V1DK908826       DTSRB2T      CPMP-367:S4H:CPM:CPM:ABAP:Adjust forecast overload issues

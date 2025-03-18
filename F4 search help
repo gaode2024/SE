@@ -1,0 +1,27 @@
+REPORT z_f4_example.
+
+DATA: lv_matnr TYPE matnr.
+
+AT SELECTION-SCREEN ON VALUE-REQUEST FOR lv_matnr.
+  PERFORM f4_help_for_matnr.
+
+FORM f4_help_for_matnr.
+  DATA: lt_return TYPE TABLE OF ddshretval,
+        ls_return TYPE ddshretval.
+
+  CALL FUNCTION 'F4IF_INT_TABLE_VALUE_REQUEST'
+    EXPORTING
+      retfield    = 'MATNR'
+      dynpprog    = sy-repid
+      dynpnr      = sy-dynnr
+      dynprofield = 'LV_MATNR'
+      value_org   = 'S'
+    TABLES
+      value_tab   = lt_mara
+      return_tab  = lt_return.
+
+  READ TABLE lt_return INTO ls_return INDEX 1.
+  IF sy-subrc = 0.
+    lv_matnr = ls_return-fieldval.
+  ENDIF.
+ENDFORM.

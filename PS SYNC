@@ -1,0 +1,36 @@
+
+*   Mass Project Modification
+*    LOOP AT it_item_upd INTO DATA(ls_item_upd) WHERE external_id IS NOT INITIAL.
+**Step 1 Update Financial Plan
+*      CALL FUNCTION 'ZDE_CON_CPM_FM_FP_UPDATE_PLAN'
+*        EXPORTING
+*          iv_plan_id          = ls_item_upd-external_id
+*          iv_start_date       = ls_item_upd-planned_start
+*          iv_end_date         = ls_item_upd-planned_finish
+**         iv_act_from         = ls_mp_data-fp_hdr-zzact_from
+**         iv_act_to           = ls_mp_data-fp_hdr-zzact_to
+*          iv_save_immediately = abap_true
+*        IMPORTING
+*          et_messages         = lt_messages.
+*    ENDLOOP.
+*Step 1 Update CPM project
+*      IF ls_mp_data-hdr-mp_id IS NOT INITIAL AND ls_log-flg_step5 NE lc_flag_e.
+*        CLEAR:lt_msgs, lv_failed.
+*        CALL FUNCTION 'ZDE_CON_CPM_FM_UPDATE_MP_HDR'
+*          EXPORTING
+*            iv_mp_id            = ls_mp_data-hdr-mp_id
+*            is_ws_mp_hdr        = ls_mp_data-hdr
+*            it_ws_mp_rept_attr  = ls_mp_data-attr
+*            it_description      = ls_mp_data-desc
+*            iv_save_immediately = abap_true
+*          IMPORTING
+*            et_messages         = lt_msgs.
+*
+*        READ TABLE lt_msgs INTO ls_msg INDEX 1.
+*        IF sy-subrc = 0.
+*          ls_log-flg_step1 = ls_msg-msgty.
+*          MESSAGE ID ls_msg-msgid TYPE ls_msg-msgty NUMBER ls_msg-msgno
+*            INTO ls_log-message_step1
+*            WITH ls_msg-msgv1 ls_msg-msgv2 ls_msg-msgv3 ls_msg-msgv4.
+*        ENDIF.
+*      ENDIF.

@@ -25,3 +25,42 @@ FORM f4_help_for_matnr.
     lv_matnr = ls_return-fieldval.
   ENDIF.
 ENDFORM.
+
+
+REPORT zmy_log_report.
+
+DATA: lo_log TYPE REF TO if_log.
+DATA: lv_log_handle TYPE balloghndl.
+DATA: ls_msg TYPE bal_s_msg.
+
+START-OF-SELECTION.
+
+  " 创建日志对象
+  CALL FUNCTION 'BAL_LOG_CREATE'
+    EXPORTING
+      i_s_log      = VALUE bal_s_log( object = 'ZMY_LOG_OBJECT' subobject = 'ZMY_LOG_SUBOBJECT' )
+    IMPORTING
+      e_log_handle = lv_log_handle.
+
+  " 设置日志消息
+  ls_msg-msgty = 'I'. " 消息类型：I (Info), W (Warning), E (Error), S (Success)
+  ls_msg-msgid = 'ZMY_MSG_CLASS'.
+  ls_msg-msgno = '001'.
+  ls_msg-msgv1 = 'This is a log message'.
+
+  " 添加日志消息
+  CALL FUNCTION 'BAL_LOG_MSG_ADD'
+    EXPORTING
+      i_log_handle = lv_log_handle
+      i_s_msg      = ls_msg.
+
+  " 保存日志
+  CALL FUNCTION 'BAL_DB_SAVE'
+    EXPORTING
+      i_in_update_task = abap_false
+      i_t_log_handle   = VALUE bal_t_logh( ( lv_log_handle ) ).
+
+  " 在SAP GUI中展示日志
+  CALL FUNCTION 'BAL_DSP_LOG_DISPLAY'
+    EXPORTING
+      i_t_log_handle = VALUE bal_t_logh( ( lv_log_handle ) ).

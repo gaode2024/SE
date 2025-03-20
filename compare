@@ -1,0 +1,62 @@
+Bukrs	Zcategory
+Pi	Kngjahr
+Pkostl	Knbelnr
+Plstar	Knbuzei
+Txt	Hkont
+ZactQty	Fipex
+Zcategory	Pkostl
+ZrptYear	Kostl
+Kngjahr	Fistl
+Vrgng	Wrbtr
+ZactUnit	Waers
+ZrptMonat	Dmbtr
+Knbelnr	Prctr2
+Knbuzei	Ebeln
+Cfcnt	Ebelp
+Hkont	Xblnr
+Fipex	Bktxt
+Farea	Sgtxt
+Kostl	ZrptYear
+Aufnr	ZrptMonat
+Projk	Pi
+Fistl	Lifnr
+Wrbtr	Zhldt
+Waers	Perio
+Dmbtr	Name1
+Zuonr	Vrgng
+Xref1	Txt
+Xref2	Plstar
+Xref3	ZactQty
+Prctr2	ZactUnit
+Ebeln	Vrefbn
+Ebelp	Vrfpos
+Vbel2	
+Posn2	
+Vbeln	
+Anln1	
+Anln2	
+Xblnr	
+Bktxt	
+Sgtxt	
+Gjahr	
+Fmbelnr	
+Fikrs	
+Fmbuzei	
+Btart	
+Zhldt	
+Perio	
+Vrefbt	
+Vrefbn	
+Vrforg	
+Vrfpos	
+Vrfknt	
+Vrftyp	
+Vrfsys	
+Fmxdocnr	
+Fmxyear	
+Fmxdocln	
+Fmxzekkn	
+Lifnr	
+Name1	
+Lstar	
+Zqty	

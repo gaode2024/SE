@@ -1,0 +1,456 @@
+*&---------------------------------------------------------------------*
+*& Report ZBWR_EXPORT_DATA_TO_CSV
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zbwr_export_data_to_csv.
+
+DATA: gv_year   TYPE numc4,
+      gv_period TYPE numc2.
+SELECTION-SCREEN  BEGIN OF BLOCK b1 WITH FRAME TITLE TEXT-b01.
+*  SELECTION-SCREEN SKIP 1.
+  PARAMETERS: p_folder    TYPE String.
+  SELECTION-SCREEN SKIP 1.
+  SELECTION-SCREEN BEGIN OF LINE.
+    PARAMETERS: p_mstr AS CHECKBOX."CPM Master Data
+    SELECTION-SCREEN COMMENT (55) TEXT-001 FOR FIELD p_mstr.
+  SELECTION-SCREEN END OF LINE.
+
+  SELECTION-SCREEN BEGIN OF LINE.
+    PARAMETERS: p_tmem    AS CHECKBOX
+                     . "CPM Project Team Member
+    SELECTION-SCREEN COMMENT (55) TEXT-002 FOR FIELD p_tmem.
+  SELECTION-SCREEN END OF LINE.
+
+  SELECTION-SCREEN BEGIN OF LINE.
+    PARAMETERS: p_ccat  AS CHECKBOX ."Cost Center Master Data(Attribute Time Dependent)
+    SELECTION-SCREEN COMMENT (55) TEXT-003 FOR FIELD p_ccat.
+  SELECTION-SCREEN END OF LINE.
+
+  SELECTION-SCREEN BEGIN OF LINE.
+    PARAMETERS: p_ccan  AS CHECKBOX ."Cost Center Master Data(Attribute Non-Time Dependent)
+    SELECTION-SCREEN COMMENT (55) TEXT-004 FOR FIELD p_ccan.
+  SELECTION-SCREEN END OF LINE.
+
+  SELECTION-SCREEN BEGIN OF LINE.
+    PARAMETERS: p_cctt  AS CHECKBOX ."Cost Center Master Data(Text)
+    SELECTION-SCREEN COMMENT (55) TEXT-005 FOR FIELD p_cctt.
+  SELECTION-SCREEN END OF LINE.
+
+  SELECTION-SCREEN BEGIN OF LINE.
+    PARAMETERS: p_cchr  AS CHECKBOX ."Cost Center Master Data(Hierarchy)
+    SELECTION-SCREEN COMMENT (55) TEXT-006 FOR FIELD p_cchr.
+  SELECTION-SCREEN END OF LINE.
+
+*  SELECTION-SCREEN BEGIN OF LINE.
+*    PARAMETERS: p_bpat  AS CHECKBOX ."Business Partner Master Data(Attribute Time Dependent)
+*    SELECTION-SCREEN COMMENT (55) TEXT-007 FOR FIELD p_bpat.
+*  SELECTION-SCREEN END OF LINE.
+
+  SELECTION-SCREEN BEGIN OF LINE.
+    PARAMETERS: p_bpan  AS CHECKBOX ."Business Partner Master Data(Attribute)
+    SELECTION-SCREEN COMMENT (55) TEXT-008 FOR FIELD p_bpan.
+  SELECTION-SCREEN END OF LINE.
+
+  SELECTION-SCREEN BEGIN OF LINE.
+    PARAMETERS: p_bptt  AS CHECKBOX ."Business Partner Master Data(Text)
+    SELECTION-SCREEN COMMENT (55) TEXT-009 FOR FIELD p_bptt.
+  SELECTION-SCREEN END OF LINE.
+
+  SELECTION-SCREEN BEGIN OF LINE.
+    PARAMETERS: p_fptd  AS CHECKBOX ."CPM Top Down
+    SELECTION-SCREEN COMMENT (55) TEXT-010 FOR FIELD p_fptd.
+  SELECTION-SCREEN END OF LINE.
+
+  SELECTION-SCREEN BEGIN OF LINE.
+    PARAMETERS: p_frst  AS CHECKBOX ."Forecast
+    SELECTION-SCREEN COMMENT (55) TEXT-011 FOR FIELD p_frst.
+  SELECTION-SCREEN END OF LINE.
+
+  SELECTION-SCREEN BEGIN OF LINE.
+    PARAMETERS: p_buex  AS CHECKBOX ."Bottom Up - External
+    SELECTION-SCREEN COMMENT (55) TEXT-012 FOR FIELD p_buex.
+  SELECTION-SCREEN END OF LINE.
+
+  SELECTION-SCREEN BEGIN OF LINE.
+    PARAMETERS: p_buin AS CHECKBOX ."Bottom Up - Internal
+    SELECTION-SCREEN COMMENT (55) TEXT-013 FOR FIELD p_buin.
+  SELECTION-SCREEN END OF LINE.
+
+  SELECTION-SCREEN BEGIN OF LINE.
+    PARAMETERS: p_tart AS CHECKBOX ."Target
+    SELECTION-SCREEN COMMENT (55) TEXT-014 FOR FIELD p_tart.
+  SELECTION-SCREEN END OF LINE.
+
+  SELECTION-SCREEN BEGIN OF LINE.
+    PARAMETERS: p_comt  AS CHECKBOX ."Commitment
+    SELECTION-SCREEN COMMENT (55) TEXT-015 FOR FIELD p_comt.
+  SELECTION-SCREEN END OF LINE.
+
+  SELECTION-SCREEN BEGIN OF LINE.
+    PARAMETERS: p_actl  AS CHECKBOX USER-COMMAND ucomm."Actual
+    SELECTION-SCREEN COMMENT (55) TEXT-016 FOR FIELD p_actl.
+  SELECTION-SCREEN END OF LINE.
+  SELECTION-SCREEN BEGIN OF BLOCK bl02 WITH FRAME.
+    SELECT-OPTIONS: s_year FOR gv_year MODIF ID bl2 NO INTERVALS NO-EXTENSION.
+    SELECT-OPTIONS: s_period FOR gv_period MODIF ID bl2 NO-EXTENSION.
+  SELECTION-SCREEN END OF BLOCK bl02.
+SELECTION-SCREEN  END OF BLOCK b1.
+
+INITIALIZATION.
+  PERFORM f_init_screen.
+
+AT SELECTION-SCREEN ON VALUE-REQUEST FOR p_folder.
+  PERFORM f_select_folder CHANGING p_folder.
+
+*AT SELECTION-SCREEN ON VALUE-REQUEST FOR s_period-low.
+*  PERFORM f_select_period CHANGING s_period-low.
+*
+*AT SELECTION-SCREEN ON VALUE-REQUEST FOR s_period-high.
+*  PERFORM f_select_period CHANGING s_period-high.
+
+AT SELECTION-SCREEN OUTPUT.
+  PERFORM f_set_screen.
+
+START-OF-SELECTION.
+  PERFORM f_main_process.
+
+END-OF-SELECTION.
+*&---------------------------------------------------------------------*
+*& Form f_select_folder
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*&      <-- P_FOLDER
+*&---------------------------------------------------------------------*
+FORM f_select_folder  CHANGING cv_folder.
+  DATA: lv_string TYPE string,
+        lv_title  TYPE string,
+        lv_file   TYPE string,
+        lv_path   TYPE string.
+
+  lv_title = 'Select Directory'.
+  lv_string = 'C:\'.
+
+  CALL METHOD cl_gui_frontend_services=>directory_browse
+    EXPORTING
+      window_title         = lv_title
+      initial_folder       = lv_string
+    CHANGING
+      selected_folder      = lv_path
+    EXCEPTIONS
+      cntl_error           = 1
+      error_no_gui         = 2
+      not_supported_by_gui = 3
+      OTHERS               = 4.
+
+  IF sy-subrc <> 0.
+    EXIT.
+  ELSE.
+    IF lv_path <> space.
+      cv_folder = lv_path.
+*      CONCATENATE lv_path '\' INTO cv_folder.
+    ELSE.
+      EXIT.
+    ENDIF.
+  ENDIF.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form f_init_screen
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM f_init_screen .
+  " Set file folder default vale
+  CALL METHOD cl_icf_csv=>get_path_and_filename
+    EXPORTING
+      iv_action   = '1'
+    IMPORTING
+      ev_init_dir = p_folder.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form f_main_process
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM f_main_process .
+  TYPES: BEGIN OF ty_tab_file,
+           tabname    TYPE  tabname,
+           structname TYPE string,
+           filename   TYPE string,
+         END OF ty_tab_file.
+  DATA:
+    lv_file_name   TYPE string,
+    lv_struct_name TYPE string,
+    lv_timestamp   TYPE tzntstmps,
+    lv_fld_value   TYPE string,
+    lv_condition   TYPE string,
+    lt_tab_file    TYPE TABLE OF ty_tab_file,
+    ls_tab_file    TYPE ty_tab_file,
+    lv_idx         TYPE i,
+    lv_size        TYPE i,
+    lv_percentage  TYPE i,
+    lo_data        TYPE REF TO data.
+  CONSTANTS:
+    lc_filename_mstr TYPE string VALUE 'CPM_Master_Data',
+    lc_filename_tmem TYPE string VALUE 'CPM_Project_Team_Member',
+    lc_filename_ccat TYPE string VALUE 'Cost_Center_Attribute_Time_Dependent',
+    lc_filename_ccan TYPE string VALUE 'Cost_Center_Attribute_Non-Time_Dependent',
+    lc_filename_cctt TYPE string VALUE 'Cost_Center_Text',
+    lc_filename_cchr TYPE string VALUE 'Cost_Center_Hierarchy',
+    lc_filename_bpan TYPE string VALUE 'Business_Partner_Attribute',
+    lc_filename_bptt TYPE string VALUE 'Business_Partner_Text',
+    lc_filename_fptd TYPE string VALUE 'CPM_Top_Down',
+    lc_filename_frst TYPE string VALUE 'Forecast',
+    lc_filename_buex TYPE string VALUE 'Bottom Up-External',
+    lc_filename_buin TYPE string VALUE 'Bottom Up-Internal',
+    lc_filename_tart TYPE string VALUE 'Target',
+    lc_filename_comt TYPE string VALUE 'Commitment',
+    lc_filename_actl TYPE string VALUE 'Actual'.
+  FIELD-SYMBOLS:
+    <lt_table>     TYPE ANY TABLE,
+    <lt_table_con> TYPE ANY TABLE,
+    <lv_value>     TYPE any.
+  CLEAR lt_tab_file.
+  PERFORM f_auth_check.
+
+  IF   p_mstr EQ abap_true ."CPM Master Data
+    APPEND VALUE #( tabname = '/BIC/PZC_CPMMD' structname = '/BIC/PZC_CPMMD' filename = lc_filename_mstr ) TO lt_tab_file.
+  ENDIF.
+  IF  p_tmem EQ abap_true ."CPM Project Team Member
+    APPEND VALUE #( tabname = '/BIC/AODS0491' structname = '/BIC/AODS0491' filename = lc_filename_tmem ) TO lt_tab_file.
+  ENDIF.
+  IF p_ccat  EQ abap_true ."Cost Center Master Data(Attribute Time Dependent)
+    APPEND VALUE #( tabname = '/BI0/QCOSTCENTER' structname = '/BI0/QCOSTCENTER' filename = lc_filename_ccat ) TO lt_tab_file.
+  ENDIF.
+  IF  p_ccan  EQ abap_true ."Cost Center Master Data(Attribute Non-Time Dependent)
+    APPEND VALUE #( tabname = '/BI0/PCOSTCENTER' structname = '/BI0/PCOSTCENTER' filename = lc_filename_ccan ) TO lt_tab_file.
+  ENDIF.
+  IF p_cctt  EQ abap_true ."Cost Center Master Data(Text)
+
+    APPEND VALUE #( tabname = '/BI0/TCOSTCENTER' structname = '/BI0/TCOSTCENTER' filename = lc_filename_cctt ) TO lt_tab_file.
+
+  ENDIF.
+  IF p_cchr  EQ abap_true ."Cost Center Master Data(Hierarchy)
+    APPEND VALUE #( tabname = '/BI0/HCOSTCENTER' structname = '/BI0/HCOSTCENTER' filename = lc_filename_cchr ) TO lt_tab_file.
+  ENDIF.
+  IF p_bpan  EQ abap_true ."Business Partner Master Data(Attribute)
+    APPEND VALUE #( tabname = '/BI0/PBPARTNER' structname = '/BI0/PBPARTNER' filename = lc_filename_bpan ) TO lt_tab_file.
+  ENDIF.
+  IF p_bptt  EQ abap_true ."Business Partner Master Data(Text)
+    APPEND VALUE #( tabname = '/BI0/TBPARTNER' structname = '/BI0/TBPARTNER' filename = lc_filename_bptt ) TO lt_tab_file.
+
+  ENDIF.
+  IF p_fptd  EQ abap_true ."CPM Top Down
+    APPEND VALUE #( tabname = '/BIC/AEDW0412'  structname = '/BIC/AEDW0412' filename = lc_filename_fptd ) TO lt_tab_file.
+
+  ENDIF.
+  IF p_frst  EQ abap_true ."Forecast
+    APPEND VALUE #( tabname = '/BIC/AEDW0422'  structname = 'ZBWS_CPM_FORECAST' filename = lc_filename_frst ) TO lt_tab_file.
+  ENDIF.
+  IF  p_buex  EQ abap_true ."Bottom Up - External
+    APPEND VALUE #( tabname = '/BIC/AODS0421' structname = '/BIC/AODS0421'  filename = lc_filename_buex ) TO lt_tab_file.
+  ENDIF.
+  IF p_buin  EQ abap_true ."Bottom Up - Internal
+    APPEND VALUE #( tabname = '/BIC/AEDW0432' structname = '/BIC/AEDW0432' filename = lc_filename_buin ) TO lt_tab_file.
+  ENDIF.
+  IF p_tart  EQ abap_true ."Target
+    APPEND VALUE #( tabname = '/BIC/AODS0441' structname = 'ZBWS_CPM_TARGET' filename = lc_filename_tart ) TO lt_tab_file.
+  ENDIF.
+  IF p_comt  EQ abap_true ."Commitment
+    APPEND VALUE #( tabname = '/BIC/AODS0451' structname = 'ZBWS_CPM_COMMITMENT' filename = lc_filename_comt ) TO lt_tab_file.
+  ENDIF.
+  IF p_actl  EQ abap_true ."Actual
+    APPEND VALUE #( tabname = '/BIC/AEDW0442' structname = 'ZBWS_CPM_ACTUAL' filename = lc_filename_actl ) TO lt_tab_file.
+  ENDIF.
+
+  GET TIME STAMP FIELD lv_timestamp.
+  DESCRIBE TABLE lt_tab_file LINES lv_size.
+  LOOP AT lt_tab_file INTO ls_tab_file.
+    CREATE DATA lo_data TYPE TABLE OF (ls_tab_file-tabname).
+    ASSIGN lo_data->* TO <lt_table>.
+    IF ls_tab_file-filename NE lc_filename_actl.
+      SELECT * FROM (ls_tab_file-tabname) INTO CORRESPONDING FIELDS OF TABLE <lt_table>.
+    ELSE.
+      lv_condition = 'fiscyear in s_year and poper in s_period'.
+      SELECT * FROM (ls_tab_file-tabname) INTO CORRESPONDING FIELDS OF TABLE <lt_table> WHERE (lv_condition).
+    ENDIF.
+    IF sy-subrc = 0.
+      CLEAR lv_condition.
+      IF ls_tab_file-filename EQ lc_filename_tart.
+        lv_condition = 'value lt 0'.
+      ELSEIF ls_tab_file-filename EQ lc_filename_comt.
+        lv_condition = 'value_tc lt 0 or value_lc lt 0'.
+      ELSEIF ls_tab_file-filename EQ lc_filename_frst.
+        lv_condition = '/bic/zkf_fetca lt 0'.
+      ELSEIF ls_tab_file-filename EQ lc_filename_actl.
+        lv_condition = 'amount_cc lt 0 or amount_tc lt 0 or quantityl lt 0'.
+      ENDIF.
+      IF lv_condition IS NOT INITIAL.
+        CREATE DATA lo_data TYPE TABLE OF (ls_tab_file-structname).
+        ASSIGN lo_data->* TO <lt_table_con>.
+        MOVE-CORRESPONDING <lt_table> TO <lt_table_con>.
+        LOOP AT <lt_table_con> ASSIGNING FIELD-SYMBOL(<ls_line>) WHERE (lv_condition).
+          ASSIGN COMPONENT 'VALUE' OF STRUCTURE <ls_line> TO <lv_value>.
+          IF sy-subrc = 0.
+            PERFORM f_data_format CHANGING <lv_value>.
+          ENDIF.
+          ASSIGN COMPONENT 'VALUE_TC' OF STRUCTURE <ls_line> TO <lv_value>.
+          IF sy-subrc = 0.
+            PERFORM f_data_format CHANGING <lv_value>.
+          ENDIF.
+          ASSIGN COMPONENT 'VALUE_LC' OF STRUCTURE <ls_line> TO <lv_value>.
+          IF sy-subrc = 0.
+            PERFORM f_data_format CHANGING <lv_value>.
+          ENDIF.
+          ASSIGN COMPONENT '/BIC/ZKF_FETCA' OF STRUCTURE <ls_line> TO <lv_value>.
+          IF sy-subrc = 0.
+            PERFORM f_data_format CHANGING <lv_value>.
+          ENDIF.
+          ASSIGN COMPONENT 'AMOUNT_CC' OF STRUCTURE <ls_line> TO <lv_value>.
+          IF sy-subrc = 0.
+            PERFORM f_data_format CHANGING <lv_value>.
+          ENDIF.
+          ASSIGN COMPONENT 'AMOUNT_TC' OF STRUCTURE <ls_line> TO <lv_value>.
+          IF sy-subrc = 0.
+            PERFORM f_data_format CHANGING <lv_value>.
+          ENDIF.
+          ASSIGN COMPONENT 'QUANTITYL' OF STRUCTURE <ls_line> TO <lv_value>.
+          IF sy-subrc = 0.
+            PERFORM f_data_format CHANGING <lv_value>.
+          ENDIF.
+        ENDLOOP.
+      ENDIF.
+    ENDIF.
+    lv_file_name =  ls_tab_file-filename && '_' && lv_timestamp && '.csv'.
+    lv_struct_name = ls_tab_file-structname.
+    lv_idx = sy-tabix.
+    lv_percentage = 100 *  lv_idx / lv_size .
+    IF lv_idx EQ 1 .
+      PERFORM f_display_process USING 0.
+    ENDIF.
+    IF lv_struct_name EQ ls_tab_file-tabname.
+      CALL METHOD cl_icf_csv=>request_for_write_into_csv
+        EXPORTING
+          it_data            = <lt_table>
+          iv_hdr_struct_name = lv_struct_name
+          iv_init_dir        = p_folder
+          iv_file_name       = lv_file_name.
+    ELSE.
+      CALL METHOD cl_icf_csv=>request_for_write_into_csv
+        EXPORTING
+          it_data            = <lt_table_con>
+          iv_hdr_struct_name = lv_struct_name
+          iv_init_dir        = p_folder
+          iv_file_name       = lv_file_name.
+    ENDIF.
+    PERFORM f_display_process USING lv_percentage.
+    CLEAR:lv_file_name,lv_struct_name.
+  ENDLOOP.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form f_select_perid
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*&      <-- S_PERIOD_LOW
+*&---------------------------------------------------------------------*
+FORM f_select_period  CHANGING c_period.
+  DATA: lv_month TYPE  kmonth,
+        lv_date  TYPE dats.
+  lv_date = sy-datum.
+  lv_month = lv_date+0(6).
+
+  CALL FUNCTION 'POPUP_TO_SELECT_MONTH'
+    EXPORTING
+      actual_month               = lv_month
+    IMPORTING
+      selected_month             = c_period
+    EXCEPTIONS
+      factory_calendar_not_found = 1
+      holiday_calendar_not_found = 2
+      month_not_found            = 3
+      OTHERS                     = 4.
+  IF sy-subrc <> 0.
+* Implement suitable error handling here
+  ENDIF.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form f_set_screen
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM f_set_screen .
+  LOOP AT SCREEN.
+    IF  screen-group1 = 'BL2'.
+      IF p_actl EQ abap_true.
+        screen-active = 1.
+      ELSE.
+        screen-active = 0.
+      ENDIF.
+      MODIFY SCREEN.
+    ENDIF.
+  ENDLOOP.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form f_display_process
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM f_display_process USING p_pct.
+  CALL FUNCTION 'SAPGUI_PROGRESS_INDICATOR'
+    EXPORTING
+      percentage = p_pct
+      text       = 'Data Downloading...'.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form f_auth_check
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM f_auth_check .
+*----------------authorization for display-----------------------------*
+  AUTHORITY-CHECK OBJECT 'ZBW_CPMDE'
+   ID 'ACTVT' FIELD '03'.
+  IF sy-subrc <> 0.
+    "You are not authorized for this task
+    MESSAGE e502(rspls).
+    LEAVE LIST-PROCESSING.
+  ENDIF.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form f_data_format
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*&      <-- L_FLD_VALUE
+*&---------------------------------------------------------------------*
+FORM f_data_format  CHANGING c_fld_value.
+  DATA: text1(1) TYPE c.
+
+  SEARCH c_fld_value FOR '-'.
+  IF sy-subrc = 0 AND sy-fdpos <> 0.
+    SPLIT c_fld_value AT '-' INTO c_fld_value text1.
+    CONDENSE c_fld_value.
+    CONCATENATE '-' c_fld_value INTO c_fld_value.
+  ELSE.
+    CONDENSE c_fld_value.
+  ENDIF.
+ENDFORM.

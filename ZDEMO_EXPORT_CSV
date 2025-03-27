@@ -1,0 +1,44 @@
+*&---------------------------------------------------------------------*
+*& Report ZDEMO_EXPORT_CSV
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT ZDEMO_EXPORT_CSV.
+
+PERFORM exe_create_wbs.
+FORM exe_create_wbs.
+   DATA:
+*        lt_export_table     TYPE tt_export,
+*        lt_export_table_csv TYPE truxs_t_text_data,
+lv_timestamp TYPE tzntstmps,
+        lv_action           TYPE i,
+        lv_filename         TYPE string,
+        lv_fullpath         TYPE string,
+        lv_path             TYPE string.
+  SELECT * FROM /BIC/AODS0421 INTO TABLE  @data(lt_data).
+  if sy-subrc = 0.
+   sort lt_data by REQTSN DATAPAKID record.
+  endif.
+TRY.
+* Save-Dialog
+  get TIME STAMP FIELD lv_timestamp.
+      cl_gui_frontend_services=>file_save_dialog( EXPORTING
+                                                    default_file_name = |data_{ lv_timestamp }.csv|
+                                                    default_extension = 'csv'
+                                                    file_filter       = |CSV-File (*.csv)\|*.csv\|{ cl_gui_frontend_services=>filetype_all }| ##NO_TEXT
+                                                  CHANGING
+                                                    filename          = lv_filename
+                                                    path              = lv_path
+                                                    fullpath          = lv_fullpath
+                                                    user_action       = lv_action ).
+CALL METHOD ZCL_CPM_DATA_EXTRACTION_CSV=>request_for_write_into_csv
+  EXPORTING
+    it_data            = lt_data
+    iv_hdr_struct_name = '/BIC/AODS0421'
+    iv_init_dir        = lv_path
+    iv_file_name       = lv_filename
+    .
+  CATCH cx_icf_csv_error.
+ENDTRY.
+
+ENDFORM.

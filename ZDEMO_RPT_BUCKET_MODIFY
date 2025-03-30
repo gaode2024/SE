@@ -1,0 +1,268 @@
+*&---------------------------------------------------------------------*
+*& Report ZDEMO_RPT_BUCKET_MODIFY
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT ZDEMO_RPT_BUCKET_MODIFY.
+TYPES:
+    ty_change_mode TYPE c LENGTH 1 .
+TYPES:
+    BEGIN OF ty_modifications,
+       bo_node_name         TYPE string,
+       key                  TYPE REF TO data,
+       change_mode          TYPE ty_change_mode,
+       data                 TYPE REF TO data,
+       changed_fields       TYPE scol_string_t,
+       association          TYPE string,
+       source_bo_node       TYPE string,
+       source_key           TYPE REF TO data,
+       source_key_is_handle TYPE sesf_boolean,
+    END OF ty_modifications .
+TYPES:
+    tt_modifications TYPE STANDARD TABLE OF ty_modifications
+      WITH DEFAULT KEY .
+data:  gv_bucket_guid type rpm_tv_guid,
+       gv_portfolio_guid type rpm_tv_guid.
+   parameter: p_pguid type rpm_tv_guid as listbox visible length 125.
+initialization.
+   perform frm_sel_screen.
+start-of-selection.
+
+perform create_bucket.
+
+form frm_sel_screen.
+data:  id type vrm_id,
+     lt_values type vrm_values,
+     ls_value type vrm_value.
+    select distinct d~guid as key, d~external_id as text ",text~text1 as text
+from /rpm/portfolio_d as d
+     left outer join cgpl_text as text on d~guid = text~guid "and langu = @sy-langu
+     into table @data(lt_portfolio).
+if sy-subrc = 0.
+  move-corresponding lt_portfolio to lt_values.
+  id = 'p_pguid'.
+  CALL FUNCTION 'VRM_SET_VALUES'
+    EXPORTING
+      id                    = id
+      values                = lt_values
+*   EXCEPTIONS
+*     ID_ILLEGAL_NAME       = 1
+*     OTHERS                = 2
+            .
+  IF sy-subrc <> 0.
+* Implement suitable error handling here
+  ENDIF.
+endif.
+endform.
+
+
+
+form create_bucket.
+
+  DATA: lr_bucket                TYPE REF TO /rpm/cl_bucket_api,
+        lr_msg_handler           TYPE REF TO /rpm/cl_message_handle,
+        ls_bucket_attr           TYPE /rpm/ts_bucket_api,
+        ls_object_with_language  TYPE /rpm/ts_bucket_key_in,
+        ls_short_text_key        TYPE /rpm/ts_comment_key,
+        lt_modif                 TYPE tt_modifications,
+        ls_modif                 TYPE ty_modifications,
+        lv_rc                    TYPE i,
+        lv_rejected              TYPE boolean,
+        ls_guid                  TYPE /rpm/ts_guid,
+        lt_guid                  TYPE /rpm/tt_guid,
+        ls_attr                  TYPE /rpm/ts_bucket_api,
+        ls_msg                   TYPE /rpm/ts_messages,
+        lt_msg                   TYPE /rpm/tt_messages,
+        lv_string                TYPE string,
+        lv_language              TYPE laiso,
+        lv_object_key_type       TYPE fieldname,
+        lv_object_data_type      TYPE fieldname,
+        lv_short_text_key_type   TYPE fieldname,
+        lr_key                   TYPE REF TO data,
+        lr_data                  TYPE REF TO data,
+        lr_short_texts           TYPE REF TO data,
+        lr_short_text_key        TYPE REF TO data.
+
+
+  FIELD-SYMBOLS:
+      <fs_key>                  TYPE any,
+      <fs_data>                 TYPE any,
+      <fv_short_texts>          TYPE any,
+      <fs_short_text_key>       TYPE any.
+
+  lv_object_key_type     = '/RPM/TS_BUCKET_KEY_IN'.
+  lv_object_data_type    = '/RPM/TS_BUCKET_API'.
+  lv_short_text_key_type  = /rpm/cl_object_api=>ov_comment_key_type.
+
+  lv_language = cl_rpm_language_buffer=>convert_langu_to_laiso( sy-langu ).
+  gv_portfolio_guid  = p_pguid.
+  write: / gv_portfolio_guid.
+  IF gv_portfolio_guid IS INITIAL.
+   exit.
+  ENDIF.
+data lv_time type i.
+  IF gv_bucket_guid IS INITIAL.
+do 2 times.
+
+    lv_time = lv_time + 1.
+    ls_attr-portfolio_guid = gv_portfolio_guid.
+
+    CREATE OBJECT lr_msg_handler.
+    lr_bucket ?= /rpm/cl_bucket_api=>get_instance(  ).
+
+    CLEAR: lr_key, lr_data.
+    ls_modif-change_mode  = 'C'.
+
+    CREATE DATA lr_key TYPE (lv_object_key_type).
+    ASSIGN lr_key->* TO <fs_key>.
+
+    ls_object_with_language-language       = lv_language.
+    ls_object_with_language-portfolio_guid = ls_attr-portfolio_guid.
+    ls_object_with_language-bucket_guid    = ls_attr-bucket_guid.
+    <fs_key>     = ls_object_with_language.
+    ls_modif-key = lr_key.
+
+*/  Details
+    ls_modif-bo_node_name = /rpm/cl_bucket_api=>ov_node_detail.
+    CREATE DATA lr_data TYPE (lv_object_data_type).
+    ASSIGN lr_data->* TO <fs_data>.
+    <fs_data> = ls_attr.
+    ls_modif-data = lr_data.
+    APPEND ls_modif TO lt_modif.
+
+*/   Set key references for further sub-objects
+    READ TABLE lt_modif INTO ls_modif INDEX 1.
+    IF sy-subrc EQ 0.
+      ASSIGN ls_modif-data->* TO <fs_data>.
+      ls_bucket_attr = <fs_data>.
+    ENDIF.
+
+*/ Call modify with the modification package
+
+    CALL METHOD lr_bucket->/rpm/if_provider_access~modify
+      EXPORTING
+        in_message_buffer = lr_msg_handler
+      CHANGING
+        in_modifications  = lt_modif.
+
+    lv_rc = lr_bucket->ov_rc.
+    lt_guid = lr_bucket->ot_guid.
+
+    lr_msg_handler->get_cgpl_message_log( ).
+    CALL METHOD lr_msg_handler->get_all_messages
+      RECEIVING
+        et_messages = lt_msg.
+
+* End of replacement.
+    IF lv_rc NE 0 .
+
+      ls_msg-msgtype = 'E'.
+      ls_msg-msg_txt = 'CREATE_BUCKET: Call to bucket modify failed in create mode'(b01).
+write: / 'CREATE_BUCKET: Call to bucket modify failed in create mode'.
+      RETURN.
+    ENDIF.
+    READ TABLE lt_guid INTO ls_guid INDEX 1.
+    IF sy-subrc EQ 0.
+      gv_bucket_guid = ls_guid-guid.
+    ENDIF.
+write: / gv_bucket_guid.
+    CLEAR: ls_attr, lt_modif.
+
+    ls_attr-bucket_guid = gv_bucket_guid.
+    ls_attr-external_id = 'V00' && lv_time.
+    ls_attr-description = ls_attr-external_id.
+    lv_string = ls_attr-external_id.
+    DATA: ls_rpm_currency TYPE /rpm/currency.
+    SELECT * FROM /rpm/currency INTO ls_rpm_currency.
+      ls_attr-currency = ls_rpm_currency-currency.
+      EXIT.
+    ENDSELECT.
+
+    DATA: ls_rpm_period_type TYPE /rpm/period_type.
+    SELECT * FROM /rpm/period_type INTO ls_rpm_period_type.
+      ls_attr-cap_period_type = ls_attr-period_type  = ls_rpm_period_type-periodtype.
+      EXIT.
+    ENDSELECT.
+
+    DATA: ls_rpm_unit TYPE /rpm/cap_units.
+    SELECT * FROM /rpm/cap_units INTO ls_rpm_unit.
+      ls_attr-unit  = ls_rpm_unit-unit.
+      EXIT.
+    ENDSELECT.
+
+    ls_attr-release_status = '002'.
+
+    ls_attr-begda_dem = sy-datum.
+    ls_attr-begda_fin = sy-datum.
+    ls_attr-endda_dem = sy-datum + 3 * 365.
+    ls_attr-endda_fin = sy-datum + 3 * 365.
+
+
+    CLEAR: lr_key, lr_data.
+    ls_modif-change_mode  = 'U'.
+
+    CREATE DATA lr_key TYPE (lv_object_key_type).
+    ASSIGN lr_key->* TO <fs_key>.
+
+    ls_object_with_language-language       = lv_language.
+    ls_object_with_language-portfolio_guid = ls_attr-portfolio_guid.
+    ls_object_with_language-bucket_guid    = ls_attr-bucket_guid.
+    <fs_key>     = ls_object_with_language.
+    ls_modif-key = lr_key.
+
+*/  Details
+    ls_modif-bo_node_name = /rpm/cl_bucket_api=>ov_node_detail.
+    CREATE DATA lr_data TYPE (lv_object_data_type).
+    ASSIGN lr_data->* TO <fs_data>.
+    <fs_data> = ls_attr.
+    ls_modif-data = lr_data.
+    APPEND ls_modif TO lt_modif.
+
+*/  Process short texts
+    CLEAR   ls_modif.
+    CLEAR:  lr_short_texts.
+
+*   short text key
+    CREATE DATA lr_short_text_key TYPE (lv_short_text_key_type).
+    ASSIGN lr_short_text_key->* TO <fs_short_text_key>.
+    ls_short_text_key-guid = ls_attr-bucket_guid.
+    ls_short_text_key-language = lv_language.
+    <fs_short_text_key> =  ls_short_text_key.
+
+    ls_modif-bo_node_name = /rpm/cl_object_api=>ov_node_short_text.
+    ls_modif-change_mode  = 'U'.
+    ls_modif-key = lr_short_text_key.
+
+*   short texts data
+    CREATE DATA lr_short_texts TYPE string.
+    ASSIGN lr_short_texts->* TO <fv_short_texts>.
+    <fv_short_texts>  = lv_string.
+    ls_modif-data = lr_short_texts.
+    APPEND ls_modif TO lt_modif.
+enddo.
+    CALL METHOD lr_bucket->/rpm/if_provider_access~modify
+      EXPORTING
+        in_message_buffer = lr_msg_handler
+      CHANGING
+        in_modifications  = lt_modif.
+    IF lv_rc NE 0 .
+      ls_msg-msgtype = 'E'.
+      ls_msg-msg_txt = 'CREATE_BUCKET: Call to bucket modify  failed in update mode'(b02).
+      RETURN.
+    ENDIF.
+
+Message 'before Data SAVE' TYPE 'S'.
+    CALL FUNCTION '/RPM/SAVE_CHANGES'
+      IMPORTING
+        ev_rc  = lv_rc
+        et_msg = lt_msg.
+
+    IF lv_rc NE 0.
+      ls_msg-msgtype = 'E'.
+      ls_msg-msg_txt = 'CREATE_BUCKET: Call to FM  /RPM/SAVE_CHANGES failed'(b03).
+      RETURN.
+    ELSE.
+      Message 'Data Created' TYPE 'S'.
+    ENDIF.
+  ENDIF.
+endform.

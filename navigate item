@@ -1,0 +1,171 @@
+METHOD navigate.
+
+    DATA: lv_lpd_appl_alias   TYPE apb_lpd_appl_alias,
+          ls_object_hierarchy TYPE inm_ts_nav_object_hier.
+
+    DATA:
+      lv_parent_guid TYPE /rpm/tv_guid,
+      lv_parent_type TYPE /rpm/object_type.
+
+    DATA:
+      ls_navigation_key TYPE          fpm_s_navigation_key,
+      lr_navigation     TYPE REF TO   if_fpm_navigation.
+    DATA:
+      lt_bus_params TYPE apb_lpd_t_params,
+      ls_bus_params TYPE apb_lpd_s_params.
+
+    DATA:
+      lv_appl_type        TYPE inm_nav_tv_appl_type,
+      lv_portal_role      TYPE agr_name,
+      lv_is_view_temp     TYPE wdy_boolean,
+      lv_is_status_locked TYPE wdy_boolean,
+      lv_authorized       TYPE wdy_boolean,
+      lv_appl_mode        TYPE inm_nav_tv_mode,
+      lr_session_state    TYPE REF TO  cl_inm_session_state.
+
+
+    CLEAR ls_object_hierarchy.
+    IF iv_object_type EQ /rpm/cl_co=>sc_acotype_bucket.
+      ls_object_hierarchy-portfolio_guid   = iv_portfolio_guid.
+      ls_object_hierarchy-parent_type	     = 'RPH'.
+      ls_object_hierarchy-parent_guid      = iv_portfolio_guid.
+      ls_object_hierarchy-object_type      = iv_object_type.
+      ls_object_hierarchy-object_guid      = iv_object_guid.
+      lv_lpd_appl_alias = 'DESCRIPTION'.
+      lv_portal_role = 'RPM_PORT'.
+      ls_navigation_key-key1 = 'RPM_RBH'.
+      ls_navigation_key-key2 = 'DRILLDOWN'.
+    ELSEIF iv_object_type EQ 'RIH'.
+      ls_object_hierarchy-portfolio_guid   = iv_portfolio_guid.
+      ls_object_hierarchy-parent_type	     = /rpm/cl_co=>sc_acotype_bucket.
+      ls_object_hierarchy-parent_guid      = iv_parent_guid.
+      ls_object_hierarchy-object_type      = iv_object_type.
+      ls_object_hierarchy-ctx_parent_type  = 'RPH'.
+      ls_object_hierarchy-ctx_parent_guid  = iv_portfolio_guid.
+      ls_object_hierarchy-object_guid      = iv_object_guid.
+      lv_lpd_appl_alias = 'PROJ_DESCRIPTION'.
+      lv_portal_role = 'RPM_ITEM'.
+      ls_navigation_key-key1 = 'RPM_RIH'.
+      ls_navigation_key-key2 = 'DRILLDOWN'.
+    ENDIF.
+
+
+    lv_appl_type = 'RPM'.
+    lv_appl_mode = '2'.
+
+    ls_bus_params-key = 'APPL_TYPE'.
+    ls_bus_params-value = lv_appl_type.
+    APPEND ls_bus_params TO lt_bus_params.
+
+    ls_bus_params-key = 'PORTFOLIO_ID'.
+    ls_bus_params-value = ls_object_hierarchy-portfolio_id.
+    APPEND ls_bus_params TO lt_bus_params.
+    ls_bus_params-key = 'PORTFOLIO_GUID'.
+    ls_bus_params-value = ls_object_hierarchy-portfolio_guid.
+    APPEND ls_bus_params TO lt_bus_params.
+    ls_bus_params-key = 'PARENT_TYPE'.
+    ls_bus_params-value = ls_object_hierarchy-parent_type.
+    APPEND ls_bus_params TO lt_bus_params.
+    ls_bus_params-key = 'PARENT_ID'.
+    ls_bus_params-value = ls_object_hierarchy-parent_id.
+    APPEND ls_bus_params TO lt_bus_params.
+    ls_bus_params-key = 'PARENT_GUID'.
+    ls_bus_params-value = ls_object_hierarchy-parent_guid.
+    APPEND ls_bus_params TO lt_bus_params.
+    ls_bus_params-key = 'OBJECT_TYPE'.
+    ls_bus_params-value = ls_object_hierarchy-object_type.
+    APPEND ls_bus_params TO lt_bus_params.
+    ls_bus_params-key = 'OBJECT_ID'.
+    ls_bus_params-value = ls_object_hierarchy-object_id.
+    APPEND ls_bus_params TO lt_bus_params.
+    ls_bus_params-key = 'OBJECT_GUID'.
+    ls_bus_params-value = ls_object_hierarchy-object_guid.
+    APPEND ls_bus_params TO lt_bus_params.
+    ls_bus_params-key = 'CTX_PARENT_TYPE'.
+    ls_bus_params-value = ls_object_hierarchy-ctx_parent_type.
+    APPEND ls_bus_params TO lt_bus_params.
+    ls_bus_params-key = 'CTX_PARENT_GUID'.
+    ls_bus_params-value = ls_object_hierarchy-ctx_parent_guid.
+    APPEND ls_bus_params TO lt_bus_params.
+    ls_bus_params-key = 'MAIN_PORTFOLIO_GUID'.
+    ls_bus_params-value = ls_object_hierarchy-main_portfolio_guid.
+    APPEND ls_bus_params TO lt_bus_params.
+
+    ls_bus_params-key = 'PORTAL_ROLE'.
+    ls_bus_params-value = lv_portal_role.
+    APPEND ls_bus_params TO lt_bus_params.
+
+    ls_bus_params-key = 'EDIT_MODE'.
+    ls_bus_params-value = iv_edit_mode.
+    APPEND ls_bus_params TO lt_bus_params.
+
+*     Get the singleton instance of session_state
+    IF NOT lr_session_state IS BOUND.
+      CALL METHOD cl_inm_session_state=>get_instance
+        RECEIVING
+          ro_inm_session_state = lr_session_state.
+    ENDIF.
+
+    ls_bus_params-key = 'VIEW_TEMP'.
+    CALL METHOD lr_session_state->get_object_details
+      IMPORTING
+        ev_is_view_temp = lv_is_view_temp.
+
+    IF lv_is_view_temp EQ abap_true.
+      ls_bus_params-value = 'VIEW_TEMP'.
+    ELSE.
+      CLEAR ls_bus_params-value.
+    ENDIF.
+    APPEND ls_bus_params TO lt_bus_params.
+
+    ls_bus_params-key = 'IS_STATUS_LOCKED'.
+    CALL METHOD lr_session_state->get_current_state
+      IMPORTING
+        ev_is_status_locked = lv_is_status_locked.
+
+    ls_bus_params-value = lv_is_status_locked.
+    APPEND ls_bus_params TO lt_bus_params.
+
+*     add optional appl_mode parameter
+    IF NOT lv_appl_mode IS INITIAL.
+*        READ TABLE lt_bus_params INTO ls_bus_params
+*          WITH KEY key = 'APPL_MODE'.
+      READ TABLE lt_bus_params ASSIGNING FIELD-SYMBOL(<fs_bus_params>)
+        WITH KEY key = 'APPL_MODE'.
+      IF sy-subrc IS INITIAL.
+*          ls_bus_params-value = lv_appl_mode.
+*          MODIFY lt_bus_params FROM ls_bus_params INDEX sy-tabix.
+        <fs_bus_params>-value = lv_appl_mode.
+      ELSE.
+        ls_bus_params-key = 'APPL_MODE'.
+        ls_bus_params-value = lv_appl_mode.
+        APPEND ls_bus_params TO lt_bus_params.
+      ENDIF.
+    ENDIF.
+*  CALL METHOD mr_inm_navigation->auth_pre_check
+*    EXPORTING
+*      is_object_hierarchy = ls_object_hierarchy
+*      iv_activity         = ''
+*      iv_is_dashboard     = 'X'
+*      iv_my_objects       = 'X'
+*    RECEIVING
+*      rv_authorized       = lv_authorized.
+
+*  CHECK lv_authorized EQ 'X'.
+    CALL METHOD mo_fpm->get_navigation
+      EXPORTING
+        is_key              = ls_navigation_key   " ID
+        iv_instance_sharing = abap_true    " Allows instance sharing (singleton)
+      RECEIVING
+        ro_navigation       = lr_navigation.   " Navigation API
+*
+    DATA(lt_target) = lr_navigation->mt_targets.
+    READ TABLE lt_target INTO DATA(ls_target) WITH KEY alias = lv_lpd_appl_alias .
+    IF sy-subrc = 0.
+      CALL METHOD lr_navigation->navigate
+        EXPORTING
+          iv_target_key          = ls_target-key
+          it_business_parameters = lt_bus_params.   " complete Business Parameters
+    ENDIF.
+  ENDMETHOD.
+

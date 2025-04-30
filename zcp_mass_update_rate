@@ -1,0 +1,328 @@
+*&---------------------------------------------------------------------*
+*& Report ZCP_MASS_UPDATE_RATE
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zcp_mass_update_rate.
+
+TYPES BEGIN OF ty_s_input.
+TYPES: mp_id      TYPE /cpd/d_mp_hdr-mp_id,
+       org_id     TYPE /cpd/d_mp_hdr-org_id,
+       mp_stage   TYPE /cpd/d_mp_hdr-mp_stage,
+       fous       TYPE /cpd/d_mp_hdr-fous,
+       solt       TYPE zcpd_s_budget_share_d-solt,
+       valid_date TYPE datum,
+       lstar      TYPE lstar,
+       year       TYPE ze_fyear.
+TYPES END OF ty_s_input.
+
+
+DATA:
+  gt_message TYPE bsanly_t_message,
+  gs_input   TYPE ty_s_input,
+  gt_plan    TYPE zcpm_plan_int_t.
+
+
+TABLES sscrfields.
+SELECTION-SCREEN BEGIN OF BLOCK b1 WITH FRAME TITLE TEXT-b01.
+SELECT-OPTIONS:
+              s_mpid  FOR gs_input-mp_id NO INTERVALS ,
+              s_orgid FOR gs_input-org_id NO INTERVALS ,
+              s_stage FOR gs_input-mp_stage NO INTERVALS ,
+              s_solt  FOR gs_input-solt NO INTERVALS MATCHCODE OBJECT zsh_cpm_st ,
+              s_fous  FOR gs_input-fous NO INTERVALS.
+PARAMETERS:
+  p_vdate TYPE ty_s_input-valid_date,
+  p_logid TYPE balnrext NO-DISPLAY.
+SELECTION-SCREEN:FUNCTION KEY 1.
+SELECTION-SCREEN END OF BLOCK b1.
+
+SELECTION-SCREEN BEGIN OF BLOCK b2 WITH FRAME TITLE TEXT-b02.
+SELECT-OPTIONS: s_lstar FOR gs_input-lstar NO INTERVALS DEFAULT 'INT001'.
+SELECT-OPTIONS: s_year  FOR gs_input-year NO INTERVALS.
+SELECTION-SCREEN END OF BLOCK b2.
+
+SELECTION-SCREEN BEGIN OF BLOCK b3 WITH FRAME TITLE TEXT-b03.
+PARAMETERS:
+  rb_test AS CHECKBOX  USER-COMMAND comd1,
+  rb_bg   AS CHECKBOX  USER-COMMAND comd2.
+
+*PARAMETERS:
+*  rb_test AS CHECKBOX  USER-COMMAND ucomm,
+*  rb_bg   AS CHECKBOX  .
+SELECTION-SCREEN END OF BLOCK b3.
+
+INITIALIZATION.
+
+  PERFORM f_bulid_init.
+
+AT SELECTION-SCREEN.
+
+  CASE sscrfields-ucomm.
+    WHEN 'FC01'.
+      PERFORM f_display_log.
+    WHEN OTHERS.
+
+  ENDCASE.
+
+  CASE sy-ucomm.
+    WHEN 'COMD1'.
+      IF rb_test EQ abap_true.
+        CLEAR:rb_bg.
+      ENDIF.
+    WHEN 'COMD2'.
+      IF rb_bg EQ abap_true.
+        CLEAR:rb_test.
+      ENDIF.
+  ENDCASE.
+
+START-OF-SELECTION.
+  PERFORM f_bulid_data.
+
+  IF gt_plan[] IS INITIAL.
+    MESSAGE s002(zfi_madcs) DISPLAY LIKE 'E'.
+    RETURN.
+  ENDIF.
+  " test run = '1' / background = '2'/ execute = '3'
+  IF rb_test EQ abap_true.
+    PERFORM f_bulid_test USING '1'.
+  ELSEIF rb_bg EQ abap_true.
+    p_logid =  'S_MASS_UPDATE_RATE_' && sy-datum && sy-uzeit.
+    DATA ls_log TYPE ztcpm_rate_log.
+    ls_log-logid = p_logid.
+    ls_log-uname = sy-uname.
+    ls_log-datum = sy-datum.
+    MODIFY ztcpm_rate_log FROM ls_log.                    "#EC CI_SUBRC
+    CLEAR ls_log.
+    PERFORM f_bulid_bg.
+  ELSEIF rb_test NE abap_true AND rb_bg NE abap_true.
+    PERFORM f_bulid_test USING '3'.
+  ENDIF.
+
+
+*&---------------------------------------------------------------------*
+*& Form F_BULID_DATA
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM f_bulid_data .
+  DATA lr_mp_id_int    TYPE RANGE OF /bobf/conf_key.
+
+  IF p_vdate IS INITIAL.
+    SELECT DISTINCT
+       s1~db_key,
+       s1~mp_id,
+       s2~solt,
+       s3~org_unit_key AS kostl
+       INTO  TABLE @DATA(lt_mpid)
+       FROM /cpd/d_mp_hdr AS s1
+       INNER JOIN zcpd_d_mp_bud_sh  AS s2 ON s1~db_key = s2~parent_key
+       INNER JOIN /cpd/pwsc_orgpid  AS s3 ON s1~org_id = s3~org_unit_id  AND s3~org_unit_typ = 'CS'
+    WHERE s1~mp_id IN @s_mpid
+    AND   s1~org_id IN @s_orgid
+    AND   s1~mp_stage IN @s_stage
+    AND   s1~fous IN @s_fous
+    AND   s2~solt IN @s_solt.
+  ELSE.
+    SELECT DISTINCT
+       s1~db_key,
+       s1~mp_id,
+       s2~solt,
+       s3~org_unit_key AS kostl
+       INTO  TABLE @lt_mpid
+       FROM /cpd/d_mp_hdr AS s1
+       INNER JOIN zcpd_d_mp_bud_sh  AS s2 ON s1~db_key = s2~parent_key
+       INNER JOIN /cpd/pwsc_orgpid  AS s3 ON s1~org_id = s3~org_unit_id  AND s3~org_unit_typ = 'CS'
+    WHERE s1~mp_id IN @s_mpid
+    AND   s1~org_id IN @s_orgid
+    AND   s1~mp_stage IN @s_stage
+    AND   s1~fous IN @s_fous
+    AND   s1~start_date <= @p_vdate
+    AND   s1~end_date >= @p_vdate
+    AND   s2~solt IN @s_solt
+   .
+  ENDIF.
+  IF sy-subrc = 0.
+    SELECT DISTINCT
+          s3~mp_id,
+          s3~kostl,
+          s2~plan_id,
+          s2~external_id,
+          s2~mp_id_int,
+          s1~version_id,
+          s1~description,
+          s1~status_id
+          FROM /cpd/d_pfp_pv AS s1
+          INNER JOIN /cpd/d_pfp_ph AS s2 ON s1~parent_key = s2~db_key
+          INNER JOIN @lt_mpid AS s3 ON s2~mp_id_int = s3~db_key
+*          WHERE  s1~status_id = 'Z002'   " Running Version status 'active'
+*            AND  s1~version_type = 'Z003'
+          WHERE  s1~version_type = 'Z003'
+            AND  s2~sel_structure = 'E'
+      INTO CORRESPONDING FIELDS OF TABLE @gt_plan
+.
+    IF sy-subrc = 0.
+      lr_mp_id_int = VALUE #( FOR wa_pv IN gt_plan ( option = 'EQ' sign = 'I' low = wa_pv-mp_id_int ) ).
+    ELSE.
+      APPEND VALUE #( option = 'EQ' sign = 'I' ) TO lr_mp_id_int.
+    ENDIF.
+    SELECT DISTINCT                                       "#EC CI_SUBRC
+          s3~mp_id,
+          s3~kostl,
+          s2~plan_id,
+          s2~external_id,
+          s2~mp_id_int,
+          s1~version_id,
+          s1~description,
+          s1~status_id
+
+      FROM /cpd/d_pfp_pv AS s1
+      INNER JOIN /cpd/d_pfp_ph AS s2 ON s1~parent_key = s2~db_key
+      INNER JOIN @lt_mpid AS s3 ON s2~mp_id_int = s3~db_key
+      WHERE  s1~status_id = 'Z002'
+        AND  s2~mp_id_int NOT IN @lr_mp_id_int
+        AND  s2~sel_structure = 'O'
+      APPENDING CORRESPONDING FIELDS OF TABLE @gt_plan.
+    SORT gt_plan BY plan_id.
+  ENDIF.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form F_BULID_INIT
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM f_bulid_init .
+  APPEND VALUE #( sign = 'I' option = 'EQ' low = 'Z001' ) TO s_stage.
+  APPEND VALUE #( sign = 'I' option = 'EQ' low = 'Z002' ) TO s_stage.
+  APPEND VALUE #( sign = 'I' option = 'EQ' low = sy-datum(4) ) TO s_year.
+
+  DATA: lv_functxt TYPE smp_dyntxt.
+
+  lv_functxt-text = 'Job Log' .
+
+  sscrfields-functxt_01 = lv_functxt.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form F_BULID_BG
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM f_bulid_bg .
+
+  DATA: lv_msg     TYPE string,
+        ls_msg     TYPE symsg,
+        ls_message TYPE bsanly_s_message,
+        lt_message TYPE bsanly_t_message,
+        number     TYPE tbtcjob-jobcount,
+        name       TYPE tbtcjob-jobname.
+  MESSAGE s045(zcp_madcs) DISPLAY LIKE 'S'.
+  CONCATENATE 'ZPFP_MASS_UPD_RATE_' sy-datum sy-uzeit INTO name.
+  CALL FUNCTION 'JOB_OPEN'
+    EXPORTING
+      jobname          = name
+    IMPORTING
+      jobcount         = number
+    EXCEPTIONS
+      cant_create_job  = 1
+      invalid_job_data = 2
+      jobname_missing  = 3
+      OTHERS           = 4.
+  IF sy-subrc = 0.
+
+    SUBMIT zcp_mass_update_rate_exe
+      WITH p_flag = '2'
+      WITH p_plan = gt_plan
+      WITH p_logid = p_logid
+      WITH s_lstar IN s_lstar
+      WITH s_year IN s_year
+      VIA JOB name NUMBER number
+      AND RETURN.
+    ##SUBRC_AFTER_COMMIT
+    COMMIT WORK.
+    IF sy-subrc = 0.
+      CALL FUNCTION 'JOB_CLOSE'
+        EXPORTING
+          jobcount             = number
+          jobname              = name
+          strtimmed            = 'X'
+        EXCEPTIONS
+          cant_start_immediate = 1
+          invalid_startdate    = 2
+          jobname_missing      = 3
+          job_close_failed     = 4
+          job_nosteps          = 5
+          job_notex            = 6
+          lock_failed          = 7
+          OTHERS               = 8.
+      IF sy-subrc <> 0.
+        MOVE-CORRESPONDING sy TO ls_msg.
+      ENDIF.
+    ELSE.
+      MOVE-CORRESPONDING sy TO ls_msg.
+    ENDIF.
+
+  ELSE.
+    MOVE-CORRESPONDING sy TO ls_msg.
+  ENDIF.
+
+*--------Message to display the background job is started-------------*
+  IF ls_msg IS INITIAL.
+    MOVE-CORRESPONDING sy TO ls_msg.
+  ENDIF.
+  MOVE-CORRESPONDING ls_msg TO ls_message.
+*  APPEND ls_message TO lt_message.
+*  cl_bs_anly_list_helper=>report_bsanly_messages( it_message = lt_message  ).  " to do because passing ls_msg to eo_message does not work.
+  CLEAR: ls_msg,ls_message,lt_message.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form F_BULID_TEST
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM f_bulid_test USING p_flag.
+  SUBMIT zcp_mass_update_rate_exe
+        WITH p_flag = p_flag
+        WITH p_plan = gt_plan
+        WITH s_lstar IN s_lstar
+        WITH s_year IN s_year
+        AND RETURN.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form F_DISPLAY_LOG
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM f_display_log .
+  DATA :lo_log_handler TYPE REF TO   zcl_pfp_app_log_handler,
+        lv_log_time    TYPE          baltime,
+        lv_log_date    TYPE          baldate.
+
+  SELECT SINGLE MAX( logid )  FROM ztcpm_rate_log INTO @DATA(lv_log_id) WHERE uname = @sy-uname AND datum = @sy-datum GROUP BY logid.
+  IF sy-subrc = 0.
+    CREATE OBJECT lo_log_handler
+      EXPORTING
+        iv_log_extid = lv_log_id.
+*    lo_log_handler->get_last_transfer_datetime(
+*      IMPORTING ev_date = lv_log_date
+*        ev_time = lv_log_time ).
+    lo_log_handler->display_all_logs( ).
+  ELSE.
+    MESSAGE s002(zfi_madcs) DISPLAY LIKE 'E'.
+  ENDIF.
+ENDFORM.

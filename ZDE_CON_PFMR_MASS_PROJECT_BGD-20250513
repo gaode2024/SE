@@ -1,0 +1,1406 @@
+*&---------------------------------------------------------------------*
+*& Report ZDE_CON_PFMR_MASS_PROJECT_UPD
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zde_con_pfmr_mass_project_bgd.
+
+TABLES:sscrfields.
+
+TYPES:
+  BEGIN OF gty_bucket_struc,
+    item_type       TYPE rpm_tv_extid,
+    zzplan_field    TYPE rpm_tv_extid,
+    zzsub_planfield TYPE rpm_tv_extid,
+    zztech_center   TYPE rpm_tv_extid,
+    zzsub_system    TYPE rpm_tv_extid,
+    guid_l2         TYPE rpm_tv_guid,
+    guid_l3         TYPE rpm_tv_guid,
+    guid_l4         TYPE rpm_tv_guid,
+    guid_l5         TYPE rpm_tv_guid,
+    guid_l6         TYPE rpm_tv_guid,
+  END OF gty_bucket_struc .
+TYPES:
+  BEGIN OF gty_s_batch,
+    guid       TYPE zcon_pfmt_prjlog-guid,
+    created_by TYPE zcon_pfmt_prjlog-created_by,
+    created_on TYPE zcon_pfmt_prjlog-created_on,
+  END OF gty_s_batch.
+TYPES:
+  gtt_bucket_struc TYPE STANDARD TABLE OF gty_bucket_struc.
+TYPES:
+  BEGIN OF gty_output_data.
+    INCLUDE TYPE /rpm/ts_item_d_api.
+TYPES:
+    members    TYPE zcon_cpmtt_mp_role_member,
+    batch_guid TYPE zcon_pfmt_prjlog-guid,
+    item_num   TYPE zcon_pfmt_prjlog-item_num,
+    action     TYPE zcon_pfmt_prjlog-action,
+  END OF gty_output_data .
+TYPES:
+  gtt_output_data TYPE STANDARD TABLE OF gty_output_data
+    WITH DEFAULT KEY .
+TYPES: BEGIN OF gty_object_link,
+         guid           TYPE /rpm/item_d-guid,
+         external_id    TYPE /rpm/item_d-external_id,
+         item_type      TYPE /rpm/item_d-item_type,
+         portfolio_guid TYPE /rpm/item_d-portfolio_guid,
+         object_key     TYPE /rpm/item_d-guid,
+       END OF gty_object_link .
+TYPES:
+  gtt_object_link TYPE STANDARD TABLE OF gty_object_link
+    WITH DEFAULT KEY .
+TYPES: BEGIN OF gty_mp_hdr,
+         db_key TYPE /cpd/d_mp_hdr-db_key,
+         mp_id  TYPE /cpd/d_mp_hdr-mp_id,
+       END OF gty_mp_hdr .
+TYPES:
+  gtt_mp_hdr TYPE STANDARD TABLE OF gty_mp_hdr
+    WITH DEFAULT KEY .
+DATA:
+  gv_portfolio_guid      TYPE /rpm/tv_guid,
+  gt_portfolio_guid      TYPE TABLE OF /rpm/tv_guid,
+  gs_proj_hdr            TYPE /cpd/s_mp_hdr_k,
+  gt_bucket_api          TYPE /rpm/tt_bucket_api,
+  gt_output_data         TYPE gtt_output_data,
+  gt_bucket_struc        TYPE gtt_bucket_struc,
+  gt_batchs              TYPE TABLE OF gty_s_batch,
+  gt_fieldcat            TYPE lvc_t_fcat,
+  gt_hnds                TYPE bal_t_logh,
+  gs_bal_log             TYPE bal_s_log,
+  gs_bal_msg             TYPE bal_s_msg,
+  gs_hnd                 TYPE balloghndl,
+  gt_logs                TYPE STANDARD TABLE OF zcon_pfmt_prjlog,
+  gt_upload              TYPE zcon_pfmtt_mass_project_upd,
+  gr_item                TYPE REF TO /rpm/cl_item_d_api,
+  gr_link_api            TYPE REF TO /rpm/cl_object_link_api,
+  gr_msg_handler         TYPE REF TO /rpm/cl_message_handle,
+  gs_context             TYPE /rpm/ts_object_hier,
+  gt_object_link         TYPE gtt_object_link,
+  gt_mp_hdr              TYPE gtt_mp_hdr,
+  gv_item_key_type       TYPE fieldname,
+  gv_item_data_type      TYPE fieldname,
+  gv_short_text_key_type TYPE fieldname,
+  gv_language            TYPE laiso.
+
+FIELD-SYMBOLS :
+   <gt_data> TYPE STANDARD TABLE .
+
+CONSTANTS: gc_ncol          TYPE i VALUE 24,
+           gc_icon_s        TYPE icon_d VALUE '@5B@',
+           gc_icon_e        TYPE icon_d VALUE '@5C@',
+           gc_msgty_e       TYPE char1 VALUE 'E',
+           gc_msgty_s       TYPE char1 VALUE 'S',
+           gc_change_mode_c TYPE char1 VALUE 'C',
+           gc_change_mode_u TYPE char1 VALUE 'U',
+           gc_mode_c        TYPE zpfm_mode VALUE 'Create',
+           gc_mode_u        TYPE zpfm_mode VALUE 'Change'.
+
+
+SELECTION-SCREEN BEGIN OF BLOCK bl01 WITH FRAME TITLE TEXT-b01.
+  PARAMETERS:
+    p_object TYPE zcon_pfmtt_mass_project_upd NO-DISPLAY.
+  SELECTION-SCREEN SKIP 1.
+
+SELECTION-SCREEN END OF BLOCK bl01.
+
+START-OF-SELECTION.
+  PERFORM f_main_process.
+
+END-OF-SELECTION.
+*----------------------------------------------------------------------*
+***INCLUDE LZDE_CON_PFM_FG_COMMONF01.
+*----------------------------------------------------------------------*
+*&---------------------------------------------------------------------*
+*& Form f_main_process
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM f_main_process .
+  CLEAR: gt_hnds,gt_logs,gt_upload,gt_output_data,gt_bucket_struc.
+  gs_bal_log-object = 'ZCON_PFM_ITM'.
+  gs_bal_log-subobject = 'ZCON_PFM_ITM_UPD'.
+
+  gt_upload = p_object.
+* Read Upload Data to an Internal Table
+  PERFORM f_read_filedata.
+* Get Bucket Hierarchy
+  PERFORM f_bucket_struc.
+* project creation/modification
+  PERFORM f_process_items.
+
+  MESSAGE s008(zcon_pfm) DISPLAY LIKE 'S'.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form f_read_filedata
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM f_read_filedata .
+  DATA: lv_guid_x16    TYPE sysuuid_x16,
+        lv_timestamp   TYPE tzntstmps,
+        lv_num         TYPE numc5 VALUE 1,
+        lv_msg         TYPE string,
+        ls_role_member TYPE zcon_cpms_mp_role_member,
+        ls_upload      TYPE zcon_pfms_mass_project_upd.
+  CONSTANTS:
+    lc_org_id_car0        TYPE /cpd/pws_ws_org_unit_id VALUE 'CAR0',
+    lc_separator          TYPE char1 VALUE ',',
+    lc_flg_del            TYPE boole_d VALUE 'D',
+    lc_role_z001          TYPE /cpd/pws_ws_role_id VALUE 'Z001',
+    lc_role_z002          TYPE /cpd/pws_ws_role_id VALUE 'Z002',
+    lc_role_z003          TYPE /cpd/pws_ws_role_id VALUE 'Z003',
+    lc_role_z004          TYPE /cpd/pws_ws_role_id VALUE 'Z004',
+    lc_role_z005          TYPE /cpd/pws_ws_role_id VALUE 'Z005',
+    lc_domain_devstatus   TYPE domname VALUE 'ZDEV_STATUS',
+    lc_domain_boardname   TYPE domname VALUE 'ZBOARD_NAME',
+    lc_domain_customervis TYPE domname VALUE 'ZCUSTOMER_VIS',
+    lc_domain_contracttyp TYPE domname VALUE 'ZCONTRACT_TYP',
+    lc_flg_e              TYPE zcpmflag VALUE 'E',
+    lc_flg_s              TYPE zcpmflag VALUE 'S'
+    .
+  FIELD-SYMBOLS:
+    <ls_hdr>      TYPE any,
+    <ls_rep_attr> TYPE any.
+  CHECK gt_upload IS NOT INITIAL.
+  " Project ID
+  SELECT DISTINCT proj_id FROM @gt_upload AS up WHERE proj_id IS NOT INITIAL
+  INTO TABLE @DATA(lt_data_projid).
+  IF sy-subrc = 0.
+    SELECT DISTINCT external_id,guid FROM /rpm/item_d AS item
+      INNER JOIN @lt_data_projid AS proj ON item~External_id = proj~proj_id
+      ORDER BY external_id
+    INTO TABLE @DATA(lt_data_item_his) .
+  ENDIF.
+  "Project Status
+  SELECT status , text FROM /rpm/status_t INTO TABLE @DATA(lt_status_t) WHERE
+  langu = @sy-langu.
+  "Project Type Master Data
+  SELECT DISTINCT EngagementProjectType AS proj_type,MasterProjectTypeName AS name FROM i_engagementprojecttypetext AS _text
+*    INNER JOIN @gt_upload AS _up ON _text~MasterProjectTypeName = _up~proj_type
+    WHERE _text~Language = @sy-langu
+  INTO TABLE @DATA(lt_text_proj_type).
+  "Project Member
+  SELECT DISTINCT
+    businesspartner,
+    businesspartnerrole,
+    businesspartnerfullname
+    FROM
+      i_mstrprojbpcontact AS _bp
+    WHERE  businesspartnerrole = @/cpd/cl_pws_ws_mp_bo_constant=>cv_member_emp_bupa
+  INTO TABLE @DATA(lt_bp) .
+  IF sy-subrc = 0.
+    SORT lt_bp BY businesspartner.
+  ENDIF.
+  " External Cooperation
+  SELECT DISTINCT
+    _text~ExternalCooperation AS value,
+    _text~ExternalCooperationName AS  text
+  FROM zcon_cpm_ddl_c_extcpnvh AS _text
+  INNER JOIN @gt_upload AS _up
+  ON _text~ExternalCooperationName = _up~zzext_cooper
+  INTO TABLE @DATA(lt_text_ec).
+
+  " Cooperation Detail
+  SELECT DISTINCT
+    _text~CooperationDetail AS value,
+    _text~CooperationDetailName AS  text
+  FROM zcon_cpm_ddl_c_cpndetvh AS _text
+  INNER JOIN @gt_upload AS _up
+  ON _text~CooperationDetailName = _up~zzcooper_detail
+  INTO TABLE @DATA(lt_text_cd).
+  " Development Status
+  SELECT DISTINCT
+    _text~domainvalue AS value,
+    _text~domaintext AS  text
+  FROM i_domainfixedvaluetext AS _text
+  INNER JOIN @gt_upload AS _up
+  ON _text~domaintext = _up~zzdev_status
+  WHERE _text~sapdatadictionarydomain = @lc_domain_devstatus AND _text~language = @sy-langu
+  INTO TABLE @DATA(lt_text_ds).
+  " Board Name
+  SELECT DISTINCT
+    _text~domainvalue AS value,
+    _text~domaintext AS  text
+  FROM i_domainfixedvaluetext AS _text
+  INNER JOIN @gt_upload AS _up
+  ON _text~domaintext = _up~zzboard_name
+  WHERE _text~sapdatadictionarydomain = @lc_domain_boardname AND _text~language = @sy-langu
+  INTO TABLE @DATA(lt_text_bn).
+  " Customer Visibility
+  SELECT DISTINCT
+    _text~domainvalue AS value,
+    _text~domaintext AS  text
+  FROM i_domainfixedvaluetext AS _text
+  INNER JOIN @gt_upload AS _up
+  ON _text~domaintext = _up~zzcustomer_vis
+  WHERE _text~sapdatadictionarydomain = @lc_domain_customervis AND _text~language = @sy-langu
+  INTO TABLE @DATA(lt_text_cv).
+  " Contract Type
+  SELECT DISTINCT
+    _text~domainvalue AS value,
+    _text~domaintext AS  text
+  FROM i_domainfixedvaluetext AS _text
+  INNER JOIN @gt_upload AS _up
+  ON _text~domaintext = _up~zzcontract_typ
+  WHERE _text~sapdatadictionarydomain = @lc_domain_contracttyp AND _text~language = @sy-langu
+  INTO TABLE @DATA(lt_text_ct).
+
+  " Planning Field
+  SELECT DISTINCT
+    _text~planningfield  AS value,
+    _text~planningfieldName AS  text
+  FROM zcon_cpm_ddl_i_plfldt AS _text
+  INNER JOIN @gt_upload AS _up
+  ON _text~planningfieldName = _up~zzplan_field
+    WHERE  _text~language = @sy-langu
+  INTO TABLE @DATA(lt_text_pf).
+  " Sub Planning Field
+  SELECT DISTINCT
+    _text~subplanningfield AS value,
+    _text~subplanningfieldName AS  text
+  FROM zcon_cpm_ddl_i_subpft AS _text
+  INNER JOIN @gt_upload AS _up
+  ON _text~subplanningfieldName = _up~zzsub_planfield
+    WHERE  _text~language = @sy-langu
+  INTO TABLE @DATA(lt_text_sp).
+  " TC/CE
+  SELECT DISTINCT
+    _text~techcentercentralenabler AS value,
+    _text~techcentercentralenablerName AS  text
+  FROM zcon_cpm_ddl_i_tecctt AS _text
+  INNER JOIN @gt_upload AS _up
+  ON _text~techcentercentralenablerName = _up~zztech_center
+    WHERE  _text~language = @sy-langu
+  INTO TABLE @DATA(lt_text_tc).
+  " Sub System
+  SELECT DISTINCT
+    _text~subsystem AS  value,
+    _text~subsystemName AS  text
+  FROM zcon_cpm_ddl_i_subsyt AS _text
+  INNER JOIN @gt_upload AS _up
+  ON _text~subsystemName = _up~zzsub_system
+    WHERE  _text~language = @sy-langu
+  INTO TABLE @DATA(lt_text_ss).
+* External Cooperation/Cooperation Detail data napping
+  SELECT ExternalCooperation,CooperationDetail AS value,CooperationDetailName AS text FROM zcon_cpm_ddl_c_cpndetvh
+  INTO TABLE @DATA(lt_cpndetvh).
+
+  SELECT DISTINCT PortfolioGuid,Portfolioid
+      FROM zcon_pfm_ddl_i_portfolio AS portfolio
+      FOR ALL ENTRIES IN @gt_upload WHERE portfolio~Portfolioid = @gt_upload-portfolio_id
+  INTO TABLE @DATA(lt_portfolio).
+  IF sy-subrc = 0.
+    SORT lt_portfolio BY Portfolioid.
+  ENDIF.
+* Batch number
+  lv_guid_x16 = cl_uuid_factory=>create_system_uuid( )->create_uuid_x16( ).
+* Batch timestamp
+  GET TIME STAMP FIELD lv_timestamp.
+* Convert input data
+  LOOP AT gt_upload INTO ls_upload.
+    IF ls_upload-proj_id IS NOT INITIAL.
+      " remove dumplicates
+*      READ TABLE gt_output_data TRANSPORTING NO FIELDS WITH KEY external_id = ls_upload-proj_id.
+*      IF sy-subrc = 0.
+*        CONTINUE.
+*      ENDIF.
+    ENDIF.
+    APPEND INITIAL LINE TO gt_logs ASSIGNING FIELD-SYMBOL(<ls_log>).
+    MOVE-CORRESPONDING ls_upload TO <ls_log>.
+    APPEND INITIAL LINE TO gt_output_data ASSIGNING FIELD-SYMBOL(<ls_proj_data>).
+    <ls_log>-guid = <ls_proj_data>-batch_guid = lv_guid_x16.
+    <ls_log>-item_num = <ls_proj_data>-item_num = lv_num.
+    <ls_log>-created_by = sy-uname.
+    <ls_log>-created_on = lv_timestamp.
+    <ls_log>-icon = gc_icon_s.
+    <ls_log>-action = <ls_proj_data>-action = gc_mode_c.
+    <ls_log>-status = ls_upload-proj_status.
+    CALL FUNCTION 'BAL_LOG_CREATE'
+      EXPORTING
+        i_s_log      = gs_bal_log
+      IMPORTING
+        e_log_handle = gs_hnd.
+    <ls_log>-log_handle = gs_hnd.
+*    APPEND gs_hnd TO gt_hnds.
+*    CLEAR gs_hnd.
+    lv_num = lv_num + 1.
+    <ls_proj_data>-external_id = ls_upload-proj_id.
+    <ls_proj_data>-zzfkstl = ls_upload-zzfkstl.
+    READ TABLE lt_data_item_his ASSIGNING FIELD-SYMBOL(<ls_data_item_his>) WITH KEY external_id  = <ls_proj_data>-external_id.
+    IF sy-subrc = 0.
+      <ls_log>-action = <ls_proj_data>-action = gc_mode_u.
+      <ls_proj_data>-guid = <ls_data_item_his>-guid.
+    ENDIF.
+    "Project Name
+    <ls_proj_data>-proj_description = ls_upload-proj_desc.
+    READ TABLE lt_portfolio ASSIGNING FIELD-SYMBOL(<ls_portfolio>) WITH KEY Portfolioid = ls_upload-Portfolio_id BINARY SEARCH.
+    IF sy-subrc = 0.
+      <ls_proj_data>-portfolio_guid = <ls_portfolio>-portfolioguid.
+      APPEND <ls_portfolio>-portfolioguid TO gt_portfolio_guid.
+    ENDIF.
+    <ls_proj_data>-zzorg_id = lc_org_id_car0.
+*   item type
+    READ TABLE lt_text_proj_type INTO DATA(ls_text_proj_type) WITH KEY name  = ls_upload-proj_type.
+    IF sy-subrc = 0.
+      <ls_proj_data>-item_type = ls_text_proj_type-proj_type.
+    ENDIF.
+
+    IF ls_upload-proj_sdate IS NOT INITIAL.
+      CALL FUNCTION 'CONVERT_DATE_TO_INTERNAL'
+        EXPORTING
+          date_external            = ls_upload-proj_sdate
+        IMPORTING
+          date_internal            = <ls_proj_data>-planned_start
+        EXCEPTIONS
+          date_external_is_invalid = 1
+          OTHERS                   = 2.
+    ENDIF.
+    IF ls_upload-proj_edate IS NOT INITIAL.
+      CALL FUNCTION 'CONVERT_DATE_TO_INTERNAL'
+        EXPORTING
+          date_external            = ls_upload-proj_edate
+        IMPORTING
+          date_internal            = <ls_proj_data>-planned_finish
+        EXCEPTIONS
+          date_external_is_invalid = 1
+          OTHERS                   = 2.
+    ENDIF.
+    IF ls_upload-zzboard_date IS NOT INITIAL.
+      CALL FUNCTION 'CONVERT_DATE_TO_INTERNAL'
+        EXPORTING
+          date_external            = ls_upload-zzboard_date
+        IMPORTING
+          date_internal            = <ls_proj_data>-zzboard_date
+        EXCEPTIONS
+          date_external_is_invalid = 1
+          OTHERS                   = 2.
+    ENDIF.
+*     External Cooperation
+    READ TABLE lt_text_ec INTO DATA(ls_text_ec) WITH KEY text = ls_upload-zzext_cooper.
+    IF sy-subrc = 0.
+      <ls_proj_data>-zzext_cooper = ls_text_ec-value.
+*     External Cooperation / Cooperation Detail
+      READ TABLE lt_cpndetvh INTO DATA(ls_cpndetvh) WITH KEY ExternalCooperation = ls_text_ec-value  text = ls_upload-zzcooper_detail .
+      IF sy-subrc = 0.
+        <ls_proj_data>-zzcooper_detail = ls_cpndetvh-value.
+      ENDIF.
+    ENDIF.
+    READ TABLE lt_text_ds INTO DATA(ls_text_ds) WITH KEY text = ls_upload-zzdev_status.
+    IF sy-subrc = 0.
+      <ls_proj_data>-zzdev_status = ls_text_ds-value.
+    ENDIF.
+    READ TABLE lt_text_bn INTO DATA(ls_text_bn) WITH KEY text = ls_upload-zzboard_name.
+    IF sy-subrc = 0.
+      <ls_proj_data>-zzboard_name = ls_text_bn-value.
+    ENDIF.
+    READ TABLE lt_text_cv INTO DATA(ls_text_cv) WITH KEY text = ls_upload-zzcustomer_vis.
+    IF sy-subrc = 0.
+      <ls_proj_data>-zzcustomer_vis = ls_text_cv-value.
+    ENDIF.
+    READ TABLE lt_text_ct INTO DATA(ls_text_ct) WITH KEY text = ls_upload-zzcontract_typ.
+    IF sy-subrc = 0.
+      <ls_proj_data>-zzcontract_typ = ls_text_ct-value.
+    ENDIF.
+    READ TABLE lt_text_pf INTO DATA(ls_text_pf) WITH KEY text = ls_upload-zzplan_field.
+    IF sy-subrc = 0.
+      <ls_proj_data>-zzplan_field = ls_text_pf-value.
+    ENDIF.
+    READ TABLE lt_text_sp INTO DATA(ls_text_sp) WITH KEY text = ls_upload-zzsub_planfield.
+    IF sy-subrc = 0.
+      <ls_proj_data>-zzsub_planfield = ls_text_sp-value.
+    ENDIF.
+    READ TABLE lt_text_tc INTO DATA(ls_text_tc) WITH KEY text = ls_upload-zztech_center.
+    IF sy-subrc = 0.
+      <ls_proj_data>-zztech_center = ls_text_tc-value.
+    ENDIF.
+    READ TABLE lt_text_ss INTO DATA(ls_text_ss) WITH KEY text = ls_upload-zzsub_system.
+    IF sy-subrc = 0.
+      <ls_proj_data>-zzsub_system = ls_text_ss-value.
+    ENDIF.
+    READ TABLE lt_status_t INTO DATA(ls_status_t) WITH KEY text = ls_upload-proj_status.
+    IF sy-subrc = 0.
+      <ls_proj_data>-status = ls_status_t-status.
+    ENDIF.
+    READ TABLE lt_bp INTO DATA(ls_bp) WITH KEY businesspartner = ls_upload-proj_manager BINARY SEARCH.
+    IF sy-subrc = 0.
+      <ls_proj_data>-zzpm_bupa_id = ls_upload-proj_manager.
+    ENDIF.
+    IF ls_upload-proj_controller IS NOT INITIAL.
+      IF ls_upload-proj_controller NE lc_flg_del.
+        READ TABLE lt_bp TRANSPORTING NO FIELDS WITH KEY businesspartner = ls_upload-proj_controller BINARY SEARCH.
+      ENDIF.
+      IF sy-subrc = 0.
+        ls_role_member-role_id = lc_role_z001.
+        ls_role_member-mem_id = ls_upload-proj_controller.
+        APPEND  ls_role_member TO <ls_proj_data>-members.
+        CLEAR ls_role_member.
+      ENDIF.
+    ENDIF.
+    IF ls_upload-proj_manager IS NOT INITIAL.
+      IF ls_upload-proj_manager NE lc_flg_del.
+        READ TABLE lt_bp TRANSPORTING NO FIELDS WITH KEY businesspartner = ls_upload-proj_manager BINARY SEARCH.
+      ENDIF.
+      IF sy-subrc = 0.
+        ls_role_member-role_id = lc_role_z002.
+        ls_role_member-mem_id = ls_upload-proj_manager.
+        APPEND  ls_role_member TO <ls_proj_data>-members.
+        CLEAR ls_role_member.
+      ENDIF.
+    ENDIF.
+    IF ls_upload-pc_deputy IS NOT INITIAL.
+      IF ls_upload-pc_deputy CS lc_separator.
+        SPLIT ls_upload-pc_deputy AT lc_separator INTO TABLE DATA(lt_pcdeputys).
+        LOOP AT lt_pcdeputys INTO DATA(lv_pcdeputy).
+          READ TABLE lt_bp TRANSPORTING NO FIELDS WITH KEY businesspartner = lv_pcdeputy BINARY SEARCH.
+          IF sy-subrc = 0.
+            ls_role_member-role_id = lc_role_z003.
+            ls_role_member-mem_id = lv_pcdeputy.
+            APPEND  ls_role_member TO <ls_proj_data>-members.
+            CLEAR ls_role_member.
+          ENDIF.
+        ENDLOOP.
+      ELSE.
+        IF ls_upload-pc_deputy NE lc_flg_del.
+          READ TABLE lt_bp TRANSPORTING NO FIELDS WITH KEY businesspartner = ls_upload-pc_deputy BINARY SEARCH.
+        ENDIF.
+        IF sy-subrc = 0.
+          ls_role_member-role_id = lc_role_z003.
+          ls_role_member-mem_id = ls_upload-pc_deputy.
+          APPEND  ls_role_member TO <ls_proj_data>-members.
+          CLEAR ls_role_member.
+        ENDIF.
+      ENDIF.
+    ENDIF.
+    IF ls_upload-pm_deputy IS NOT INITIAL.
+      IF ls_upload-pm_deputy CS lc_separator.
+        SPLIT ls_upload-pm_deputy AT lc_separator INTO TABLE DATA(lt_pmdeputys).
+        LOOP AT lt_pmdeputys INTO DATA(lv_pmdeputy).
+          READ TABLE lt_bp TRANSPORTING NO FIELDS WITH KEY businesspartner = lv_pmdeputy BINARY SEARCH.
+          IF sy-subrc = 0.
+            ls_role_member-role_id = lc_role_z004.
+            ls_role_member-mem_id = lv_pmdeputy.
+            APPEND  ls_role_member TO <ls_proj_data>-members.
+            CLEAR ls_role_member.
+          ENDIF.
+        ENDLOOP.
+      ELSE.
+        IF ls_upload-pm_deputy NE lc_flg_del.
+          READ TABLE lt_bp TRANSPORTING NO FIELDS WITH KEY businesspartner = ls_upload-pm_deputy BINARY SEARCH.
+        ENDIF.
+        IF sy-subrc = 0.
+          ls_role_member-role_id = lc_role_z004.
+          ls_role_member-mem_id = ls_upload-pm_deputy.
+          APPEND  ls_role_member TO <ls_proj_data>-members.
+          CLEAR ls_role_member.
+        ENDIF.
+      ENDIF.
+    ENDIF.
+    IF ls_upload-syslead IS NOT INITIAL.
+      IF ls_upload-syslead NE lc_flg_del.
+        READ TABLE lt_bp TRANSPORTING NO FIELDS WITH KEY businesspartner = ls_upload-syslead BINARY SEARCH.
+      ENDIF.
+      IF sy-subrc = 0.
+        ls_role_member-role_id = lc_role_z005.
+        ls_role_member-mem_id = ls_upload-syslead.
+        APPEND  ls_role_member TO <ls_proj_data>-members.
+        CLEAR ls_role_member.
+      ENDIF.
+    ENDIF.
+
+    "add validation
+    PERFORM f_chk_value USING ls_upload-proj_sdate <ls_proj_data>-planned_start CHANGING <ls_log>.
+    PERFORM f_chk_value USING ls_upload-proj_edate <ls_proj_data>-planned_finish CHANGING <ls_log>.
+    PERFORM f_chk_value USING ls_upload-zzfkstl  <ls_proj_data>-zzfkstl  CHANGING <ls_log>.
+    PERFORM f_chk_value USING ls_upload-proj_manager  <ls_proj_data>-zzpm_bupa_id  CHANGING <ls_log>.
+    PERFORM f_chk_value USING ls_upload-proj_status  <ls_proj_data>-status  CHANGING <ls_log>.
+    PERFORM f_chk_value USING ls_upload-zzdev_status  <ls_proj_data>-zzdev_status  CHANGING <ls_log>.
+    PERFORM f_chk_value USING ls_upload-zzboard_name  <ls_proj_data>-zzboard_name  CHANGING <ls_log>.
+    PERFORM f_chk_value USING ls_upload-zzboard_date <ls_proj_data>-zzboard_date CHANGING <ls_log>.
+    PERFORM f_chk_value USING ls_upload-zzcustomer_vis <ls_proj_data>-zzcustomer_vis CHANGING <ls_log>.
+    PERFORM f_chk_value USING ls_upload-zzcontract_typ <ls_proj_data>-zzcontract_typ CHANGING <ls_log>.
+    PERFORM f_chk_value USING ls_upload-zzext_cooper <ls_proj_data>-zzext_cooper CHANGING <ls_log>.
+    PERFORM f_chk_value USING ls_upload-zzcooper_detail <ls_proj_data>-zzcooper_detail CHANGING <ls_log>.
+    PERFORM f_chk_value USING ls_upload-zzplan_field  <ls_proj_data>-zzplan_field  CHANGING <ls_log>.
+    PERFORM f_chk_value USING ls_upload-zzsub_planfield  <ls_proj_data>-zzsub_planfield  CHANGING <ls_log>.
+    PERFORM f_chk_value USING ls_upload-zztech_center  <ls_proj_data>-zztech_center  CHANGING <ls_log>.
+    PERFORM f_chk_value USING ls_upload-zzsub_system   <ls_proj_data>-zzsub_system   CHANGING <ls_log>.
+
+  ENDLOOP.
+
+  SORT gt_portfolio_guid.
+  DELETE ADJACENT DUPLICATES FROM gt_portfolio_guid.
+  SORT gt_output_data BY item_num.
+ENDFORM.
+
+*&---------------------------------------------------------------------*
+*& Form f_chk_value
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*&      --> LS_UPLOAD_ZZEXT_COOPER
+*&      --> <LS_PROJ_DATA>_ZZCOOPER_DETAIL
+*&      --> <LS_LOG>_LOG_HANDLE
+*&---------------------------------------------------------------------*
+FORM f_chk_value  USING    p_upload_value
+                           p_output_value
+                          CHANGING cs_log TYPE zcon_pfmt_prjlog.
+  DATA lv_msg TYPE string.
+  IF p_output_value IS INITIAL AND p_upload_value IS NOT INITIAL.
+    cs_log-icon = gc_icon_e.
+    MESSAGE e016(zcon_cpm) INTO lv_msg WITH p_upload_value.
+    MOVE-CORRESPONDING sy TO gs_bal_msg.
+    "error log
+    CALL FUNCTION 'BAL_LOG_MSG_ADD'
+      EXPORTING
+        i_log_handle = cs_log-log_handle
+        i_s_msg      = gs_bal_msg.
+    CLEAR gs_bal_msg.
+  ENDIF.
+ENDFORM.
+
+*&---------------------------------------------------------------------*
+*& Form f_bucket_struc
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM f_bucket_struc .
+  DATA:
+  lt_bucket_api     TYPE /rpm/tt_bucket_api.
+  IF gt_portfolio_guid IS NOT INITIAL.
+    "Get buckets from portfolio
+    LOOP AT gt_portfolio_guid ASSIGNING FIELD-SYMBOL(<lv_portfolio_guid>).
+      CALL METHOD zde_cl_con_pfm_bucket_api_enh=>get_bucket_list
+        EXPORTING
+          iv_portfolio_guid = <lv_portfolio_guid>
+        IMPORTING
+          et_bucket_api     = lt_bucket_api.
+      APPEND LINES OF lt_bucket_api TO gt_bucket_api.
+      CLEAR lt_bucket_api.
+    ENDLOOP.
+    SORT gt_bucket_api BY bucket_guid.
+    DELETE ADJACENT DUPLICATES FROM gt_bucket_api COMPARING bucket_guid.
+    "Get planning structure from excel data
+    SELECT DISTINCT item_type,zzplan_field,zzsub_planfield,zztech_center,zzsub_system
+          FROM @gt_output_data AS main
+    INTO CORRESPONDING FIELDS OF TABLE @gt_bucket_struc.
+    IF sy-subrc = 0 AND  gt_bucket_api IS NOT  INITIAL.
+      SORT gt_bucket_api BY external_id.
+      "Get Bucket GUID by External ID
+      LOOP AT gt_bucket_struc ASSIGNING FIELD-SYMBOL(<ls_bucket_struc>).
+        READ TABLE gt_bucket_api ASSIGNING FIELD-SYMBOL(<ls_bucket_api>)
+        WITH KEY external_id = <ls_bucket_struc>-item_type.
+        IF sy-subrc <> 0.CONTINUE.ENDIF.
+        <ls_bucket_struc>-guid_l2 = <ls_bucket_api>-bucket_guid.
+        READ TABLE gt_bucket_api ASSIGNING <ls_bucket_api>
+        WITH KEY external_id = <ls_bucket_struc>-zzplan_field parent_guid = <ls_bucket_struc>-guid_l2.
+        IF sy-subrc <> 0.CONTINUE.ENDIF.
+        <ls_bucket_struc>-guid_l3 = <ls_bucket_api>-bucket_guid.
+        READ TABLE gt_bucket_api ASSIGNING <ls_bucket_api>
+        WITH KEY external_id = <ls_bucket_struc>-zzsub_planfield parent_guid = <ls_bucket_struc>-guid_l3.
+        IF sy-subrc <> 0.CONTINUE.ENDIF.
+        <ls_bucket_struc>-guid_l4 = <ls_bucket_api>-bucket_guid.
+        READ TABLE gt_bucket_api ASSIGNING <ls_bucket_api>
+        WITH KEY external_id = <ls_bucket_struc>-zztech_center parent_guid = <ls_bucket_struc>-guid_l4.
+        IF sy-subrc <> 0.CONTINUE.ENDIF.
+        <ls_bucket_struc>-guid_l5 = <ls_bucket_api>-bucket_guid.
+        READ TABLE gt_bucket_api ASSIGNING <ls_bucket_api>
+        WITH KEY external_id = <ls_bucket_struc>-zzsub_system parent_guid = <ls_bucket_struc>-guid_l5.
+        IF sy-subrc <> 0.CONTINUE.ENDIF.
+        <ls_bucket_struc>-guid_l6 = <ls_bucket_api>-bucket_guid.
+      ENDLOOP.
+      DELETE gt_bucket_struc WHERE guid_l6 IS INITIAL.
+    ENDIF.
+  ENDIF.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form f_process_item
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM f_process_items.
+  DATA: lv_rc           TYPE i,
+        ls_msg          TYPE /rpm/ts_messages,
+        lt_msg          TYPE /rpm/tt_messages,
+        ls_cpm_message  TYPE inm_of_ts_message,
+        lt_cpm_messages TYPE inm_of_tt_messages,
+        lv_mp_type      TYPE /cpd/pws_ws_mp_type,
+        lr_mp_id        TYPE RANGE OF /cpd/mp_id,
+        lr_link_api     TYPE REF TO /rpm/cl_object_link_api.
+
+  SELECT item~guid,item~external_id,item_type,portfolio_guid,objlink~object_key FROM rpm_obj_link AS objlink
+     INNER JOIN /rpm/item_d AS item ON item~guid = objlink~project_guid AND objlink~object_type = @/rpm/cl_co=>sc_cpm_obj_link
+     FOR ALL ENTRIES IN @gt_output_data WHERE item~guid = @gt_output_data-guid
+  INTO TABLE @DATA(lt_data).
+  IF sy-subrc = 0.
+    MOVE-CORRESPONDING lt_data TO gt_object_link.
+  ENDIF.
+
+  lr_mp_id = VALUE #( FOR wa_output_data IN gt_output_data ( sign = 'I' option = 'EQ' low = wa_output_data-external_id ) ).
+  SELECT DISTINCT hdr~mp_id,hdr~db_key  FROM /cpd/d_mp_hdr AS hdr
+     WHERE hdr~mp_id IN @lr_mp_id
+  INTO CORRESPONDING FIELDS OF TABLE @gt_mp_hdr.
+  IF sy-subrc = 0.
+    SORT gt_mp_hdr BY mp_id.
+  ENDIF.
+  gv_item_key_type        = '/RPM/TS_ITEM_KEY_IN'.
+  gv_item_data_type       = /rpm/cl_item_d_api=>ov_item_api_type.
+  gv_short_text_key_type  = /rpm/cl_object_api=>ov_comment_key_type.
+  gv_language = cl_rpm_language_buffer=>convert_langu_to_laiso( sy-langu ).
+
+* Check if portfolio and bucket are created.
+  gr_item ?= /rpm/cl_item_d_api=>get_instance( ).
+  gr_link_api ?= /rpm/cl_object_link_api=>get_instance( ).
+  CREATE OBJECT gr_msg_handler.
+  gs_context-parent_type = /rpm/cl_co=>sc_ot_bucket.
+  gs_context-object_type = /rpm/cl_co=>sc_ot_item.
+
+  LOOP AT gt_output_data ASSIGNING FIELD-SYMBOL(<ls_output_data>).
+    gs_context-portfolio_guid = <ls_output_data>-portfolio_guid.
+    READ TABLE gt_logs ASSIGNING FIELD-SYMBOL(<ls_log>) WITH KEY guid = <ls_output_data>-batch_guid item_num = <ls_output_data>-item_num.
+    IF sy-subrc <> 0.CONTINUE.ENDIF.
+    IF <ls_log>-icon NE gc_icon_e.
+      IF <ls_output_data>-action = gc_mode_c.
+        "Create Project
+        PERFORM f_add_message_title USING TEXT-003 <ls_log>-log_handle abap_false.
+        PERFORM f_create_item USING <ls_output_data> CHANGING <ls_log>.
+      ELSEIF <ls_output_data>-action = gc_mode_u.
+        " Update Project
+        PERFORM f_add_message_title USING TEXT-004 <ls_log>-log_handle abap_false.
+        PERFORM f_update_item USING <ls_output_data> CHANGING <ls_log>.
+      ENDIF.
+      " Mapping CPM to PFM
+      PERFORM f_create_link USING <ls_output_data> CHANGING <ls_log>.
+      " Assign members
+      PERFORM f_assign_members  USING <ls_output_data> CHANGING <ls_log>.
+    ENDIF.
+    "save log
+    PERFORM f_save_log_single USING <ls_log>.
+  ENDLOOP.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form f_add_message_title
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*&      --> TEXT_003
+*&      --> <LS_LOG>_LOG_HANDLE
+*&---------------------------------------------------------------------*
+FORM f_add_message_title  USING    p_text
+                                   p_log_handle
+                                   p_skip_line
+                           .
+  IF p_skip_line EQ abap_true.
+    CALL FUNCTION 'BAL_LOG_MSG_ADD_FREE_TEXT'
+      EXPORTING
+        i_log_handle     = p_log_handle
+        i_msgty          = 'W'
+        i_text           = ''
+      EXCEPTIONS
+        log_not_found    = 1
+        msg_inconsistent = 2
+        log_is_full      = 3
+        OTHERS           = 4.
+  ENDIF.
+
+  CALL FUNCTION 'BAL_LOG_MSG_ADD_FREE_TEXT'
+    EXPORTING
+      i_log_handle     = p_log_handle
+      i_msgty          = 'W'
+      i_text           = p_text
+    EXCEPTIONS
+      log_not_found    = 1
+      msg_inconsistent = 2
+      log_is_full      = 3
+      OTHERS           = 4.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form f_create_item
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*&      --> <LS_OUTPUT_DATA>
+*&      <-- <LS_LOG>
+*&---------------------------------------------------------------------*
+FORM f_create_item USING is_input_data TYPE gty_output_data
+                    CHANGING cs_log TYPE zcon_pfmt_prjlog.
+  TYPES:
+  ty_change_mode TYPE c LENGTH 1 .
+  TYPES:
+    BEGIN OF ty_modifications,
+      bo_node_name         TYPE string,
+      key                  TYPE REF TO data,
+      change_mode          TYPE ty_change_mode,
+      data                 TYPE REF TO data,
+      changed_fields       TYPE scol_string_t,
+      association          TYPE string,
+      source_bo_node       TYPE string,
+      source_key           TYPE REF TO data,
+      source_key_is_handle TYPE sesf_boolean,
+    END OF ty_modifications .
+  TYPES:
+      tt_modifications TYPE STANDARD TABLE OF ty_modifications
+  WITH DEFAULT KEY .
+  DATA:
+    ls_parameter           TYPE /rpm/ts_bucket_reassign_param,
+    ls_item_with_language  TYPE /rpm/ts_item_key_in,
+    lt_items_with_language TYPE /rpm/tt_item_key_in,
+    lt_headers_attributes  TYPE /rpm/tt_item_d_api,
+    lt_change_mode         TYPE /rpm/tt_change_mode_w_guid,
+    ls_change_mode         TYPE /rpm/ts_change_mode_w_guid,
+    ls_short_text_key      TYPE /rpm/ts_comment_key,
+    lt_modif               TYPE tt_modifications,
+    ls_modif               TYPE ty_modifications,
+    lv_authorized          TYPE boole_d,
+    lv_proj_type           TYPE /cpd/pws_ws_mp_type,
+    lv_msg                 TYPE string,
+    lr_key                 TYPE REF TO data,
+    lr_data                TYPE REF TO data,
+    lr_short_text_key      TYPE REF TO data,
+    lr_short_texts         TYPE REF TO data,
+    lv_rc                  TYPE i,
+    ls_guid                TYPE /rpm/ts_guid,
+    ls_attr                TYPE /rpm/ts_item_d_api,
+    ls_item_attr           TYPE /rpm/ts_item_d_api,
+    ls_msg                 TYPE /rpm/ts_messages,
+    lt_msg                 TYPE /rpm/tt_messages.
+
+  FIELD-SYMBOLS:
+    <fs_key>            TYPE any,
+    <fs_data>           TYPE any,
+    <fv_data>           TYPE any,
+    <fs_short_text_key> TYPE any,
+    <fv_short_texts>    TYPE any.
+  CONSTANTS:
+    lc_currency    TYPE waers_curc VALUE 'EUR',
+    lc_unit        TYPE /rpm/tv_unit VALUE 'TAG',
+    lc_period_type TYPE /rpm/tv_period_type VALUE '12',
+    lc_org_id      TYPE /cpd/pws_ws_org_unit_id VALUE 'ZCAR'.
+
+  CLEAR ls_attr.
+  READ TABLE gt_bucket_struc ASSIGNING FIELD-SYMBOL(<ls_bucket_struc>)
+  WITH KEY
+  item_type = is_input_data-item_type
+  zzplan_field = is_input_data-zzplan_field
+  zzsub_planfield = is_input_data-zzsub_planfield
+  zztech_center = is_input_data-zztech_center
+  zzsub_system = is_input_data-zzsub_system.
+  IF sy-subrc = 0.
+    is_input_data-parent_guid = <ls_bucket_struc>-guid_l6.
+  ELSE.
+    cs_log-icon = gc_icon_e.
+    MESSAGE e010(zcon_pfm) INTO lv_msg.
+    MOVE-CORRESPONDING sy TO gs_bal_msg.
+    "error log
+    CALL FUNCTION 'BAL_LOG_MSG_ADD'
+      EXPORTING
+        i_log_handle = cs_log-log_handle
+        i_s_msg      = gs_bal_msg.
+    CLEAR gs_bal_msg.
+    RETURN.
+  ENDIF.
+  gs_context-parent_guid = is_input_data-parent_guid.
+* Check 'Create' authorization on parent object
+  CALL METHOD gr_item->check_authorization
+    EXPORTING
+      is_context    = gs_context
+      iv_mode       = gc_change_mode_c
+    RECEIVING
+      ev_authorized = lv_authorized.
+* Not authorized for creation : log message and set ev_rc
+  IF lv_authorized IS INITIAL.
+    MESSAGE e040(/rpm/item) INTO lv_msg.
+    MOVE-CORRESPONDING sy TO gs_bal_msg.
+    "error log
+    CALL FUNCTION 'BAL_LOG_MSG_ADD'
+      EXPORTING
+        i_log_handle = cs_log-log_handle
+        i_s_msg      = gs_bal_msg.
+    CLEAR gs_bal_msg.
+    RETURN.
+  ENDIF.
+* Set item attributes
+  REFRESH lt_modif.
+  CLEAR ls_modif.
+  CLEAR: lr_key, lr_data.
+
+  CREATE DATA lr_key TYPE (gv_item_key_type).
+  ASSIGN lr_key->* TO <fs_key>.
+
+* Build modification table
+  MOVE-CORRESPONDING is_input_data TO ls_attr.
+  IF ls_attr-external_id IS INITIAL.
+    lv_proj_type  = ls_attr-item_type.
+    CALL METHOD zde_cl_con_pfm_item_cust_field=>get_next_number
+      EXPORTING
+        iv_proj_type = lv_proj_type
+      CHANGING
+        cv_proj_id   = ls_attr-external_id.
+  ENDIF.
+  cs_log-proj_id = is_input_data-external_id = ls_attr-external_id.
+  ls_attr-cap_periodtype = ls_attr-periodtype  = lc_period_type.
+  ls_attr-unit  = lc_unit.
+  ls_attr-zzorg_id = lc_org_id.
+  ls_item_with_language-language        = gv_language.
+  ls_item_with_language-portfl_guid     = ls_attr-portfolio_guid.
+  ls_item_with_language-bucket_guid     = ls_attr-parent_guid.
+  ls_item_with_language-call_mode       = gc_change_mode_c.
+  ls_item_with_language-create_cproject = abap_true.
+
+  <fs_key>     = ls_item_with_language.
+  ls_modif-key = lr_key.
+  ls_modif-bo_node_name = /rpm/cl_item_d_api=>ov_node_item_detail.
+  ls_modif-change_mode  = ls_item_with_language-call_mode.
+  CREATE DATA lr_data TYPE (gv_item_data_type).
+  ASSIGN lr_data->* TO <fs_data>.
+  <fs_data> = ls_attr.
+  ls_modif-data = lr_data.
+  APPEND ls_modif TO lt_modif.
+* Call modify in Create/Change mode
+  CALL METHOD gr_item->/rpm/if_provider_access~modify
+    EXPORTING
+      in_message_buffer = gr_msg_handler
+    CHANGING
+      in_modifications  = lt_modif.
+
+  READ TABLE lt_modif INTO ls_modif WITH KEY change_mode = gc_change_mode_c.
+  IF sy-subrc = 0.
+    ASSIGN ls_modif-data->* TO <fs_data>.
+    ASSIGN COMPONENT 'GUID' OF STRUCTURE <fs_data> TO <fv_data>.
+    IF sy-subrc = 0.
+      is_input_data-guid = ls_attr-guid = <fv_data>.
+    ENDIF.
+  ENDIF.
+  cs_log-proj_key = is_input_data-guid.
+  lv_rc = gr_item->ov_rc.
+  IF lv_rc NE 0 .
+    CLEAR lt_msg.
+    CALL METHOD gr_msg_handler->get_all_messages
+      RECEIVING
+        et_messages = lt_msg.
+
+    cs_log-icon = gc_icon_e.
+    "error log
+    PERFORM f_process_message USING lt_msg cs_log-log_handle.
+
+    RETURN.
+  ENDIF.
+
+  REFRESH lt_modif.
+  CLEAR   ls_modif.
+  CLEAR:  lr_short_texts.
+* Short text Processing - short text key
+  CREATE DATA lr_short_text_key TYPE (gv_short_text_key_type).
+  ASSIGN lr_short_text_key->* TO <fs_short_text_key>.
+  ls_short_text_key-guid = ls_attr-guid."lv_guid.
+  ls_short_text_key-language = gv_language.
+  <fs_short_text_key> =  ls_short_text_key.
+
+  ls_modif-bo_node_name = /rpm/cl_item_d_api=>ov_node_short_text.
+  ls_modif-change_mode  = gc_change_mode_u.
+  ls_modif-key = lr_short_text_key.
+
+* short text data
+  CREATE DATA lr_short_texts TYPE string.
+  ASSIGN lr_short_texts->* TO <fv_short_texts>.
+  <fv_short_texts>  = ls_attr-external_id.
+  ls_modif-data = lr_short_texts.
+  APPEND ls_modif TO lt_modif.
+* Call modify in Update mode
+  CALL METHOD gr_item->/rpm/if_provider_access~modify
+    EXPORTING
+      in_message_buffer = gr_msg_handler
+    CHANGING
+      in_modifications  = lt_modif.
+
+  lv_rc = gr_item->ov_rc.
+  IF lv_rc NE 0 .
+    CLEAR lt_msg.
+    CALL METHOD gr_msg_handler->get_all_messages
+      RECEIVING
+        et_messages = lt_msg.
+
+    cs_log-icon = gc_icon_e.
+    "error log
+    PERFORM f_process_message USING lt_msg cs_log-log_handle.
+    RETURN.
+  ENDIF.
+  CLEAR lt_msg.
+  CALL FUNCTION '/RPM/SAVE_CHANGES'
+    IMPORTING
+      ev_rc  = lv_rc
+      et_msg = lt_msg.
+
+  IF lv_rc NE 0.
+    cs_log-icon = gc_icon_e.
+  ELSE.
+    DELETE lt_msg WHERE msgtype <> gc_msgty_s.
+  ENDIF.
+* Free the objects
+  CALL METHOD cl_inm_ppm_services=>do_cleanup( ).
+  PERFORM f_process_message USING lt_msg cs_log-log_handle.
+
+ENDFORM.
+
+*&---------------------------------------------------------------------*
+*& Form f_create_link
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM f_create_link USING is_input_data TYPE gty_output_data
+                    CHANGING cs_log TYPE zcon_pfmt_prjlog.
+  DATA:
+    lv_rc  TYPE i,
+    lt_msg TYPE /rpm/tt_messages,
+    ls_msg TYPE /rpm/ts_messages.
+  CHECK is_input_data-guid IS NOT INITIAL.
+  READ TABLE gt_mp_hdr INTO DATA(ls_hdr) WITH KEY mp_id = is_input_data-external_id BINARY SEARCH.
+  IF sy-subrc = 0.
+    READ TABLE gt_object_link TRANSPORTING NO FIELDS WITH KEY guid = is_input_data-guid.
+    IF sy-subrc <> 0.
+      PERFORM f_add_message_title USING TEXT-005 cs_log-log_handle abap_true.
+* update RPM_OBJ_LINK database table
+      CALL METHOD gr_link_api->create_cpm_object_link
+        EXPORTING
+          iv_item_guid = is_input_data-guid
+          iv_mp_guid   = ls_hdr-db_key
+        IMPORTING
+          ev_rc        = lv_rc
+          et_messages  = lt_msg.
+      IF lv_rc NE 0 .
+        cs_log-icon = gc_icon_e.
+        "error log
+        PERFORM f_process_message USING lt_msg cs_log-log_handle.
+        RETURN.
+      ENDIF.
+      PERFORM f_update_item USING is_input_data CHANGING cs_log.
+    ENDIF.
+    CALL FUNCTION '/RPM/SAVE_CHANGES'
+      IMPORTING
+        ev_rc  = lv_rc
+        et_msg = lt_msg.
+    IF lv_rc NE 0 .
+      cs_log-icon = gc_icon_e.
+    ENDIF.
+    PERFORM f_process_message USING lt_msg cs_log-log_handle.
+
+* Free the objects
+    CALL METHOD cl_inm_ppm_services=>do_cleanup( ).
+  ENDIF.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form f_assign_members
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM f_assign_members  USING is_input_data TYPE gty_output_data
+                    CHANGING cs_log TYPE zcon_pfmt_prjlog.
+  DATA:
+    lv_object_key TYPE /bobf/conf_key,
+    lv_rc         TYPE i,
+    lt_msg        TYPE /cpd/t_message,
+    ls_msg        TYPE /cpd/s_message.
+  CHECK is_input_data-guid IS NOT INITIAL AND is_input_data-members IS NOT INITIAL.
+  IF cs_log-icon EQ gc_icon_e.RETURN.ENDIF.
+  SELECT SINGLE internal_id FROM rpm_obj_link INTO @DATA(lv_internal_id)
+     WHERE object_type = @/rpm/cl_co=>sc_cpm_obj_link AND project_guid = @is_input_data-guid.
+  IF sy-subrc <> 0.
+    RETURN.
+  ENDIF.
+  lv_object_key = lv_internal_id.
+  PERFORM f_add_message_title USING TEXT-006 cs_log-log_handle abap_true.
+  CLEAR lt_msg.
+  CALL FUNCTION 'ZDE_CON_CPM_FM_ASSIGN_ROLE_MEM'
+    EXPORTING
+      iv_key          = lv_object_key
+      it_role_members = is_input_data-members
+    IMPORTING
+      et_messages     = lt_msg.
+  LOOP AT lt_msg INTO ls_msg.
+    MOVE-CORRESPONDING ls_msg TO gs_bal_msg.
+    "error log
+    CALL FUNCTION 'BAL_LOG_MSG_ADD'
+      EXPORTING
+        i_log_handle = cs_log-log_handle
+        i_s_msg      = gs_bal_msg.
+    CLEAR gs_bal_msg.
+  ENDLOOP.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form f_save_log
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM f_save_log_single USING is_log TYPE zcon_pfmt_prjlog.
+  IF is_log IS NOT INITIAL.
+* Log DB Update
+    MODIFY zcon_pfmt_prjlog FROM is_log.
+    IF sy-subrc = 0.COMMIT WORK.ELSE.ROLLBACK WORK.ENDIF.
+    IF is_log-log_handle IS NOT INITIAL.
+      APPEND is_log-log_handle TO gt_hnds.
+      " call log
+      CALL FUNCTION 'BAL_DB_SAVE'
+        EXPORTING
+          i_t_log_handle = gt_hnds.
+      CLEAR gt_hnds.
+      IF sy-subrc = 0.COMMIT WORK.ELSE.ROLLBACK WORK.ENDIF.
+    ENDIF.
+  ENDIF.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form f_update_item
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM f_update_item USING is_input_data TYPE gty_output_data
+                    CHANGING cs_log TYPE zcon_pfmt_prjlog.
+  TYPES:
+  ty_change_mode TYPE c LENGTH 1 .
+  TYPES:
+    BEGIN OF ty_modifications,
+      bo_node_name         TYPE string,
+      key                  TYPE REF TO data,
+      change_mode          TYPE ty_change_mode,
+      data                 TYPE REF TO data,
+      changed_fields       TYPE scol_string_t,
+      association          TYPE string,
+      source_bo_node       TYPE string,
+      source_key           TYPE REF TO data,
+      source_key_is_handle TYPE sesf_boolean,
+    END OF ty_modifications .
+  TYPES:
+      tt_modifications TYPE STANDARD TABLE OF ty_modifications
+  WITH DEFAULT KEY .
+  DATA:
+    ls_parameter           TYPE /rpm/ts_bucket_reassign_param,
+    ls_item_with_language  TYPE /rpm/ts_item_key_in,
+    lt_items_with_language TYPE /rpm/tt_item_key_in,
+    lt_headers_attributes  TYPE /rpm/tt_item_d_api,
+    lt_change_mode         TYPE /rpm/tt_change_mode_w_guid,
+    ls_change_mode         TYPE /rpm/ts_change_mode_w_guid,
+    ls_short_text_key      TYPE /rpm/ts_comment_key,
+    lt_modif               TYPE tt_modifications,
+    ls_modif               TYPE ty_modifications,
+    lv_authorized          TYPE boole_d,
+    lv_proj_type           TYPE /cpd/pws_ws_mp_type,
+    lv_msg                 TYPE string,
+    lr_key                 TYPE REF TO data,
+    lr_data                TYPE REF TO data,
+    lr_short_text_key      TYPE REF TO data,
+    lr_short_texts         TYPE REF TO data,
+    lv_rc                  TYPE i,
+    ls_guid                TYPE /rpm/ts_guid,
+    ls_attr                TYPE /rpm/ts_item_d_api,
+    ls_item_attr           TYPE /rpm/ts_item_d_api,
+    ls_msg                 TYPE /rpm/ts_messages,
+    lt_msg                 TYPE /rpm/tt_messages.
+
+  FIELD-SYMBOLS:
+    <fs_key>            TYPE any,
+    <fs_data>           TYPE any,
+    <fv_data>           TYPE any,
+    <fs_short_text_key> TYPE any,
+    <fv_short_texts>    TYPE any.
+  CONSTANTS:
+    lc_currency    TYPE waers_curc VALUE 'EUR',
+    lc_unit        TYPE /rpm/tv_unit VALUE 'TAG',
+    lc_period_type TYPE /rpm/tv_period_type VALUE '12',
+    lc_org_id      TYPE /cpd/pws_ws_org_unit_id VALUE 'ZCAR'.
+
+  CLEAR ls_attr.
+  READ TABLE gt_bucket_struc ASSIGNING FIELD-SYMBOL(<ls_bucket_struc>)
+  WITH KEY
+  item_type = is_input_data-item_type
+  zzplan_field = is_input_data-zzplan_field
+  zzsub_planfield = is_input_data-zzsub_planfield
+  zztech_center = is_input_data-zztech_center
+  zzsub_system = is_input_data-zzsub_system.
+  IF sy-subrc = 0.
+    is_input_data-parent_guid = <ls_bucket_struc>-guid_l6.
+  ELSE.
+    cs_log-icon = gc_icon_e.
+    MESSAGE e010(zcon_pfm) INTO lv_msg.
+    MOVE-CORRESPONDING sy TO gs_bal_msg.
+    "error log
+    CALL FUNCTION 'BAL_LOG_MSG_ADD'
+      EXPORTING
+        i_log_handle = cs_log-log_handle
+        i_s_msg      = gs_bal_msg.
+    CLEAR gs_bal_msg.
+    RETURN.
+  ENDIF.
+* Set item attributes
+  REFRESH lt_modif.
+  CLEAR ls_modif.
+  CLEAR: lr_key, lr_data.
+
+  CREATE DATA lr_key TYPE (gv_item_key_type).
+  ASSIGN lr_key->* TO <fs_key>.
+
+  CLEAR:lt_change_mode,lt_headers_attributes, lt_items_with_language.
+  APPEND VALUE #( guid = is_input_data-guid language = gv_language ) TO lt_items_with_language.
+* Call item retrieve
+*----------------authorization for edit mode-----------------------------*
+  CALL METHOD gr_item->/rpm/if_provider_access~retrieve
+    EXPORTING
+      in_bo_node_name   = gr_item->ov_node_item_detail
+*     in_bo_node_name   = lr_item->ov_object_details_ui
+      in_keys           = lt_items_with_language
+      in_edit_mode      = '2'
+      in_message_buffer = gr_msg_handler
+    IMPORTING
+      out_data          = lt_headers_attributes.
+* get change mode and accordingly set the return code
+  CALL METHOD gr_msg_handler->get_change_mode
+    IMPORTING
+      et_change_mode = lt_change_mode.
+  READ TABLE lt_change_mode INTO ls_change_mode INDEX 1.
+  IF sy-subrc = 0 AND ls_change_mode-update IS NOT INITIAL.
+    CLEAR ls_item_attr.
+    MOVE-CORRESPONDING is_input_data TO ls_item_attr.
+    READ TABLE lt_headers_attributes INTO ls_attr INDEX 1.
+    IF sy-subrc <> 0.RETURN.ENDIF.
+*       Update item attributes/ose11
+    IF ls_attr-parent_guid NE ls_item_attr-parent_guid.
+      ls_parameter-new_bucket = ls_item_attr-parent_guid.
+      CALL METHOD gr_item->/rpm/if_provider_action~do_action
+        EXPORTING
+          in_bo_node_name   = gr_item->ov_node_item_detail
+          in_action_name    = gr_item->ov_action_bucket_reassign
+          in_keys           = lt_items_with_language
+          in_parameters     = ls_parameter
+          in_message_buffer = gr_msg_handler.
+    ENDIF.
+    PERFORM f_set_attr USING ls_item_attr CHANGING ls_attr.
+    ls_item_with_language-language        = gv_language.
+    ls_item_with_language-portfl_guid     = ls_attr-portfolio_guid.
+    ls_item_with_language-bucket_guid     = ls_attr-parent_guid.
+    ls_item_with_language-call_mode       = gc_change_mode_u.
+    ls_item_with_language-guid  = ls_attr-guid.
+  ELSE.
+    MESSAGE e044(/rpm/item) INTO lv_msg.
+    MOVE-CORRESPONDING sy TO gs_bal_msg.
+    "error log
+    CALL FUNCTION 'BAL_LOG_MSG_ADD'
+      EXPORTING
+        i_log_handle = cs_log-log_handle
+        i_s_msg      = gs_bal_msg.
+    CLEAR gs_bal_msg.
+    RETURN.
+  ENDIF.
+
+  <fs_key>     = ls_item_with_language.
+  ls_modif-key = lr_key.
+  ls_modif-bo_node_name = /rpm/cl_item_d_api=>ov_node_item_detail.
+  ls_modif-change_mode  = ls_item_with_language-call_mode.
+  CREATE DATA lr_data TYPE (gv_item_data_type).
+  ASSIGN lr_data->* TO <fs_data>.
+  <fs_data> = ls_attr.
+  ls_modif-data = lr_data.
+  APPEND ls_modif TO lt_modif.
+* Call modify in Create/Change mode
+  CALL METHOD gr_item->/rpm/if_provider_access~modify
+    EXPORTING
+      in_message_buffer = gr_msg_handler
+    CHANGING
+      in_modifications  = lt_modif.
+
+  READ TABLE lt_modif INTO ls_modif WITH KEY change_mode = gc_change_mode_c.
+  IF sy-subrc = 0.
+    ASSIGN ls_modif-data->* TO <fs_data>.
+    ASSIGN COMPONENT 'GUID' OF STRUCTURE <fs_data> TO <fv_data>.
+    IF sy-subrc = 0.
+      is_input_data-guid = ls_attr-guid = <fv_data>.
+    ENDIF.
+  ENDIF.
+  cs_log-proj_key = is_input_data-guid.
+  lv_rc = gr_item->ov_rc.
+  IF lv_rc NE 0 .
+    CLEAR lt_msg.
+    CALL METHOD gr_msg_handler->get_all_messages
+      RECEIVING
+        et_messages = lt_msg.
+
+    cs_log-icon = gc_icon_e.
+    "error log
+    PERFORM f_process_message USING lt_msg cs_log-log_handle.
+
+    RETURN.
+  ENDIF.
+
+  REFRESH lt_modif.
+  CLEAR   ls_modif.
+  CLEAR:  lr_short_texts.
+* Short text Processing - short text key
+  CREATE DATA lr_short_text_key TYPE (gv_short_text_key_type).
+  ASSIGN lr_short_text_key->* TO <fs_short_text_key>.
+  ls_short_text_key-guid = ls_attr-guid."lv_guid.
+  ls_short_text_key-language = gv_language.
+  <fs_short_text_key> =  ls_short_text_key.
+
+  ls_modif-bo_node_name = /rpm/cl_item_d_api=>ov_node_short_text.
+  ls_modif-change_mode  = gc_change_mode_u.
+  ls_modif-key = lr_short_text_key.
+
+* short text data
+  CREATE DATA lr_short_texts TYPE string.
+  ASSIGN lr_short_texts->* TO <fv_short_texts>.
+  <fv_short_texts>  = ls_attr-external_id.
+  ls_modif-data = lr_short_texts.
+  APPEND ls_modif TO lt_modif.
+* Call modify in Update mode
+  CALL METHOD gr_item->/rpm/if_provider_access~modify
+    EXPORTING
+      in_message_buffer = gr_msg_handler
+    CHANGING
+      in_modifications  = lt_modif.
+
+  lv_rc = gr_item->ov_rc.
+  IF lv_rc NE 0 .
+    CLEAR lt_msg.
+    CALL METHOD gr_msg_handler->get_all_messages
+      RECEIVING
+        et_messages = lt_msg.
+
+    cs_log-icon = gc_icon_e.
+    "error log
+    PERFORM f_process_message USING lt_msg cs_log-log_handle.
+    RETURN.
+  ENDIF.
+  CLEAR lt_msg.
+  CALL FUNCTION '/RPM/SAVE_CHANGES'
+    IMPORTING
+      ev_rc  = lv_rc
+      et_msg = lt_msg.
+
+  IF lv_rc NE 0.
+    cs_log-icon = gc_icon_e.
+  ELSE.
+    DELETE lt_msg WHERE msgtype <> gc_msgty_s.
+  ENDIF.
+* Free the objects
+  CALL METHOD cl_inm_ppm_services=>do_cleanup( ).
+  PERFORM f_process_message USING lt_msg cs_log-log_handle.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form f_process_message
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*&      --> LT_MSG
+*&---------------------------------------------------------------------*
+FORM f_process_message  USING lt_msg TYPE /rpm/tt_messages log_handle TYPE balloghndl.
+  LOOP AT lt_msg INTO DATA(ls_msg).
+    IF ls_msg-msgid IS NOT INITIAL.
+      MOVE-CORRESPONDING ls_msg TO gs_bal_msg.
+      gs_bal_msg-msgty = ls_msg-msgtype.
+      "error log
+      CALL FUNCTION 'BAL_LOG_MSG_ADD'
+        EXPORTING
+          i_log_handle = log_handle
+          i_s_msg      = gs_bal_msg.
+      CLEAR gs_bal_msg.
+    ELSE.
+      CALL FUNCTION 'BAL_LOG_MSG_ADD_FREE_TEXT'
+        EXPORTING
+          i_log_handle     = log_handle
+          i_msgty          = ls_msg-msgtype
+          i_text           = ls_msg-msg_txt
+        EXCEPTIONS
+          log_not_found    = 1
+          msg_inconsistent = 2
+          log_is_full      = 3
+          OTHERS           = 4.
+    ENDIF.
+
+  ENDLOOP.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form f_set_attr
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*&      --> LS_ITEM_ATTR
+*&      <-- LS_ATTR
+*&---------------------------------------------------------------------*
+FORM f_set_attr  USING    p_item_attr TYPE /rpm/ts_item_d_api
+                 CHANGING p_attr TYPE /rpm/ts_item_d_api.
+  IF p_item_attr-status IS NOT INITIAL.
+    p_attr-status = p_item_attr-status.
+  ENDIF.
+  IF p_item_attr-parent_guid IS NOT INITIAL.
+    p_attr-parent_guid = p_item_attr-parent_guid.
+  ENDIF.
+  IF p_item_attr-proj_description IS NOT INITIAL.
+    p_attr-proj_description = p_item_attr-proj_description.
+  ENDIF.
+  IF p_item_attr-planned_start IS NOT INITIAL.
+    p_attr-planned_start = p_item_attr-planned_start.
+  ENDIF.
+  IF p_item_attr-planned_finish IS NOT INITIAL.
+    p_attr-planned_finish = p_item_attr-planned_finish.
+  ENDIF.
+  IF p_item_attr-zzfkstl IS NOT INITIAL.
+    p_attr-zzfkstl = p_item_attr-zzfkstl.
+  ENDIF.
+  IF p_item_attr-zzdev_status IS NOT INITIAL.
+    p_attr-zzdev_status = p_item_attr-zzdev_status.
+  ENDIF.
+  IF p_item_attr-zzboard_name IS NOT INITIAL.
+    p_attr-zzboard_name = p_attr-zzboard_name.
+  ENDIF.
+  IF p_item_attr-zzboard_date IS NOT INITIAL.
+    p_attr-zzboard_date = p_item_attr-zzboard_date.
+  ENDIF.
+  IF p_item_attr-zzcustomer_vis IS NOT INITIAL.
+    p_attr-zzcustomer_vis = p_item_attr-zzcustomer_vis.
+  ENDIF.
+  IF p_item_attr-zzcontract_typ IS NOT INITIAL.
+    p_attr-zzcontract_typ = p_item_attr-zzcontract_typ.
+  ENDIF.
+  IF p_item_attr-zzext_cooper IS NOT INITIAL.
+    p_attr-zzext_cooper = p_item_attr-zzext_cooper.
+  ENDIF.
+  IF p_item_attr-zzcooper_detail IS NOT INITIAL.
+    p_attr-zzcooper_detail = p_item_attr-zzcooper_detail.
+  ENDIF.
+  IF p_item_attr-zzplan_field IS NOT INITIAL.
+    p_attr-zzplan_field = p_item_attr-zzplan_field.
+  ENDIF.
+  IF p_item_attr-zzsub_planfield IS NOT INITIAL.
+    p_attr-zzsub_planfield = p_item_attr-zzsub_planfield.
+  ENDIF.
+  IF p_item_attr-zztech_center IS NOT INITIAL.
+    p_attr-zztech_center = p_item_attr-zztech_center.
+  ENDIF.
+  IF p_item_attr-zzsub_system IS NOT INITIAL.
+    p_attr-zzsub_system = p_item_attr-zzsub_system.
+  ENDIF.
+ENDFORM.

@@ -1,0 +1,26 @@
+  METHOD headerset_get_entity.
+*    DATA:
+*           lv_bucketguid     TYPE /rpm/tv_guid
+*          ,ls_header TYPE zcon_pfms_plan_header
+*          .
+** use the utility class
+*    IF mr_util IS NOT BOUND.
+*      mr_util = zde_cl_con_pfm_planning_util=>get_instance( ).
+*    ENDIF.
+**    Convert Input Data
+*    LOOP AT it_key_tab ASSIGNING FIELD-SYMBOL(<ls_key_tab>).
+*      CASE <ls_key_tab>-name.
+*        WHEN mr_util->gc_mgw_name_bucketguid.
+*          lv_bucketguid = <ls_key_tab>-value.
+*      ENDCASE.
+*    ENDLOOP.
+**   Bucket Master Data
+*    SELECT SINGLE * FROM zcon_pfm_ddl_i_bucket INTO @DATA(ls_data)
+*      WHERE bucketguid = @lv_bucketguid.
+*    IF sy-subrc = 0.
+*      MOVE-CORRESPONDING ls_data TO ls_header.
+*      ls_header-planned_start = ls_data-PlanningStart.
+*      ls_header-planned_finish = ls_data-PlanningFinish.
+*    ENDIF.
+*    MOVE-CORRESPONDING ls_header TO er_entity.
+  ENDMETHOD.

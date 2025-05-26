@@ -1,4 +1,51 @@
 *&---------------------------------------------------------------------*
+*& Include ZXFMRI04 (Enhancement for EXIT_SAPLFMFR_004)
+*&---------------------------------------------------------------------*
+
+DATA: lv_wbs          TYPE ps_pspnr,
+      lt_status       TABLE OF jstat,
+      lv_valid        TYPE abap_bool.
+
+FIELD-SYMBOLS: <status> LIKE LINE OF lt_status.
+
+* Retrieve WBS element from the funds reservation item
+lv_wbs = ci_fmri_key-wbs_element. " Adjust based on actual structure
+
+* Check if WBS is provided
+IF lv_wbs IS INITIAL.
+  RETURN.
+ENDIF.
+
+* Get active statuses of the WBS element
+CALL FUNCTION 'GET_STATUS_FOR_PS_OBJECT_RFC'
+  EXPORTING
+    iv_pspnr          = lv_wbs
+  TABLES
+    et_status         = lt_status
+  EXCEPTIONS
+    invalid_pspnr     = 1
+    error_occurred    = 2
+    OTHERS            = 3.
+
+IF sy-subrc <> 0.
+  MESSAGE ID sy-msgid TYPE sy-msgty NUMBER sy-msgno
+          WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
+ENDIF.
+
+* Check for released (I0002) or interrupted (E0008) status
+LOOP AT lt_status ASSIGNING <status>.
+  IF <status>-stat = 'I0002' OR <status>-stat = 'E0008'.
+    lv_valid = abap_true.
+    EXIT.
+  ENDIF.
+ENDLOOP.
+
+* Raise error if status not valid
+IF lv_valid = abap_false.
+  MESSAGE e000(zfm) WITH 'Only released or interrupted WBS can be used.'.
+ENDIF.
+
+*&---------------------------------------------------------------------*
 *& Include ZXFMRI04 (EXIT_SAPLFMFR_004 增强实现)
 *&---------------------------------------------------------------------*
 

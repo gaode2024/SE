@@ -1,0 +1,47 @@
+*&---------------------------------------------------------------------*
+*& Include ZXFMRI04 (EXIT_SAPLFMFR_004 增强实现)
+*&---------------------------------------------------------------------*
+
+DATA: lv_wbs        TYPE ps_pspnr,          " WBS 元素
+      lt_status     TABLE OF jstat,         " 状态表
+      lv_valid      TYPE abap_bool.         " 校验标志
+
+FIELD-SYMBOLS: <status> LIKE LINE OF lt_status.
+
+* 从资金预留行项目中获取 WBS 元素
+lv_wbs = ci_fmri_key-wbs_element.          " 需根据实际结构调整字段名
+
+* 检查 WBS 是否为空
+IF lv_wbs IS INITIAL.
+  RETURN.
+ENDIF.
+
+* 获取 WBS 的激活状态（系统状态/I0002 或用户状态/E0008）
+CALL FUNCTION 'GET_STATUS_FOR_PS_OBJECT_RFC'
+  EXPORTING
+    iv_pspnr       = lv_wbs                " WBS 元素号
+  TABLES
+    et_status      = lt_status             " 返回状态列表
+  EXCEPTIONS
+    invalid_pspnr  = 1
+    error_occurred = 2
+    OTHERS         = 3.
+
+IF sy-subrc <> 0.
+  MESSAGE ID sy-msgid TYPE sy-msgty NUMBER sy-msgno
+          WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
+ENDIF.
+
+* 检查是否包含 "已释放（I0002）" 或 "中断（E0008）" 状态
+LOOP AT lt_status ASSIGNING <status>.
+  CASE <status>-stat.
+    WHEN 'I0002' OR 'E0008'.  " I0002=系统状态"已释放", E0008=用户状态"中断"
+      lv_valid = abap_true.
+      EXIT.  " 找到有效状态后立即退出循环
+  ENDCASE.
+ENDLOOP.
+
+* 若未找到有效状态，抛出错误
+IF lv_valid = abap_false.
+  MESSAGE e000(zfm) WITH '只能使用已释放或中断的WBS。'.  " 自定义错误消息
+ENDIF.

@@ -1,46 +1,13 @@
-REPORT z_dynamic_block.
+SELECTION-SCREEN BEGIN OF TABBED BLOCK mytab FOR 20 LINES.
+SELECTION-SCREEN TAB (20) tab1 USER-COMMAND tab1 DEFAULT SCREEN 101.
+SELECTION-SCREEN TAB (20) tab2 USER-COMMAND tab2 DEFAULT SCREEN 102.
+SELECTION-SCREEN END OF BLOCK mytab.
 
-" 控制显示状态的变量
-DATA: gv_show_block TYPE abap_bool VALUE abap_true.
+" 定义不同子屏幕
+SELECTION-SCREEN BEGIN OF SCREEN 101 AS SUBSCREEN.
+" [...] 字段组1
+SELECTION-SCREEN END OF SCREEN 101.
 
-" 折叠控制按钮
-SELECTION-SCREEN PUSHBUTTON /2(20) btn_toggle USER-COMMAND toggle.
-
-" 可折叠的 BLOCK
-SELECTION-SCREEN BEGIN OF BLOCK b1 WITH FRAME TITLE gv_title.
-PARAMETERS: p_matnr TYPE matnr,
-            p_werks TYPE werks_d.
-SELECTION-SCREEN END OF BLOCK b1.
-
-INITIALIZATION.
-  btn_toggle = '▼ 折叠区块'.
-  gv_title = '物料详细信息 (展开中)'.
-
-AT SELECTION-SCREEN OUTPUT.
-  " 动态控制 BLOCK 内字段的可见性
-  LOOP AT SCREEN.
-    IF screen-group1 = 'GRP'.  " 需给字段分配修改组
-      IF gv_show_block = abap_true.
-        screen-active = 1.  " 显示
-      ELSE.
-        screen-active = 0.  " 隐藏
-      ENDIF.
-      MODIFY SCREEN.
-    ENDIF.
-  ENDLOOP.
-  
-  " 更新标题文本
-  IF gv_show_block = abap_true.
-    gv_title = '物料详细信息 (展开中)'.
-    btn_toggle = '▲ 折叠区块'.
-  ELSE.
-    gv_title = '物料详细信息 (已折叠)'.
-    btn_toggle = '▼ 展开区块'.
-  ENDIF.
-
-AT SELECTION-SCREEN.
-  " 处理按钮点击
-  CASE sy-ucomm.
-    WHEN 'TOGGLE'.
-      gv_show_block = NOT gv_show_block.
-  ENDCASE.
+SELECTION-SCREEN BEGIN OF SCREEN 102 AS SUBSCREEN.
+" [...] 字段组2
+SELECTION-SCREEN END OF SCREEN 102.

@@ -1,0 +1,28 @@
+REPORT z_dynamic_block.
+SELECTION-SCREEN BEGIN OF TABBED BLOCK mytab FOR 20 LINES.
+SELECTION-SCREEN TAB (20) tab1 USER-COMMAND tab1 DEFAULT SCREEN 101.
+SELECTION-SCREEN TAB (20) tab2 USER-COMMAND tab2 DEFAULT SCREEN 102.
+SELECTION-SCREEN END OF BLOCK mytab.
+
+" 定义不同子屏幕
+SELECTION-SCREEN BEGIN OF SCREEN 101 AS SUBSCREEN.
+PARAMETERS: p_1 type char1.
+SELECTION-SCREEN END OF SCREEN 101.
+
+SELECTION-SCREEN BEGIN OF SCREEN 102 AS SUBSCREEN.
+PARAMETERS: p_2 type char1.
+SELECTION-SCREEN END OF SCREEN 102.
+
+START-OF-SELECTION.
+perform f_main_process.
+*&---------------------------------------------------------------------*
+*& Form f_main_process
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM f_main_process .
+message 'Success' type 'S'.
+ENDFORM.

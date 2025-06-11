@@ -1,0 +1,100 @@
+  METHOD CHECK_COMMERCIAL_PROJECT_ATTRS.
+    TYPES:
+      BEGIN OF ty_comm_proj_context,
+        object_id       TYPE rpm_tv_guid,
+        grouping        TYPE inm_of_tv_obl_group,
+        object_type     TYPE /rpm/tv_item_id,
+        target_id       TYPE rpm_tv_guid,
+        target_grouping TYPE inm_of_tv_obl_group,
+        target_type     TYPE /cpd/pws_ws_mp_type,
+        operation       TYPE char1,
+        item_attr       TYPE rpm_ts_project_int,
+        item_attr_old   TYPE rpm_ts_project_int,
+        item_obj        TYPE REF TO cl_rpm_project,
+      END OF ty_comm_proj_context .
+
+    DATA: ls_comm_proj_context TYPE ty_comm_proj_context,
+          lv_mp_type           TYPE /cpd/pws_ws_mp_type,
+          lv_return            TYPE i,
+          lt_messages          TYPE inm_of_tt_messages,
+          lt_cpm_messages      TYPE inm_of_tt_messages,
+          ls_message           TYPE inm_of_ts_message,
+          lt_cpm_objectlink      TYPE rpm_tt_obj_link_db,
+          ls_cpm_objectlink      TYPE rpm_obj_link,
+          lv_rc                TYPE i.
+CHECK zde_cl_con_pfm_bucket_api_enh=>check_portfoliotype_cariad( ) EQ abap_true.
+    " PPM-CPM Int
+    CALL METHOD /rpm/cl_configuration=>get_mp_type_for_item_type
+      EXPORTING
+        iv_item_type = is_attributes-rpm_project-item_type
+      IMPORTING
+        ev_mp_type   = lv_mp_type
+        ev_rc        = lv_return.
+    IF lv_return = 0.
+*      ls_comm_proj_context-object_id        = is_attributes-guid.
+*      ls_comm_proj_context-grouping         = cl_inm_of_co=>sc_group_portfolio_item.
+*      ls_comm_proj_context-object_type      = is_attributes-rpm_project-item_type.
+*      ls_comm_proj_context-target_type      = lv_mp_type.
+*      ls_comm_proj_context-target_grouping  = /rpm/cl_co=>sc_ppm_commercial_proj.
+*      ls_comm_proj_context-operation        = /rpm/cl_co=>sc_change_mode_update.
+*      ls_comm_proj_context-item_attr        = is_attributes.
+*      ls_comm_proj_context-item_attr_old    = is_attributes_old.
+*      CALL FUNCTION 'ZDE_CON_PFM_FM_CPM_PROJECT_CHK'
+*        EXPORTING
+*          iv_item_guid     = ls_comm_proj_context-object_id
+*          iv_item_type     = ls_comm_proj_context-object_type
+*          iv_mp_type       = ls_comm_proj_context-target_type
+*          is_item_attr     = ls_comm_proj_context-item_attr
+*          is_item_attr_old = ls_comm_proj_context-item_attr_old
+*        IMPORTING
+*          et_messages      = lt_cpm_messages
+*          ev_rc            = lv_rc.
+      /rpm/cl_object_link_api=>get_exisiting_cpm_links(
+    EXPORTING
+      iv_item_guid    = is_attributes-guid
+    IMPORTING
+      et_db_cpm_links = lt_cpm_objectlink
+  ).
+
+  IF lt_cpm_objectlink IS NOT INITIAL.
+* Get the Master Project GUID
+    READ TABLE lt_cpm_objectlink INTO ls_cpm_objectlink
+      WITH KEY project_guid = is_attributes-guid.
+    IF sy-subrc IS INITIAL.
+      lv_mp_guid = ls_cpm_objectlink-object_key.
+      SELECT DISTINCT plan_id,external_id,start_date,end_date FROM /cpd/d_pfp_ph INTO TABLE @DATA(lt_plan)
+        WHERE mp_id_int = @lv_mp_guid
+        AND   sel_structure = 'E'
+        AND  ( start_date <> @ls_mp_data-start_date
+        OR   end_date <> @ls_mp_data-end_date )
+        .
+      IF sy-subrc = 0.
+        LOOP AT lt_plan INTO DATA(ls_plan).
+      CALL FUNCTION 'ZDE_CON_CPM_FM_FP_UPDATE_PLAN'
+              EXPORTING
+                iv_plan_id          = ls_plan-external_id
+                iv_start_date       = ls_mp_data-start_date
+                iv_end_date         = ls_mp_data-end_date
+                iv_act_from         = ls_mp_data-start_date
+                iv_act_to           = ls_mp_data-end_date
+                iv_save_immediately = iv_save_immediately
+              IMPORTING
+                et_messages         = lt_messages.
+      APPEND LINES OF lt_cpm_messages TO lt_messages.
+      LOOP AT lt_messages INTO ls_message.
+        IF ls_message-msgty EQ 'E'.
+          rv_rc = 4.
+        ENDIF.
+        CALL METHOD cl_rpm_message_services=>message_add
+          EXPORTING
+            iv_msgty  = ls_message-msgty
+            iv_msgid  = ls_message-msgid
+            iv_msgno  = ls_message-msgno
+            iv_msgv1  = ls_message-msgv1
+            iv_msgv2  = ls_message-msgv2
+            iv_msgv3  = ls_message-msgv3
+            iv_msgv4  = ls_message-msgv4
+            iv_msgtxt = ls_message-msgtxt.
+      ENDLOOP.
+    ENDIF.
+  ENDMETHOD.

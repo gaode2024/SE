@@ -1,0 +1,28 @@
+DATA: lv_target_dir TYPE string,
+      lv_new_dir    TYPE string.
+
+" Set target directory path (Windows/Network path)
+lv_target_dir = 'C:\target_folder\'.        " Windows example
+" lv_target_dir = '\\network_share\folder\'. " Network path example
+lv_new_dir = lv_target_dir && 'new_subfolder'. " New folder name
+
+" Create directory
+CALL METHOD cl_gui_frontend_services=>directory_create
+  EXPORTING
+    directory                = lv_new_dir
+  CHANGING
+    rc                       = DATA(lv_rc)  " Return operation result
+  EXCEPTIONS
+    directory_create_failed  = 1
+    cntl_error               = 2
+    error_no_gui             = 3
+    directory_access_denied  = 4
+    unknown_error            = 5
+    not_supported_by_gui     = 6
+    OTHERS                   = 7.
+
+IF sy-subrc <> 0 OR lv_rc <> 0.
+  MESSAGE 'Failed to create directory' TYPE 'E'.
+ELSE.
+  MESSAGE 'Directory created successfully' TYPE 'S'.
+ENDIF.

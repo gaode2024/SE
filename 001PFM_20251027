@@ -1,0 +1,15 @@
+Task ID	Yes	CHAR, 40
+Task Name		CHAR, 80
+Type		CHAR, 40
+Jira Status		CHAR, 40
+Task Status		CHAR, 40
+Priority		CHAR, 40
+Start Date		DATS, 8
+End Date		DATS, 8
+Assignee		CHAR, 40
+Reporter		CHAR, 40
+Description		
+Labels		CHAR, 80
+Jira2SAP Timestamp		
+SAP2Jira Timestamp		
+Last Update Timestamp		

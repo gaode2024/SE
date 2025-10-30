@@ -1,3 +1,10 @@
+Viewtype  Value:FIN/CAP Name:Financial/Capacity View Type
+Category  Value:INT/EXT Name:Internal/External
+Group     Value:INT/EXT Name:Internal/External
+
+FTE: CAP-INT-INT
+Internal cost:FIN-INT-INT
+External cost:FIN-EXT-EXT
 Test ID: T_EFES_CONT
 Password: Welcome_123456789
 ZCON_PFM_DDL_C_SPFVER

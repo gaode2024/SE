@@ -1,3 +1,8 @@
+Parameter IS_URL
+Meaning
+This parameter defines the URL or HTTP destination for the Integration Server or Advanced Adapter Engine.
+This parameter is evaluated in the HTTP communication path Sender -> Integration Server/Advanced Adapter Engine.
+
 V1D_TO_CPI_PROXY_SYN
 
 to be confirmed

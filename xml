@@ -3,927 +3,46 @@
   <expand>schema,names</expand>
   <startAt>0</startAt>
   <maxResults>100</maxResults>
-  <total>13</total>
+  <total>4</total>
   <issues>
     <expand>operations,versionedRepresentations,editmeta,changelog,renderedFields</expand>
-    <id>20722852</id>
-    <self>https://devstack.vwgroup.com/jira/rest/api/2/issue/20722852</self>
-    <key>CFINJSD-6787</key>
+    <id>20352111</id>
+    <self>https://devstack.vwgroup.com/jira/rest/api/2/issue/20352111</self>
+    <key>CFINJSD-6471</key>
     <fields>
-      <summary>Add T3-U and T3-I to mapping table</summary>
-      <issuetype>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/issuetype/10503</self>
-        <id>10503</id>
-        <description></description>
-        <iconUrl>https://devstack.vwgroup.com/jira/secure/viewavatar?size=xsmall&amp;avatarId=10303&amp;avatarType=issuetype</iconUrl>
-        <name>Incident</name>
-        <subtask>false</subtask>
-        <avatarId>10303</avatarId>
-      </issuetype>
-      <duedate/>
-      <description>Please add following cost centers to the mapping table
-
-T3-U 1002031600 (02031600)
-
-T3-I 1002031700 (02031700)
-
-Please implement in all interfaces:
-
-* COSMAS
-
-* GLC
-
-* EMP_EXP
-
-* HRMD_A09
-
-* IPS_PAYROL
-
-* NUMIGA
-
-* PROFIS
-
-Thanks</description>
-      <reporter>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=fixclau</self>
-        <name>fixclau</name>
-        <key>JIRAUSER49400</key>
-        <emailAddress>holger.laufersweiler@cariad.technology</emailAddress>
-        <avatarUrls>
-          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?ownerId=JIRAUSER49400&amp;avatarId=55910</_48x48>
-          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;ownerId=JIRAUSER49400&amp;avatarId=55910</_24x24>
-          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;ownerId=JIRAUSER49400&amp;avatarId=55910</_16x16>
-          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;ownerId=JIRAUSER49400&amp;avatarId=55910</_32x32>
-        </avatarUrls>
-        <displayName>Laufersweiler, Holger (FC-F)</displayName>
-        <active>true</active>
-        <timeZone>Europe/Berlin</timeZone>
-      </reporter>
-      <customfield_10220/>
-      <assignee>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=t2yuhm0</self>
-        <name>t2yuhm0</name>
-        <key>JIRAUSER189411</key>
-        <emailAddress>selay.selter@cariad.technology</emailAddress>
-        <avatarUrls>
-          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?avatarId=10122</_48x48>
-          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;avatarId=10122</_24x24>
-          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;avatarId=10122</_16x16>
-          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;avatarId=10122</_32x32>
-        </avatarUrls>
-        <displayName>Selter, Selay (FD-A)</displayName>
-        <active>true</active>
-        <timeZone>Europe/Berlin</timeZone>
-      </assignee>
-      <priority>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/priority/10801</self>
-        <iconUrl>https://devstack.vwgroup.com/jira/images/icons/priorities/trivial.svg</iconUrl>
-        <name>Normal</name>
-        <id>10801</id>
-      </priority>
-      <updated>2025-11-19T03:52:14.000+0100</updated>
-      <labels>Incident</labels>
-      <labels>OnVWITS</labels>
-      <status>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/status/4</self>
-        <description>This issue was once resolved, but the resolution was deemed incorrect. From here issues are either marked assigned or resolved.</description>
-        <iconUrl>https://devstack.vwgroup.com/jira/images/icons/statuses/reopened.png</iconUrl>
-        <name>Reopened</name>
-        <id>4</id>
-        <statusCategory>
-          <self>https://devstack.vwgroup.com/jira/rest/api/2/statuscategory/2</self>
-          <id>2</id>
-          <key>new</key>
-          <colorName>default</colorName>
-          <name>To Do</name>
-        </statusCategory>
-      </status>
-    </fields>
-    <renderedFields/>
-  </issues>
-  <issues>
-    <expand>operations,versionedRepresentations,editmeta,changelog,renderedFields</expand>
-    <id>20896634</id>
-    <self>https://devstack.vwgroup.com/jira/rest/api/2/issue/20896634</self>
-    <key>CFINJSD-6977</key>
-    <fields>
-      <summary>Wrong Approval Status</summary>
-      <issuetype>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/issuetype/10503</self>
-        <id>10503</id>
-        <description></description>
-        <iconUrl>https://devstack.vwgroup.com/jira/secure/viewavatar?size=xsmall&amp;avatarId=10303&amp;avatarType=issuetype</iconUrl>
-        <name>Incident</name>
-        <subtask>false</subtask>
-        <avatarId>10303</avatarId>
-      </issuetype>
-      <duedate/>
-      <description>Hallo zusammen,
-
-in der PRE PRE0016032 ist der Genehmigungsstatus “PR deleted”. Die PR wurde versehentlich von mir nachträglich deleted, aber die PO 4500038094 wurde erfolgreich ausgelöst. Es wurden sogar Rechnungen beglichen. Kann man den Status auf “PO approved” anpassen? Wenn der Status nicht angepasst wird, geht unsere Buchhaltung davon aus, dass das Geld noch verfügbar und anderweitig verwendet werden kann. 
-</description>
-      <reporter>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=dla01jq</self>
-        <name>dla01jq</name>
-        <key>JIRAUSER169726</key>
-        <emailAddress>maria.costanzo@cariad.technology</emailAddress>
-        <avatarUrls>
-          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?avatarId=10122</_48x48>
-          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;avatarId=10122</_24x24>
-          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;avatarId=10122</_16x16>
-          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;avatarId=10122</_32x32>
-        </avatarUrls>
-        <displayName>Costanzo, Maria (TX-Z)</displayName>
-        <active>true</active>
-        <timeZone>Europe/Berlin</timeZone>
-      </reporter>
-      <customfield_10220/>
-      <assignee>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=acm5a9n</self>
-        <name>acm5a9n</name>
-        <key>JIRAUSER370944</key>
-        <emailAddress>mutteppa.pujar@volkswagen.co.in</emailAddress>
-        <avatarUrls>
-          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?avatarId=10122</_48x48>
-          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;avatarId=10122</_24x24>
-          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;avatarId=10122</_16x16>
-          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;avatarId=10122</_32x32>
-        </avatarUrls>
-        <displayName>Pujar, Mutteppa (Digital Solutions IN I-DS-B)</displayName>
-        <active>true</active>
-        <timeZone>Europe/Berlin</timeZone>
-      </assignee>
-      <priority>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/priority/10801</self>
-        <iconUrl>https://devstack.vwgroup.com/jira/images/icons/priorities/trivial.svg</iconUrl>
-        <name>Normal</name>
-        <id>10801</id>
-      </priority>
-      <updated>2025-11-19T02:00:40.000+0100</updated>
-      <labels>Incident</labels>
-      <labels>OnVWITS</labels>
-      <status>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/status/6</self>
-        <description>The issue is considered finished, the resolution is correct. Issues which are closed can be reopened.</description>
-        <iconUrl>https://devstack.vwgroup.com/jira/images/icons/statuses/closed.png</iconUrl>
-        <name>Closed</name>
-        <id>6</id>
-        <statusCategory>
-          <self>https://devstack.vwgroup.com/jira/rest/api/2/statuscategory/3</self>
-          <id>3</id>
-          <key>done</key>
-          <colorName>success</colorName>
-          <name>Done</name>
-        </statusCategory>
-      </status>
-    </fields>
-    <renderedFields/>
-  </issues>
-  <issues>
-    <expand>operations,versionedRepresentations,editmeta,changelog,renderedFields</expand>
-    <id>20902368</id>
-    <self>https://devstack.vwgroup.com/jira/rest/api/2/issue/20902368</self>
-    <key>CFINJSD-6989</key>
-    <fields>
-      <summary>PO4500031822 wird nicht beliefert werden und kann gelöscht werden</summary>
-      <issuetype>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/issuetype/10100</self>
-        <id>10100</id>
-        <description>A task that needs to be done.</description>
-        <iconUrl>https://devstack.vwgroup.com/jira/secure/viewavatar?size=xsmall&amp;avatarId=10318&amp;avatarType=issuetype</iconUrl>
-        <name>Task</name>
-        <subtask>false</subtask>
-        <avatarId>10318</avatarId>
-      </issuetype>
-      <duedate/>
-      <description>Hallo Zusammen, 
-
-hoffe dass ich bei euch richtig bin.
-
-PO[4500031822|https://cariadps4h.sap.cariad.eu.sap.cloud.vwgroup.com/sap/bc/ui2/flp?sap-client=100&amp;sap-language=EN#] wird *nicht* beliefert.
-Es wurde ein Lieferschein gebucht (0 Stück geliefert) mit email-Bestätigung vom Lieferanten dass die PO nicht beliefert wird. 
-
-Des weiteren wurde der Haken für “Endlieferung” gesetzt.
-(so besprochen mit Raphael Gärtner, da ein löschen der PO von unserer Seite technisch nicht möglich ist)
-
-Warum ist der Vorgang in SAP immer noch auf “Receiving” und wird nicht abgebrochen oder abgeschlossen? Dann würde das Budget wieder frei werden und ich könnte damit neue Teile bestellen.
-
-Vielen Dank.</description>
-      <reporter>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=s8kzyp7</self>
-        <name>s8kzyp7</name>
-        <key>JIRAUSER78198</key>
-        <emailAddress>johannes.walser@cariad.technology</emailAddress>
-        <avatarUrls>
-          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?avatarId=10122</_48x48>
-          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;avatarId=10122</_24x24>
-          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;avatarId=10122</_16x16>
-          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;avatarId=10122</_32x32>
-        </avatarUrls>
-        <displayName>Walser, Johannes (T2-FC)</displayName>
-        <active>true</active>
-        <timeZone>Europe/Berlin</timeZone>
-      </reporter>
-      <customfield_10220/>
-      <assignee>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=eva9zw7</self>
-        <name>eva9zw7</name>
-        <key>JIRAUSER166287</key>
-        <emailAddress>kunal.potdar@volkswagen.co.in</emailAddress>
-        <avatarUrls>
-          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?avatarId=10122</_48x48>
-          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;avatarId=10122</_24x24>
-          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;avatarId=10122</_16x16>
-          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;avatarId=10122</_32x32>
-        </avatarUrls>
-        <displayName>Potdar, Kunal (Digital Solutions IN I-DS-B)</displayName>
-        <active>true</active>
-        <timeZone>Europe/Berlin</timeZone>
-      </assignee>
-      <priority>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/priority/10801</self>
-        <iconUrl>https://devstack.vwgroup.com/jira/images/icons/priorities/trivial.svg</iconUrl>
-        <name>Normal</name>
-        <id>10801</id>
-      </priority>
-      <updated>2025-11-19T02:00:40.000+0100</updated>
-      <labels>OnVWITS</labels>
-      <labels>Task</labels>
-      <status>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/status/6</self>
-        <description>The issue is considered finished, the resolution is correct. Issues which are closed can be reopened.</description>
-        <iconUrl>https://devstack.vwgroup.com/jira/images/icons/statuses/closed.png</iconUrl>
-        <name>Closed</name>
-        <id>6</id>
-        <statusCategory>
-          <self>https://devstack.vwgroup.com/jira/rest/api/2/statuscategory/3</self>
-          <id>3</id>
-          <key>done</key>
-          <colorName>success</colorName>
-          <name>Done</name>
-        </statusCategory>
-      </status>
-    </fields>
-    <renderedFields/>
-  </issues>
-  <issues>
-    <expand>operations,versionedRepresentations,editmeta,changelog,renderedFields</expand>
-    <id>20969819</id>
-    <self>https://devstack.vwgroup.com/jira/rest/api/2/issue/20969819</self>
-    <key>CFINJSD-7020</key>
-    <fields>
-      <summary>ABAP Development</summary>
-      <issuetype>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/issuetype/10101</self>
-        <id>10101</id>
-        <description>The sub-task of the issue</description>
-        <iconUrl>https://devstack.vwgroup.com/jira/secure/viewavatar?size=xsmall&amp;avatarId=10316&amp;avatarType=issuetype</iconUrl>
-        <name>Sub-task</name>
-        <subtask>true</subtask>
-        <avatarId>10316</avatarId>
-      </issuetype>
-      <duedate/>
-      <description/>
-      <reporter>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=ehkw6v6</self>
-        <name>ehkw6v6</name>
-        <key>JIRAUSER428035</key>
-        <emailAddress>preethi.1@volkswagen.co.in</emailAddress>
-        <avatarUrls>
-          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?avatarId=10122</_48x48>
-          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;avatarId=10122</_24x24>
-          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;avatarId=10122</_16x16>
-          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;avatarId=10122</_32x32>
-        </avatarUrls>
-        <displayName>1, Preethi (Digital Solutions IN I-DS-B)</displayName>
-        <active>true</active>
-        <timeZone>Asia/Kolkata</timeZone>
-      </reporter>
-      <customfield_10220/>
-      <assignee>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=ehkw6v6</self>
-        <name>ehkw6v6</name>
-        <key>JIRAUSER428035</key>
-        <emailAddress>preethi.1@volkswagen.co.in</emailAddress>
-        <avatarUrls>
-          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?avatarId=10122</_48x48>
-          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;avatarId=10122</_24x24>
-          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;avatarId=10122</_16x16>
-          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;avatarId=10122</_32x32>
-        </avatarUrls>
-        <displayName>1, Preethi (Digital Solutions IN I-DS-B)</displayName>
-        <active>true</active>
-        <timeZone>Asia/Kolkata</timeZone>
-      </assignee>
-      <priority>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/priority/10801</self>
-        <iconUrl>https://devstack.vwgroup.com/jira/images/icons/priorities/trivial.svg</iconUrl>
-        <name>Normal</name>
-        <id>10801</id>
-      </priority>
-      <updated>2025-11-19T02:00:38.000+0100</updated>
-      <labels>ABAP_CW44</labels>
-      <labels>ABAP_EHKW6V6</labels>
+      <customfield_25209/>
+      <customfield_42102/>
+      <customfield_65100/>
+      <customfield_17700/>
+      <customfield_52941/>
+      <customfield_15526/>
+      <resolution/>
+      <customfield_16613/>
+      <customfield_16612/>
+      <customfield_57600/>
+      <customfield_57601/>
+      <customfield_11714/>
+      <customfield_12807/>
+      <lastViewed/>
+      <customfield_18103/>
+      <customfield_66300/>
+      <customfield_66301/>
+      <customfield_53901/>
+      <customfield_36900/>
+      <labels>ABAP_CW40</labels>
+      <labels>ABAP_CW41</labels>
+      <labels>ABAP_E5RIOI6</labels>
+      <labels>ABAP_F0M64L6</labels>
       <labels>ABAP_OCTOBER</labels>
+      <labels>ABAP_SEPTEMBER</labels>
       <labels>ABAP_VWITS</labels>
-      <labels>ONVWITS</labels>
-      <status>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/status/6</self>
-        <description>The issue is considered finished, the resolution is correct. Issues which are closed can be reopened.</description>
-        <iconUrl>https://devstack.vwgroup.com/jira/images/icons/statuses/closed.png</iconUrl>
-        <name>Closed</name>
-        <id>6</id>
-        <statusCategory>
-          <self>https://devstack.vwgroup.com/jira/rest/api/2/statuscategory/3</self>
-          <id>3</id>
-          <key>done</key>
-          <colorName>success</colorName>
-          <name>Done</name>
-        </statusCategory>
-      </status>
-    </fields>
-    <renderedFields/>
-  </issues>
-  <issues>
-    <expand>operations,versionedRepresentations,editmeta,changelog,renderedFields</expand>
-    <id>20975239</id>
-    <self>https://devstack.vwgroup.com/jira/rest/api/2/issue/20975239</self>
-    <key>CFINJSD-7023</key>
-    <fields>
-      <summary>ABAP development</summary>
-      <issuetype>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/issuetype/10101</self>
-        <id>10101</id>
-        <description>The sub-task of the issue</description>
-        <iconUrl>https://devstack.vwgroup.com/jira/secure/viewavatar?size=xsmall&amp;avatarId=10316&amp;avatarType=issuetype</iconUrl>
-        <name>Sub-task</name>
-        <subtask>true</subtask>
-        <avatarId>10316</avatarId>
-      </issuetype>
-      <duedate/>
-      <description/>
-      <reporter>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=ehkw6v6</self>
-        <name>ehkw6v6</name>
-        <key>JIRAUSER428035</key>
-        <emailAddress>preethi.1@volkswagen.co.in</emailAddress>
-        <avatarUrls>
-          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?avatarId=10122</_48x48>
-          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;avatarId=10122</_24x24>
-          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;avatarId=10122</_16x16>
-          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;avatarId=10122</_32x32>
-        </avatarUrls>
-        <displayName>1, Preethi (Digital Solutions IN I-DS-B)</displayName>
-        <active>true</active>
-        <timeZone>Asia/Kolkata</timeZone>
-      </reporter>
-      <customfield_10220/>
-      <assignee>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=ehkw6v6</self>
-        <name>ehkw6v6</name>
-        <key>JIRAUSER428035</key>
-        <emailAddress>preethi.1@volkswagen.co.in</emailAddress>
-        <avatarUrls>
-          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?avatarId=10122</_48x48>
-          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;avatarId=10122</_24x24>
-          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;avatarId=10122</_16x16>
-          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;avatarId=10122</_32x32>
-        </avatarUrls>
-        <displayName>1, Preethi (Digital Solutions IN I-DS-B)</displayName>
-        <active>true</active>
-        <timeZone>Asia/Kolkata</timeZone>
-      </assignee>
-      <priority>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/priority/10801</self>
-        <iconUrl>https://devstack.vwgroup.com/jira/images/icons/priorities/trivial.svg</iconUrl>
-        <name>Normal</name>
-        <id>10801</id>
-      </priority>
-      <updated>2025-11-19T02:00:38.000+0100</updated>
-      <labels>ABAP_CW44</labels>
-      <labels>ABAP_EHKW6V6</labels>
-      <labels>ABAP_OCTOBER</labels>
-      <labels>ABAP_VWITS</labels>
-      <status>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/status/6</self>
-        <description>The issue is considered finished, the resolution is correct. Issues which are closed can be reopened.</description>
-        <iconUrl>https://devstack.vwgroup.com/jira/images/icons/statuses/closed.png</iconUrl>
-        <name>Closed</name>
-        <id>6</id>
-        <statusCategory>
-          <self>https://devstack.vwgroup.com/jira/rest/api/2/statuscategory/3</self>
-          <id>3</id>
-          <key>done</key>
-          <colorName>success</colorName>
-          <name>Done</name>
-        </statusCategory>
-      </status>
-    </fields>
-    <renderedFields/>
-  </issues>
-  <issues>
-    <expand>operations,versionedRepresentations,editmeta,changelog,renderedFields</expand>
-    <id>20985893</id>
-    <self>https://devstack.vwgroup.com/jira/rest/api/2/issue/20985893</self>
-    <key>CFINJSD-7032</key>
-    <fields>
-      <summary>Add Functional Requester Role </summary>
-      <issuetype>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/issuetype/10302</self>
-        <id>10302</id>
-        <description>For requests that require approval. Created by JIRA Service Desk</description>
-        <iconUrl>https://devstack.vwgroup.com/jira/secure/viewavatar?size=xsmall&amp;avatarId=10653&amp;avatarType=issuetype</iconUrl>
-        <name>Service Request with Approvals</name>
-        <subtask>false</subtask>
-        <avatarId>10653</avatarId>
-      </issuetype>
-      <duedate/>
-      <description>Could you please ssign Alin Jianu (USMJKVU
-
- ) the role Functional requetser in PrePR. 
-
-He also still needs the role as an Technical Requester. Alin will take over budget planning responsibility within the sytems T3-LB 
-
-[~usmjkvu] </description>
-      <reporter>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=tufun3a</self>
-        <name>tufun3a</name>
-        <key>JIRAUSER91588</key>
-        <emailAddress>marcel.lutz@cariad.technology</emailAddress>
-        <avatarUrls>
-          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?avatarId=10122</_48x48>
-          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;avatarId=10122</_24x24>
-          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;avatarId=10122</_16x16>
-          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;avatarId=10122</_32x32>
-        </avatarUrls>
-        <displayName>Lutz, Marcel (T3-SE)</displayName>
-        <active>true</active>
-        <timeZone>Europe/Berlin</timeZone>
-      </reporter>
-      <customfield_10220/>
-      <assignee>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=fn13wrj</self>
-        <name>fn13wrj</name>
-        <key>JIRAUSER289411</key>
-        <emailAddress>dayakar.nakka@volkswagen.co.in</emailAddress>
-        <avatarUrls>
-          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?avatarId=10122</_48x48>
-          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;avatarId=10122</_24x24>
-          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;avatarId=10122</_16x16>
-          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;avatarId=10122</_32x32>
-        </avatarUrls>
-        <displayName>Nakka, Dayakar (Digital Solutions IN I-DS-B)</displayName>
-        <active>true</active>
-        <timeZone>Europe/Berlin</timeZone>
-      </assignee>
-      <priority>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/priority/7</self>
-        <iconUrl>https://devstack.vwgroup.com/jira/images/icons/priorities/minor.svg</iconUrl>
-        <name>Minor</name>
-        <id>7</id>
-      </priority>
-      <updated>2025-11-19T02:00:38.000+0100</updated>
-      <labels>Authorization</labels>
       <labels>OnVWITS</labels>
-      <status>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/status/6</self>
-        <description>The issue is considered finished, the resolution is correct. Issues which are closed can be reopened.</description>
-        <iconUrl>https://devstack.vwgroup.com/jira/images/icons/statuses/closed.png</iconUrl>
-        <name>Closed</name>
-        <id>6</id>
-        <statusCategory>
-          <self>https://devstack.vwgroup.com/jira/rest/api/2/statuscategory/3</self>
-          <id>3</id>
-          <key>done</key>
-          <colorName>success</colorName>
-          <name>Done</name>
-        </statusCategory>
-      </status>
-    </fields>
-    <renderedFields/>
-  </issues>
-  <issues>
-    <expand>operations,versionedRepresentations,editmeta,changelog,renderedFields</expand>
-    <id>20814351</id>
-    <self>https://devstack.vwgroup.com/jira/rest/api/2/issue/20814351</self>
-    <key>CFINJSD-6880</key>
-    <fields>
-      <summary>You are not authorized for this release process</summary>
-      <issuetype>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/issuetype/10302</self>
-        <id>10302</id>
-        <description>For requests that require approval. Created by JIRA Service Desk</description>
-        <iconUrl>https://devstack.vwgroup.com/jira/secure/viewavatar?size=xsmall&amp;avatarId=10653&amp;avatarType=issuetype</iconUrl>
-        <name>Service Request with Approvals</name>
-        <subtask>false</subtask>
-        <avatarId>10653</avatarId>
-      </issuetype>
-      <duedate/>
-      <description>Hi, since this monring I can’t approve PO/PR in MM. But I am a product controller and can approve until 500.00€. Did my role switch in SAP?</description>
-      <reporter>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=gsym601</self>
-        <name>gsym601</name>
-        <key>JIRAUSER219908</key>
-        <emailAddress>rosi.piep@cariad.technology</emailAddress>
-        <avatarUrls>
-          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?avatarId=10122</_48x48>
-          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;avatarId=10122</_24x24>
-          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;avatarId=10122</_16x16>
-          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;avatarId=10122</_32x32>
-        </avatarUrls>
-        <displayName>Piep, Rosi (FC-A)</displayName>
-        <active>true</active>
-        <timeZone>Europe/Berlin</timeZone>
-      </reporter>
-      <customfield_10220/>
+      <labels>Request</labels>
+      <customfield_53900/>
+      <aggregatetimeoriginalestimate/>
+      <issuelinks/>
+      <customfield_58000/>
       <assignee>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=fn13wrj</self>
-        <name>fn13wrj</name>
-        <key>JIRAUSER289411</key>
-        <emailAddress>dayakar.nakka@volkswagen.co.in</emailAddress>
-        <avatarUrls>
-          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?avatarId=10122</_48x48>
-          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;avatarId=10122</_24x24>
-          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;avatarId=10122</_16x16>
-          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;avatarId=10122</_32x32>
-        </avatarUrls>
-        <displayName>Nakka, Dayakar (Digital Solutions IN I-DS-B)</displayName>
-        <active>true</active>
-        <timeZone>Europe/Berlin</timeZone>
-      </assignee>
-      <priority>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/priority/7</self>
-        <iconUrl>https://devstack.vwgroup.com/jira/images/icons/priorities/minor.svg</iconUrl>
-        <name>Minor</name>
-        <id>7</id>
-      </priority>
-      <updated>2025-11-19T02:00:38.000+0100</updated>
-      <labels>Authorization</labels>
-      <labels>OnVWITS</labels>
-      <labels>SECURITY_VWITS</labels>
-      <status>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/status/6</self>
-        <description>The issue is considered finished, the resolution is correct. Issues which are closed can be reopened.</description>
-        <iconUrl>https://devstack.vwgroup.com/jira/images/icons/statuses/closed.png</iconUrl>
-        <name>Closed</name>
-        <id>6</id>
-        <statusCategory>
-          <self>https://devstack.vwgroup.com/jira/rest/api/2/statuscategory/3</self>
-          <id>3</id>
-          <key>done</key>
-          <colorName>success</colorName>
-          <name>Done</name>
-        </statusCategory>
-      </status>
-    </fields>
-    <renderedFields/>
-  </issues>
-  <issues>
-    <expand>operations,versionedRepresentations,editmeta,changelog,renderedFields</expand>
-    <id>20850564</id>
-    <self>https://devstack.vwgroup.com/jira/rest/api/2/issue/20850564</self>
-    <key>CFINJSD-6935</key>
-    <fields>
-      <summary>Login issue </summary>
-      <issuetype>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/issuetype/10302</self>
-        <id>10302</id>
-        <description>For requests that require approval. Created by JIRA Service Desk</description>
-        <iconUrl>https://devstack.vwgroup.com/jira/secure/viewavatar?size=xsmall&amp;avatarId=10653&amp;avatarType=issuetype</iconUrl>
-        <name>Service Request with Approvals</name>
-        <subtask>false</subtask>
-        <avatarId>10653</avatarId>
-      </issuetype>
-      <duedate/>
-      <description>Hello,
-I can not log into SAP.
-The following photo is displayed as my start page.
-Could you please look into this issue?
-Thank you very much for your support.
-
-BR
-
-Eda</description>
-      <reporter>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=av01803</self>
-        <name>av01803</name>
-        <key>JIRAUSER177037</key>
-        <emailAddress>eda.uzar@volkswagen-groupservices.com</emailAddress>
-        <avatarUrls>
-          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?avatarId=10122</_48x48>
-          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;avatarId=10122</_24x24>
-          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;avatarId=10122</_16x16>
-          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;avatarId=10122</_32x32>
-        </avatarUrls>
-        <displayName>Uzar, Eda (A-IBPK/1)</displayName>
-        <active>true</active>
-        <timeZone>Europe/Berlin</timeZone>
-      </reporter>
-      <customfield_10220/>
-      <assignee>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=fn13wrj</self>
-        <name>fn13wrj</name>
-        <key>JIRAUSER289411</key>
-        <emailAddress>dayakar.nakka@volkswagen.co.in</emailAddress>
-        <avatarUrls>
-          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?avatarId=10122</_48x48>
-          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;avatarId=10122</_24x24>
-          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;avatarId=10122</_16x16>
-          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;avatarId=10122</_32x32>
-        </avatarUrls>
-        <displayName>Nakka, Dayakar (Digital Solutions IN I-DS-B)</displayName>
-        <active>true</active>
-        <timeZone>Europe/Berlin</timeZone>
-      </assignee>
-      <priority>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/priority/7</self>
-        <iconUrl>https://devstack.vwgroup.com/jira/images/icons/priorities/minor.svg</iconUrl>
-        <name>Minor</name>
-        <id>7</id>
-      </priority>
-      <updated>2025-11-19T02:00:38.000+0100</updated>
-      <labels>Authorization</labels>
-      <labels>OnVWITS</labels>
-      <labels>SECURITY_VWITS</labels>
-      <status>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/status/6</self>
-        <description>The issue is considered finished, the resolution is correct. Issues which are closed can be reopened.</description>
-        <iconUrl>https://devstack.vwgroup.com/jira/images/icons/statuses/closed.png</iconUrl>
-        <name>Closed</name>
-        <id>6</id>
-        <statusCategory>
-          <self>https://devstack.vwgroup.com/jira/rest/api/2/statuscategory/3</self>
-          <id>3</id>
-          <key>done</key>
-          <colorName>success</colorName>
-          <name>Done</name>
-        </statusCategory>
-      </status>
-    </fields>
-    <renderedFields/>
-  </issues>
-  <issues>
-    <expand>operations,versionedRepresentations,editmeta,changelog,renderedFields</expand>
-    <id>20893013</id>
-    <self>https://devstack.vwgroup.com/jira/rest/api/2/issue/20893013</self>
-    <key>CFINJSD-6970</key>
-    <fields>
-      <summary>Erteilung Rolle als Functional Requester</summary>
-      <issuetype>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/issuetype/10302</self>
-        <id>10302</id>
-        <description>For requests that require approval. Created by JIRA Service Desk</description>
-        <iconUrl>https://devstack.vwgroup.com/jira/secure/viewavatar?size=xsmall&amp;avatarId=10653&amp;avatarType=issuetype</iconUrl>
-        <name>Service Request with Approvals</name>
-        <subtask>false</subtask>
-        <avatarId>10653</avatarId>
-      </issuetype>
-      <duedate/>
-      <description>Bitte um Erteilung der Rolle: Functional Requester
-
-Windows User: EBBO723 </description>
-      <reporter>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=ebbo723</self>
-        <name>ebbo723</name>
-        <key>JIRAUSER154580</key>
-        <emailAddress>stefan.beyer@cariad.technology</emailAddress>
-        <avatarUrls>
-          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?ownerId=JIRAUSER154580&amp;avatarId=152017</_48x48>
-          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;ownerId=JIRAUSER154580&amp;avatarId=152017</_24x24>
-          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;ownerId=JIRAUSER154580&amp;avatarId=152017</_16x16>
-          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;ownerId=JIRAUSER154580&amp;avatarId=152017</_32x32>
-        </avatarUrls>
-        <displayName>Beyer, Stefan (T4-DF)</displayName>
-        <active>true</active>
-        <timeZone>Europe/Berlin</timeZone>
-      </reporter>
-      <customfield_10220/>
-      <assignee>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=fn13wrj</self>
-        <name>fn13wrj</name>
-        <key>JIRAUSER289411</key>
-        <emailAddress>dayakar.nakka@volkswagen.co.in</emailAddress>
-        <avatarUrls>
-          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?avatarId=10122</_48x48>
-          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;avatarId=10122</_24x24>
-          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;avatarId=10122</_16x16>
-          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;avatarId=10122</_32x32>
-        </avatarUrls>
-        <displayName>Nakka, Dayakar (Digital Solutions IN I-DS-B)</displayName>
-        <active>true</active>
-        <timeZone>Europe/Berlin</timeZone>
-      </assignee>
-      <priority>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/priority/7</self>
-        <iconUrl>https://devstack.vwgroup.com/jira/images/icons/priorities/minor.svg</iconUrl>
-        <name>Minor</name>
-        <id>7</id>
-      </priority>
-      <updated>2025-11-19T02:00:38.000+0100</updated>
-      <labels>Authorization</labels>
-      <labels>OnVWITS</labels>
-      <labels>SECURITY_VWITS</labels>
-      <status>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/status/6</self>
-        <description>The issue is considered finished, the resolution is correct. Issues which are closed can be reopened.</description>
-        <iconUrl>https://devstack.vwgroup.com/jira/images/icons/statuses/closed.png</iconUrl>
-        <name>Closed</name>
-        <id>6</id>
-        <statusCategory>
-          <self>https://devstack.vwgroup.com/jira/rest/api/2/statuscategory/3</self>
-          <id>3</id>
-          <key>done</key>
-          <colorName>success</colorName>
-          <name>Done</name>
-        </statusCategory>
-      </status>
-    </fields>
-    <renderedFields/>
-  </issues>
-  <issues>
-    <expand>operations,versionedRepresentations,editmeta,changelog,renderedFields</expand>
-    <id>20454915</id>
-    <self>https://devstack.vwgroup.com/jira/rest/api/2/issue/20454915</self>
-    <key>CFINJSD-6544</key>
-    <fields>
-      <summary>AMS Access Revalidation for BW</summary>
-      <issuetype>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/issuetype/10101</self>
-        <id>10101</id>
-        <description>The sub-task of the issue</description>
-        <iconUrl>https://devstack.vwgroup.com/jira/secure/viewavatar?size=xsmall&amp;avatarId=10316&amp;avatarType=issuetype</iconUrl>
-        <name>Sub-task</name>
-        <subtask>true</subtask>
-        <avatarId>10316</avatarId>
-      </issuetype>
-      <duedate/>
-      <description>Hello,
-
-Please prepare one excel sheet with list of all Tcodes/table/access required in production</description>
-      <reporter>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=aerw7t8</self>
-        <name>aerw7t8</name>
-        <key>JIRAUSER284240</key>
-        <emailAddress>pranav.dhumal@volkswagen.co.in</emailAddress>
-        <avatarUrls>
-          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?avatarId=10122</_48x48>
-          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;avatarId=10122</_24x24>
-          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;avatarId=10122</_16x16>
-          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;avatarId=10122</_32x32>
-        </avatarUrls>
-        <displayName>Dhumal, Pranav (Digital Solutions IN I-DS-B)</displayName>
-        <active>true</active>
-        <timeZone>Europe/Berlin</timeZone>
-      </reporter>
-      <customfield_10220/>
-      <assignee>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=fn13wrj</self>
-        <name>fn13wrj</name>
-        <key>JIRAUSER289411</key>
-        <emailAddress>dayakar.nakka@volkswagen.co.in</emailAddress>
-        <avatarUrls>
-          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?avatarId=10122</_48x48>
-          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;avatarId=10122</_24x24>
-          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;avatarId=10122</_16x16>
-          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;avatarId=10122</_32x32>
-        </avatarUrls>
-        <displayName>Nakka, Dayakar (Digital Solutions IN I-DS-B)</displayName>
-        <active>true</active>
-        <timeZone>Europe/Berlin</timeZone>
-      </assignee>
-      <priority>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/priority/10801</self>
-        <iconUrl>https://devstack.vwgroup.com/jira/images/icons/priorities/trivial.svg</iconUrl>
-        <name>Normal</name>
-        <id>10801</id>
-      </priority>
-      <updated>2025-11-19T02:00:37.000+0100</updated>
-      <labels/>
-      <status>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/status/6</self>
-        <description>The issue is considered finished, the resolution is correct. Issues which are closed can be reopened.</description>
-        <iconUrl>https://devstack.vwgroup.com/jira/images/icons/statuses/closed.png</iconUrl>
-        <name>Closed</name>
-        <id>6</id>
-        <statusCategory>
-          <self>https://devstack.vwgroup.com/jira/rest/api/2/statuscategory/3</self>
-          <id>3</id>
-          <key>done</key>
-          <colorName>success</colorName>
-          <name>Done</name>
-        </statusCategory>
-      </status>
-    </fields>
-    <renderedFields/>
-  </issues>
-  <issues>
-    <expand>operations,versionedRepresentations,editmeta,changelog,renderedFields</expand>
-    <id>20988918</id>
-    <self>https://devstack.vwgroup.com/jira/rest/api/2/issue/20988918</self>
-    <key>CFINJSD-7035</key>
-    <fields>
-      <summary>Materialeingang kann nicht gebucht werden</summary>
-      <issuetype>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/issuetype/10503</self>
-        <id>10503</id>
-        <description></description>
-        <iconUrl>https://devstack.vwgroup.com/jira/secure/viewavatar?size=xsmall&amp;avatarId=10303&amp;avatarType=issuetype</iconUrl>
-        <name>Incident</name>
-        <subtask>false</subtask>
-        <avatarId>10303</avatarId>
-      </issuetype>
-      <duedate/>
-      <description>Zur PO 4500041473 habe ich eine Rechnung in VIM erhalten, kann jedoch über die App “Post Goods Receipt for Purchasing Document” keinen Wareneingang buchen.
-
-Im Anhang sind die Dokumente zu finden:
-
-Anhang 1: VIM Rechnung
-
-Anhang 2: Fehlermeldung.
-
-
-
-Vielen Dank bereits und Grüße
-
-Elke
-
-</description>
-      <reporter>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=d8hmoev</self>
-        <name>d8hmoev</name>
-        <key>JIRAUSER57172</key>
-        <emailAddress>elke.kneisler@cariad.technology</emailAddress>
-        <avatarUrls>
-          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?avatarId=10122</_48x48>
-          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;avatarId=10122</_24x24>
-          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;avatarId=10122</_16x16>
-          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;avatarId=10122</_32x32>
-        </avatarUrls>
-        <displayName>Kneisler, Elke (T5-SZ)</displayName>
-        <active>true</active>
-        <timeZone>Europe/Berlin</timeZone>
-      </reporter>
-      <customfield_10220/>
-      <assignee>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=eva9zw7</self>
-        <name>eva9zw7</name>
-        <key>JIRAUSER166287</key>
-        <emailAddress>kunal.potdar@volkswagen.co.in</emailAddress>
-        <avatarUrls>
-          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?avatarId=10122</_48x48>
-          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;avatarId=10122</_24x24>
-          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;avatarId=10122</_16x16>
-          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;avatarId=10122</_32x32>
-        </avatarUrls>
-        <displayName>Potdar, Kunal (Digital Solutions IN I-DS-B)</displayName>
-        <active>true</active>
-        <timeZone>Europe/Berlin</timeZone>
-      </assignee>
-      <priority>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/priority/10801</self>
-        <iconUrl>https://devstack.vwgroup.com/jira/images/icons/priorities/trivial.svg</iconUrl>
-        <name>Normal</name>
-        <id>10801</id>
-      </priority>
-      <updated>2025-11-19T02:00:37.000+0100</updated>
-      <labels>Incident</labels>
-      <labels>OnVWITS</labels>
-      <status>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/status/6</self>
-        <description>The issue is considered finished, the resolution is correct. Issues which are closed can be reopened.</description>
-        <iconUrl>https://devstack.vwgroup.com/jira/images/icons/statuses/closed.png</iconUrl>
-        <name>Closed</name>
-        <id>6</id>
-        <statusCategory>
-          <self>https://devstack.vwgroup.com/jira/rest/api/2/statuscategory/3</self>
-          <id>3</id>
-          <key>done</key>
-          <colorName>success</colorName>
-          <name>Done</name>
-        </statusCategory>
-      </status>
-    </fields>
-    <renderedFields/>
-  </issues>
-  <issues>
-    <expand>operations,versionedRepresentations,editmeta,changelog,renderedFields</expand>
-    <id>20988912</id>
-    <self>https://devstack.vwgroup.com/jira/rest/api/2/issue/20988912</self>
-    <key>CFINJSD-7034</key>
-    <fields>
-      <summary>Change of CC approver 1003050000</summary>
-      <issuetype>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/issuetype/10302</self>
-        <id>10302</id>
-        <description>For requests that require approval. Created by JIRA Service Desk</description>
-        <iconUrl>https://devstack.vwgroup.com/jira/secure/viewavatar?size=xsmall&amp;avatarId=10653&amp;avatarType=issuetype</iconUrl>
-        <name>Service Request with Approvals</name>
-        <subtask>false</subtask>
-        <avatarId>10653</avatarId>
-      </issuetype>
-      <duedate/>
-      <description>Hi Dayakar - please assign approver roles to u4mzfho with reference to dbe4m3c. Please also set Ashraf as permanent subsitute for Petra. TY and KR Thomas</description>
-      <reporter>
         <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=fixcw36</self>
         <name>fixcw36</name>
         <key>JIRAUSER55317</key>
@@ -937,56 +56,517 @@ Elke
         <displayName>Jahn, Thomas (FD-A)</displayName>
         <active>true</active>
         <timeZone>Europe/Berlin</timeZone>
-      </reporter>
-      <customfield_10220/>
-      <assignee>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=fn13wrj</self>
-        <name>fn13wrj</name>
-        <key>JIRAUSER289411</key>
-        <emailAddress>dayakar.nakka@volkswagen.co.in</emailAddress>
+      </assignee>
+      <components>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/component/128583</self>
+        <id>128583</id>
+        <name>Purchasing - SAP S/4HANA</name>
+        <description>All technical topics related to Purchase requisition in SAP S/4HANA system.</description>
+      </components>
+      <customfield_10600>{}</customfield_10600>
+      <customfield_13316/>
+      <customfield_14405/>
+      <customfield_21738/>
+      <customfield_45506/>
+      <customfield_45400/>
+      <customfield_45402/>
+      <customfield_45401/>
+      <subtasks/>
+      <customfield_57606/>
+      <reporter>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=fmqhq5l</self>
+        <name>fmqhq5l</name>
+        <key>JIRAUSER181971</key>
+        <emailAddress>richarda.krauss@cariad.technology</emailAddress>
         <avatarUrls>
           <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?avatarId=10122</_48x48>
           <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;avatarId=10122</_24x24>
           <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;avatarId=10122</_16x16>
           <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;avatarId=10122</_32x32>
         </avatarUrls>
-        <displayName>Nakka, Dayakar (Digital Solutions IN I-DS-B)</displayName>
+        <displayName>Krauss, RicHarda (T1-SB)</displayName>
         <active>true</active>
         <timeZone>Europe/Berlin</timeZone>
-      </assignee>
+      </reporter>
+      <customfield_57602/>
+      <customfield_32203/>
+      <customfield_57603/>
+      <customfield_57604/>
+      <customfield_57605/>
+      <progress>
+        <progress>0</progress>
+        <total>0</total>
+      </progress>
+      <votes>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/issue/CFINJSD-6471/votes</self>
+        <votes>0</votes>
+        <hasVoted>false</hasVoted>
+      </votes>
+      <issuetype>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/issuetype/10301</self>
+        <id>10301</id>
+        <description>Created by JIRA Service Desk.</description>
+        <iconUrl>https://devstack.vwgroup.com/jira/secure/viewavatar?size=xsmall&amp;avatarId=10652&amp;avatarType=issuetype</iconUrl>
+        <name>Service Request</name>
+        <subtask>false</subtask>
+        <avatarId>10652</avatarId>
+      </issuetype>
+      <project>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/project/64103</self>
+        <id>64103</id>
+        <key>CFINJSD</key>
+        <name>CARIAD Finance Support Portal</name>
+        <projectTypeKey>service_desk</projectTypeKey>
+        <avatarUrls>
+          <_48x48>https://devstack.vwgroup.com/jira/secure/projectavatar?pid=64103&amp;avatarId=87443</_48x48>
+          <_24x24>https://devstack.vwgroup.com/jira/secure/projectavatar?size=small&amp;pid=64103&amp;avatarId=87443</_24x24>
+          <_16x16>https://devstack.vwgroup.com/jira/secure/projectavatar?size=xsmall&amp;pid=64103&amp;avatarId=87443</_16x16>
+          <_32x32>https://devstack.vwgroup.com/jira/secure/projectavatar?size=medium&amp;pid=64103&amp;avatarId=87443</_32x32>
+        </avatarUrls>
+      </project>
+      <customfield_15602/>
+      <customfield_37901/>
+      <customfield_11005/>
+      <customfield_52074/>
+      <customfield_10943/>
+      <customfield_25131/>
+      <customfield_62300/>
+      <resolutiondate/>
+      <customfield_25132/>
+      <customfield_60801/>
+      <customfield_60800/>
+      <customfield_25019/>
+      <watches>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/issue/CFINJSD-6471/watchers</self>
+        <watchCount>3</watchCount>
+        <isWatching>false</isWatching>
+      </watches>
+      <customfield_49103/>
+      <customfield_52615/>
+      <customfield_15703/>
+      <customfield_15704/>
+      <customfield_40400/>
+      <updated>2025-11-19T08:45:09.000+0100</updated>
+      <customfield_25701>&lt;i&gt;not set&lt;/i&gt;</customfield_25701>
+      <timeoriginalestimate/>
+      <customfield_52521/>
+      <description>The incorrect details have been shown while extracting data using Monitor Purchase Contract Item App
+
+Contracts with only one item appear several times. This means that residual values cannot be determined exactly. Here are two examples.
+
+Residual volume is misrepresented. The same amount would have to be deposited for the rest value as for the target value. Not 0 EUR. (Orange)
+
+Currency is displayed incorrectly. When filtering, a currency must be selected. This causes the correct currency not to appear in the report.
+
+Here the actual currency should be displayed in the report.
+
+ </description>
+      <customfield_16912/>
+      <customfield_15702/>
+      <customfield_10005>2|j2xmog:</customfield_10005>
+      <customfield_10006/>
+      <customfield_34300/>
+      <customfield_10802/>
+      <customfield_28302/>
+      <customfield_43005/>
+      <customfield_24500/>
+      <summary>Issue with the data extracted in Monitor Purchase Contract Item App</summary>
+      <customfield_44113/>
+      <customfield_44114/>
+      <customfield_49003/>
+      <customfield_52753/>
+      <customfield_10000/>
+      <customfield_14601/>
+      <customfield_12300/>
+      <customfield_10004/>
+      <customfield_42608/>
+      <environment/>
+      <customfield_42607/>
+      <duedate/>
+      <customfield_10914/>
+      <customfield_61100>
+        <name>cgm-cfin-jsd-1st-levelsupport</name>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/group?groupname=cgm-cfin-jsd-1st-levelsupport</self>
+      </customfield_61100>
+      <customfield_40301/>
+      <customfield_40302/>
+      <customfield_40303/>
+      <customfield_40304/>
+      <customfield_21000></customfield_21000>
+      <customfield_56901/>
+      <customfield_56900/>
+      <customfield_15005/>
+      <fixVersions/>
+      <customfield_19600/>
+      <customfield_56904/>
+      <customfield_56903/>
+      <customfield_53515/>
+      <customfield_56902/>
+      <customfield_62901/>
+      <customfield_62902/>
+      <customfield_62903/>
+      <customfield_62101/>
+      <customfield_49806/>
+      <customfield_16320/>
+      <customfield_52410/>
+      <customfield_52531/>
+      <customfield_10220/>
+      <customfield_52533/>
       <priority>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/priority/7</self>
-        <iconUrl>https://devstack.vwgroup.com/jira/images/icons/priorities/minor.svg</iconUrl>
-        <name>Minor</name>
-        <id>7</id>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/priority/10801</self>
+        <iconUrl>https://devstack.vwgroup.com/jira/images/icons/priorities/trivial.svg</iconUrl>
+        <name>Normal</name>
+        <id>10801</id>
       </priority>
-      <updated>2025-11-19T02:00:37.000+0100</updated>
-      <labels>SECURITY_VWITS</labels>
-      <labels>Workflow</labels>
+      <customfield_10221/>
+      <customfield_13603/>
+      <customfield_10335/>
+      <customfield_10215/>
+      <customfield_10216/>
+      <customfield_10217/>
+      <customfield_10218/>
+      <timeestimate/>
+      <versions/>
+      <customfield_10219/>
+      <customfield_61801/>
       <status>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/status/6</self>
-        <description>The issue is considered finished, the resolution is correct. Issues which are closed can be reopened.</description>
-        <iconUrl>https://devstack.vwgroup.com/jira/images/icons/statuses/closed.png</iconUrl>
-        <name>Closed</name>
-        <id>6</id>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/status/10000</self>
+        <description>Backlog</description>
+        <iconUrl>https://devstack.vwgroup.com/jira/images/icons/subtask.gif</iconUrl>
+        <name>Backlog</name>
+        <id>10000</id>
         <statusCategory>
-          <self>https://devstack.vwgroup.com/jira/rest/api/2/statuscategory/3</self>
-          <id>3</id>
-          <key>done</key>
-          <colorName>success</colorName>
-          <name>Done</name>
+          <self>https://devstack.vwgroup.com/jira/rest/api/2/statuscategory/2</self>
+          <id>2</id>
+          <key>new</key>
+          <colorName>default</colorName>
+          <name>To Do</name>
         </statusCategory>
       </status>
+      <customfield_10211/>
+      <customfield_16317/>
+      <customfield_16316/>
+      <customfield_50700/>
+      <customfield_10213/>
+      <customfield_59403/>
+      <customfield_10203/>
+      <customfield_10204/>
+      <customfield_10205/>
+      <customfield_59404/>
+      <customfield_10206/>
+      <customfield_10207 links='[object Object]'>
+        <id>296</id>
+        <name>Time to resolution</name>
+        <completedCycles/>
+        <ongoingCycle>
+          <startTime>
+            <iso8601>2025-08-26T09:09:15+0200</iso8601>
+            <jira>2025-08-26T09:09:15.863+0200</jira>
+            <friendly>26.08.2025 09:09</friendly>
+            <epochMillis>1756192155863</epochMillis>
+          </startTime>
+          <breachTime>
+            <iso8601>2025-11-25T12:48:24+0100</iso8601>
+            <jira>2025-11-25T12:48:24.885+0100</jira>
+            <friendly>In 6 days 12:48</friendly>
+            <epochMillis>1764071304885</epochMillis>
+          </breachTime>
+          <breached>false</breached>
+          <paused>true</paused>
+          <withinCalendarHours>true</withinCalendarHours>
+          <goalDuration>
+            <millis>144000000</millis>
+            <friendly>40h</friendly>
+          </goalDuration>
+          <elapsedTime>
+            <millis>18098085</millis>
+            <friendly>5h 1m</friendly>
+          </elapsedTime>
+          <remainingTime>
+            <millis>125901915</millis>
+            <friendly>34h 58m</friendly>
+          </remainingTime>
+        </ongoingCycle>
+      </customfield_10207>
+      <aggregatetimeestimate/>
+      <customfield_10208 links='[object Object]'>
+        <id>564</id>
+        <name>Time to first response</name>
+        <completedCycles>
+          <startTime>
+            <iso8601>2025-08-26T09:09:15+0200</iso8601>
+            <jira>2025-08-26T09:09:15.863+0200</jira>
+            <friendly>26.08.2025 09:09</friendly>
+            <epochMillis>1756192155863</epochMillis>
+          </startTime>
+          <stopTime>
+            <iso8601>2025-08-26T14:10:53+0200</iso8601>
+            <jira>2025-08-26T14:10:53.948+0200</jira>
+            <friendly>26.08.2025 14:10</friendly>
+            <epochMillis>1756210253948</epochMillis>
+          </stopTime>
+          <breached>false</breached>
+          <goalDuration>
+            <millis>28800000</millis>
+            <friendly>8h</friendly>
+          </goalDuration>
+          <elapsedTime>
+            <millis>18098085</millis>
+            <friendly>5h 1m</friendly>
+          </elapsedTime>
+          <remainingTime>
+            <millis>10701915</millis>
+            <friendly>2h 58m</friendly>
+          </remainingTime>
+        </completedCycles>
+      </customfield_10208>
+      <customfield_57100/>
+      <customfield_45902/>
+      <customfield_25634/>
+      <customfield_62803/>
+      <customfield_62802/>
+      <customfield_25636>1.0</customfield_25636>
+      <creator>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=acm5a9n</self>
+        <name>acm5a9n</name>
+        <key>JIRAUSER370944</key>
+        <emailAddress>mutteppa.pujar@volkswagen.co.in</emailAddress>
+        <avatarUrls>
+          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?avatarId=10122</_48x48>
+          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;avatarId=10122</_24x24>
+          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;avatarId=10122</_16x16>
+          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;avatarId=10122</_32x32>
+        </avatarUrls>
+        <displayName>Pujar, Mutteppa (Digital Solutions IN I-DS-B)</displayName>
+        <active>true</active>
+        <timeZone>Europe/Berlin</timeZone>
+      </creator>
+      <customfield_49600/>
+      <customfield_64300/>
+      <customfield_51102/>
+      <customfield_14125/>
+      <customfield_62000/>
+      <customfield_16301/>
+      <customfield_51103/>
+      <customfield_16300/>
+      <customfield_14123/>
+      <aggregateprogress>
+        <progress>0</progress>
+        <total>0</total>
+      </aggregateprogress>
+      <customfield_16307/>
+      <customfield_10200/>
+      <customfield_10201>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=ufdidjb</self>
+        <name>ufdidjb</name>
+        <key>JIRAUSER74788</key>
+        <emailAddress>wolf.kujath@cariad.technology</emailAddress>
+        <avatarUrls>
+          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?avatarId=10122</_48x48>
+          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;avatarId=10122</_24x24>
+          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;avatarId=10122</_16x16>
+          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;avatarId=10122</_32x32>
+        </avatarUrls>
+        <displayName>Kujath, Wolf (FB-C)</displayName>
+        <active>true</active>
+        <timeZone>Europe/Berlin</timeZone>
+      </customfield_10201>
+      <customfield_10201>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=fixcw36</self>
+        <name>fixcw36</name>
+        <key>JIRAUSER55317</key>
+        <emailAddress>thomas.jahn@cariad.technology</emailAddress>
+        <avatarUrls>
+          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?avatarId=10122</_48x48>
+          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;avatarId=10122</_24x24>
+          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;avatarId=10122</_16x16>
+          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;avatarId=10122</_32x32>
+        </avatarUrls>
+        <displayName>Jahn, Thomas (FD-A)</displayName>
+        <active>true</active>
+        <timeZone>Europe/Berlin</timeZone>
+      </customfield_10201>
+      <customfield_10202 links='[object Object]'>
+        <requestType links='[object Object]'>
+          <id>2063</id>
+          <name>New Service Request</name>
+          <description>Create a formal request to add new features or implement new requirements to our ERP landscape.
+
+Typical use case: 
+When you have a request for a change in the current configuration or process in the system.</description>
+          <helpText></helpText>
+          <serviceDeskId>185</serviceDeskId>
+          <groupIds>710</groupIds>
+          <icon links='[object Object]'>
+            <id>10618</id>
+          </icon>
+          <restrictionStatus>OPEN</restrictionStatus>
+        </requestType>
+        <currentStatus>
+          <status>Backlog</status>
+          <statusDate>
+            <iso8601>2025-08-26T14:10:53+0200</iso8601>
+            <jira>2025-08-26T14:10:53.948+0200</jira>
+            <friendly>26.08.2025 14:10</friendly>
+            <epochMillis>1756210253948</epochMillis>
+          </statusDate>
+        </currentStatus>
+      </customfield_10202>
+      <customfield_61700/>
+      <customfield_40000/>
+      <timespent/>
+      <aggregatetimespent/>
+      <customfield_60401/>
+      <customfield_60400/>
+      <workratio>-1</workratio>
+      <customfield_20101/>
+      <created>2025-08-26T09:09:15.000+0200</created>
+      <customfield_52459/>
+      <customfield_13800/>
+      <customfield_61600/>
+      <customfield_52803/>
+      <customfield_52805/>
+      <customfield_46002/>
+      <customfield_15300/>
+      <customfield_19900/>
+      <customfield_10402/>
+      <customfield_62600/>
+      <customfield_41103/>
+      <customfield_64900/>
+      <customfield_64901/>
+      <customfield_30904/>
+      <customfield_53447/>
+      <customfield_52479/>
+      <customfield_34701/>
+      <customfield_10400/>
+      <customfield_15527/>
+      <customfield_36214/>
+      <customfield_12815/>
+      <customfield_12814>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/customFieldOption/307435</self>
+        <value>V1P - S/4 HANA Production System</value>
+        <id>307435</id>
+        <disabled>false</disabled>
+      </customfield_12814>
+      <customfield_20317/>
+      <customfield_22612/>
     </fields>
     <renderedFields/>
   </issues>
   <issues>
     <expand>operations,versionedRepresentations,editmeta,changelog,renderedFields</expand>
-    <id>20991896</id>
-    <self>https://devstack.vwgroup.com/jira/rest/api/2/issue/20991896</self>
-    <key>CFINJSD-7037</key>
+    <id>21195130</id>
+    <self>https://devstack.vwgroup.com/jira/rest/api/2/issue/21195130</self>
+    <key>CFINJSD-7193</key>
     <fields>
-      <summary>V1E Error - Issue in &quot;Run Statutory Report&quot; App</summary>
+      <customfield_25209/>
+      <customfield_42102/>
+      <customfield_65100/>
+      <customfield_17700>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/customFieldOption/307439</self>
+        <value>V1P - S/4 HANA Production System</value>
+        <id>307439</id>
+        <disabled>false</disabled>
+      </customfield_17700>
+      <customfield_17700>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/customFieldOption/307440</self>
+        <value>V3P - BW/4 Reporting Production System</value>
+        <id>307440</id>
+        <disabled>false</disabled>
+      </customfield_17700>
+      <customfield_17700>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/customFieldOption/307442</self>
+        <value>V1Q - S/4 HANA Test System</value>
+        <id>307442</id>
+        <disabled>false</disabled>
+      </customfield_17700>
+      <customfield_17700>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/customFieldOption/307443</self>
+        <value>V1D - S/4 HANA Development System</value>
+        <id>307443</id>
+        <disabled>false</disabled>
+      </customfield_17700>
+      <customfield_52941/>
+      <customfield_15526/>
+      <resolution/>
+      <customfield_16613/>
+      <customfield_16612/>
+      <customfield_57600/>
+      <customfield_57601/>
+      <customfield_11714/>
+      <customfield_12807/>
+      <lastViewed/>
+      <customfield_18103/>
+      <customfield_66300/>
+      <customfield_66301/>
+      <customfield_53901/>
+      <customfield_36900/>
+      <labels>OnVWITS</labels>
+      <labels>Task</labels>
+      <customfield_53900/>
+      <aggregatetimeoriginalestimate/>
+      <issuelinks/>
+      <customfield_58000/>
+      <assignee>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=gjqklg5</self>
+        <name>gjqklg5</name>
+        <key>JIRAUSER404818</key>
+        <emailAddress>yash.gour@volkswagen.co.in</emailAddress>
+        <avatarUrls>
+          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?avatarId=10122</_48x48>
+          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;avatarId=10122</_24x24>
+          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;avatarId=10122</_16x16>
+          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;avatarId=10122</_32x32>
+        </avatarUrls>
+        <displayName>Gour, Yash (Digital Solutions IN I-DS-B)</displayName>
+        <active>true</active>
+        <timeZone>Europe/Berlin</timeZone>
+      </assignee>
+      <components>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/component/146571</self>
+        <id>146571</id>
+        <name>Technical - SAP ERP</name>
+        <description>All technical topics which does not belong to any of those.</description>
+      </components>
+      <customfield_10600>{}</customfield_10600>
+      <customfield_13316/>
+      <customfield_14405/>
+      <customfield_21738/>
+      <customfield_45506/>
+      <customfield_45400/>
+      <customfield_45402/>
+      <customfield_45401/>
+      <subtasks/>
+      <customfield_57606/>
+      <reporter>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=gjqklg5</self>
+        <name>gjqklg5</name>
+        <key>JIRAUSER404818</key>
+        <emailAddress>yash.gour@volkswagen.co.in</emailAddress>
+        <avatarUrls>
+          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?avatarId=10122</_48x48>
+          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;avatarId=10122</_24x24>
+          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;avatarId=10122</_16x16>
+          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;avatarId=10122</_32x32>
+        </avatarUrls>
+        <displayName>Gour, Yash (Digital Solutions IN I-DS-B)</displayName>
+        <active>true</active>
+        <timeZone>Europe/Berlin</timeZone>
+      </reporter>
+      <customfield_57602/>
+      <customfield_32203/>
+      <customfield_57603/>
+      <customfield_57604/>
+      <customfield_57605/>
+      <progress>
+        <progress>0</progress>
+        <total>0</total>
+      </progress>
+      <votes>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/issue/CFINJSD-7193/votes</self>
+        <votes>0</votes>
+        <hasVoted>false</hasVoted>
+      </votes>
       <issuetype>
         <self>https://devstack.vwgroup.com/jira/rest/api/2/issuetype/10100</self>
         <id>10100</id>
@@ -996,48 +576,349 @@ Elke
         <subtask>false</subtask>
         <avatarId>10318</avatarId>
       </issuetype>
+      <project>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/project/64103</self>
+        <id>64103</id>
+        <key>CFINJSD</key>
+        <name>CARIAD Finance Support Portal</name>
+        <projectTypeKey>service_desk</projectTypeKey>
+        <avatarUrls>
+          <_48x48>https://devstack.vwgroup.com/jira/secure/projectavatar?pid=64103&amp;avatarId=87443</_48x48>
+          <_24x24>https://devstack.vwgroup.com/jira/secure/projectavatar?size=small&amp;pid=64103&amp;avatarId=87443</_24x24>
+          <_16x16>https://devstack.vwgroup.com/jira/secure/projectavatar?size=xsmall&amp;pid=64103&amp;avatarId=87443</_16x16>
+          <_32x32>https://devstack.vwgroup.com/jira/secure/projectavatar?size=medium&amp;pid=64103&amp;avatarId=87443</_32x32>
+        </avatarUrls>
+      </project>
+      <customfield_15602/>
+      <customfield_37901/>
+      <customfield_11005/>
+      <customfield_52074/>
+      <customfield_10943/>
+      <customfield_25131/>
+      <customfield_62300/>
+      <resolutiondate/>
+      <customfield_25132/>
+      <customfield_60801/>
+      <customfield_60800/>
+      <customfield_25019/>
+      <watches>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/issue/CFINJSD-7193/watchers</self>
+        <watchCount>1</watchCount>
+        <isWatching>false</isWatching>
+      </watches>
+      <customfield_49103/>
+      <customfield_52615/>
+      <customfield_15703/>
+      <customfield_15704/>
+      <customfield_40400/>
+      <updated>2025-11-19T08:32:21.000+0100</updated>
+      <customfield_25701>&lt;i&gt;not set&lt;/i&gt;</customfield_25701>
+      <timeoriginalestimate/>
+      <customfield_52521/>
+      <description>BASIS Monitoring for (17/11/2025 - 21/11/2025) - CW 47
+
+In reference to ticket number [CFINJSD-7124|https://devstack.vwgroup.com/jira/browse/CFINJSD-7124], please find the continued correspondence below.
+
+Daily Monitoring Sheet attached.</description>
+      <customfield_16912/>
+      <customfield_15702/>
+      <customfield_10005>2|j6v9h4:</customfield_10005>
+      <customfield_10006/>
+      <customfield_34300/>
+      <customfield_10802/>
+      <customfield_28302/>
+      <customfield_43005/>
+      <customfield_24500/>
+      <summary>BASIS Monitoring - CW 47</summary>
+      <customfield_44113/>
+      <customfield_44114/>
+      <customfield_49003/>
+      <customfield_52753/>
+      <customfield_10000/>
+      <customfield_14601/>
+      <customfield_12300/>
+      <customfield_10244>
+        <count>0</count>
+        <statuses>
+          <id>0</id>
+          <name>PASS</name>
+          <description>The test run/iteration has passed</description>
+          <isFinal>true</isFinal>
+          <color>#95C160</color>
+          <isNative>true</isNative>
+          <statusCount>0</statusCount>
+          <statusPercent>0</statusPercent>
+        </statuses>
+        <statuses>
+          <id>3</id>
+          <name>FAIL</name>
+          <description>The test run/iteration has failed</description>
+          <isFinal>true</isFinal>
+          <color>#D45D52</color>
+          <isNative>true</isNative>
+          <statusCount>0</statusCount>
+          <statusPercent>0</statusPercent>
+        </statuses>
+        <statuses>
+          <id>4</id>
+          <name>ABORTED</name>
+          <description>The test run/iteration was aborted</description>
+          <isFinal>true</isFinal>
+          <color>#111111</color>
+          <isNative>true</isNative>
+          <statusCount>0</statusCount>
+          <statusPercent>0</statusPercent>
+        </statuses>
+        <statuses>
+          <id>1000</id>
+          <name>BLOCKED</name>
+          <description>The test run is blocked by another failed test</description>
+          <isFinal>true</isFinal>
+          <color>#FF7F27</color>
+          <isNative>false</isNative>
+          <statusCount>0</statusCount>
+          <statusPercent>0</statusPercent>
+        </statuses>
+        <statuses>
+          <id>2</id>
+          <name>EXECUTING</name>
+          <description>The test run/iteration is currently being executed</description>
+          <isFinal>false</isFinal>
+          <color>#F1E069</color>
+          <isNative>true</isNative>
+          <statusCount>0</statusCount>
+          <statusPercent>0</statusPercent>
+        </statuses>
+        <statuses>
+          <id>1001</id>
+          <name>PENDING_VALIDATION</name>
+          <description>The test run is pending validation</description>
+          <isFinal>false</isFinal>
+          <color>#000FFF</color>
+          <isNative>false</isNative>
+          <statusCount>0</statusCount>
+          <statusPercent>0</statusPercent>
+        </statuses>
+        <statuses>
+          <id>1</id>
+          <name>TODO</name>
+          <description>The test run/iteration has not started</description>
+          <isFinal>false</isFinal>
+          <color>#A2A6AE</color>
+          <isNative>true</isNative>
+          <statusCount>0</statusCount>
+          <statusPercent>0</statusPercent>
+        </statuses>
+      </customfield_10244>
+      <customfield_10004/>
+      <customfield_42608/>
+      <environment/>
+      <customfield_42607/>
       <duedate/>
-      <description>We are seeking assistance from the BASIS and ABAP teams to help resolve the following issue observed in the V1E system.
-
- 
-
-*+Issue:+*
-When executing the *“Run Statutory Report”* app, the system is expected to display the monthly statutory reports along with their respective statuses. However, instead of the expected results, a warning message appears with {*}“No Data”{*}.
-
-             
-
-*+Analysis &amp; Solution:+*
-
-Upon analysis, it was identified that the issue is caused by a program error due to recent system upgrade to 2023 version. As per SAP’s recommendation, the issue can be resolved by implementing the OSS Notes listed below.
-
- 
-
-*+Suggested SAP Notes:+*
-
-[https://me.sap.com/notes/0003587241] ({*}3587241 - &quot;Warning No Data&quot; Message Displayed in Run Statutory Reports Fiori App Post S/4 HANA 2023 Upgrade){*}
-
-[https://me.sap.com/notes/0003521388] ({*}3521388 - Consolidated improvements and enhancement to support new features in statutory reporting.){*}
-
- ** 
-
-Kindly review and assist in proceeding with the implementation.</description>
-      <reporter>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=tbiynyj</self>
-        <name>tbiynyj</name>
-        <key>JIRAUSER278045</key>
-        <emailAddress>prashant.rajpurohit@volkswagen.co.in</emailAddress>
+      <customfield_10914/>
+      <customfield_61100>
+        <name>cgm-cfin-jsd-1st-levelsupport</name>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/group?groupname=cgm-cfin-jsd-1st-levelsupport</self>
+      </customfield_61100>
+      <customfield_40301/>
+      <customfield_40302/>
+      <customfield_40303/>
+      <customfield_40304/>
+      <customfield_21000></customfield_21000>
+      <customfield_56901/>
+      <customfield_56900/>
+      <customfield_15005/>
+      <fixVersions/>
+      <customfield_19600/>
+      <customfield_56904/>
+      <customfield_56903/>
+      <customfield_53515/>
+      <customfield_56902/>
+      <customfield_62901/>
+      <customfield_62902/>
+      <customfield_62903/>
+      <customfield_62101/>
+      <customfield_49806/>
+      <customfield_16320/>
+      <customfield_52410/>
+      <customfield_52531/>
+      <customfield_10220/>
+      <customfield_52533/>
+      <priority>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/priority/10801</self>
+        <iconUrl>https://devstack.vwgroup.com/jira/images/icons/priorities/trivial.svg</iconUrl>
+        <name>Normal</name>
+        <id>10801</id>
+      </priority>
+      <customfield_10221/>
+      <customfield_13603/>
+      <customfield_10335/>
+      <customfield_10215/>
+      <customfield_10216/>
+      <customfield_10217/>
+      <customfield_10218/>
+      <timeestimate/>
+      <versions/>
+      <customfield_10219/>
+      <customfield_61801/>
+      <status>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/status/3</self>
+        <description>This issue is being actively worked on at the moment by the assignee.</description>
+        <iconUrl>https://devstack.vwgroup.com/jira/images/icons/status_custom_insmile.gif</iconUrl>
+        <name>In Progress</name>
+        <id>3</id>
+        <statusCategory>
+          <self>https://devstack.vwgroup.com/jira/rest/api/2/statuscategory/4</self>
+          <id>4</id>
+          <key>indeterminate</key>
+          <colorName>inprogress</colorName>
+          <name>In Progress</name>
+        </statusCategory>
+      </status>
+      <customfield_10211/>
+      <customfield_16317/>
+      <customfield_16316/>
+      <customfield_50700/>
+      <customfield_10213/>
+      <customfield_59403/>
+      <customfield_10203/>
+      <customfield_10204/>
+      <customfield_10205/>
+      <customfield_59404/>
+      <customfield_10206/>
+      <customfield_10207 links='[object Object]'>
+        <id>296</id>
+        <name>Time to resolution</name>
+        <completedCycles/>
+        <ongoingCycle>
+          <startTime>
+            <iso8601>2025-11-17T08:59:31+0100</iso8601>
+            <jira>2025-11-17T08:59:31.323+0100</jira>
+            <friendly>2 days ago 08:59</friendly>
+            <epochMillis>1763366371323</epochMillis>
+          </startTime>
+          <breachTime>
+            <iso8601>2025-11-21T17:00:00+0100</iso8601>
+            <jira>2025-11-21T17:00:00.000+0100</jira>
+            <friendly>In 2 days 17:00</friendly>
+            <epochMillis>1763740800000</epochMillis>
+          </breachTime>
+          <breached>false</breached>
+          <paused>false</paused>
+          <withinCalendarHours>true</withinCalendarHours>
+          <goalDuration>
+            <millis>144000000</millis>
+            <friendly>40h</friendly>
+          </goalDuration>
+          <elapsedTime>
+            <millis>60603156</millis>
+            <friendly>16h 50m</friendly>
+          </elapsedTime>
+          <remainingTime>
+            <millis>83396844</millis>
+            <friendly>23h 9m</friendly>
+          </remainingTime>
+        </ongoingCycle>
+      </customfield_10207>
+      <aggregatetimeestimate/>
+      <customfield_10208 links='[object Object]'>
+        <id>564</id>
+        <name>Time to first response</name>
+        <completedCycles>
+          <startTime>
+            <iso8601>2025-11-17T08:59:31+0100</iso8601>
+            <jira>2025-11-17T08:59:31.323+0100</jira>
+            <friendly>2 days ago 08:59</friendly>
+            <epochMillis>1763366371323</epochMillis>
+          </startTime>
+          <stopTime>
+            <iso8601>2025-11-17T09:01:12+0100</iso8601>
+            <jira>2025-11-17T09:01:12.825+0100</jira>
+            <friendly>2 days ago 09:01</friendly>
+            <epochMillis>1763366472825</epochMillis>
+          </stopTime>
+          <breached>false</breached>
+          <goalDuration>
+            <millis>28800000</millis>
+            <friendly>8h</friendly>
+          </goalDuration>
+          <elapsedTime>
+            <millis>72825</millis>
+            <friendly>1m</friendly>
+          </elapsedTime>
+          <remainingTime>
+            <millis>28727175</millis>
+            <friendly>7h 58m</friendly>
+          </remainingTime>
+        </completedCycles>
+      </customfield_10208>
+      <customfield_57100/>
+      <customfield_45902/>
+      <customfield_25634/>
+      <customfield_62803/>
+      <customfield_62802/>
+      <customfield_25636>1.0</customfield_25636>
+      <creator>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=gjqklg5</self>
+        <name>gjqklg5</name>
+        <key>JIRAUSER404818</key>
+        <emailAddress>yash.gour@volkswagen.co.in</emailAddress>
         <avatarUrls>
           <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?avatarId=10122</_48x48>
           <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;avatarId=10122</_24x24>
           <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;avatarId=10122</_16x16>
           <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;avatarId=10122</_32x32>
         </avatarUrls>
-        <displayName>Rajpurohit, Prashant (Digital Solutions IN I-DS-B)</displayName>
+        <displayName>Gour, Yash (Digital Solutions IN I-DS-B)</displayName>
         <active>true</active>
         <timeZone>Europe/Berlin</timeZone>
-      </reporter>
-      <customfield_10220/>
-      <assignee>
+      </creator>
+      <customfield_49600/>
+      <customfield_64300/>
+      <customfield_51102/>
+      <customfield_14125/>
+      <customfield_62000/>
+      <customfield_16301/>
+      <customfield_51103/>
+      <customfield_16300/>
+      <customfield_14123/>
+      <aggregateprogress>
+        <progress>0</progress>
+        <total>0</total>
+      </aggregateprogress>
+      <customfield_16307/>
+      <customfield_10200/>
+      <customfield_10201>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=f7y670q</self>
+        <name>f7y670q</name>
+        <key>JIRAUSER295775</key>
+        <emailAddress>mounika.v.s@volkswagen.co.in</emailAddress>
+        <avatarUrls>
+          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?avatarId=10122</_48x48>
+          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;avatarId=10122</_24x24>
+          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;avatarId=10122</_16x16>
+          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;avatarId=10122</_32x32>
+        </avatarUrls>
+        <displayName>V S, Mounika (Digital Solutions IN I-DS-B)</displayName>
+        <active>true</active>
+        <timeZone>Europe/Berlin</timeZone>
+      </customfield_10201>
+      <customfield_10201>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=fe2qczz</self>
+        <name>fe2qczz</name>
+        <key>JIRAUSER188605</key>
+        <emailAddress>vaishnavi.mankar@volkswagen.co.in</emailAddress>
+        <avatarUrls>
+          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?avatarId=10122</_48x48>
+          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;avatarId=10122</_24x24>
+          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;avatarId=10122</_16x16>
+          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;avatarId=10122</_32x32>
+        </avatarUrls>
+        <displayName>Mankar, Vaishnavi (Digital Solutions IN I-DS-B)</displayName>
+        <active>true</active>
+        <timeZone>Europe/Berlin</timeZone>
+      </customfield_10201>
+      <customfield_10201>
         <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=gqcmzf1</self>
         <name>gqcmzf1</name>
         <key>JIRAUSER315856</key>
@@ -1051,29 +932,1185 @@ Kindly review and assist in proceeding with the implementation.</description>
         <displayName>Rane, Rajesh (Digital Solutions IN I-DP)</displayName>
         <active>true</active>
         <timeZone>Asia/Kolkata</timeZone>
+      </customfield_10201>
+      <customfield_10202 links='[object Object]'>
+        <requestType links='[object Object]'>
+          <id>2401</id>
+          <name>Operational Request</name>
+          <description>Select this to trigger an internal task to the ERP team. This request is restricted to ERP support team only.</description>
+          <helpText></helpText>
+          <serviceDeskId>185</serviceDeskId>
+          <groupIds>710</groupIds>
+          <icon links='[object Object]'>
+            <id>10627</id>
+          </icon>
+          <restrictionStatus>OPEN</restrictionStatus>
+        </requestType>
+        <currentStatus>
+          <status>In Progress</status>
+          <statusDate>
+            <iso8601>2025-11-17T09:01:12+0100</iso8601>
+            <jira>2025-11-17T09:01:12.825+0100</jira>
+            <friendly>2 days ago 09:01</friendly>
+            <epochMillis>1763366472825</epochMillis>
+          </statusDate>
+        </currentStatus>
+      </customfield_10202>
+      <customfield_61700/>
+      <customfield_40000/>
+      <timespent/>
+      <aggregatetimespent/>
+      <customfield_13700/>
+      <customfield_60401/>
+      <customfield_60400/>
+      <workratio>-1</workratio>
+      <customfield_20101/>
+      <created>2025-11-17T08:59:31.000+0100</created>
+      <customfield_52459/>
+      <customfield_13800/>
+      <customfield_61600/>
+      <customfield_52803/>
+      <customfield_52805>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/customFieldOption/310813</self>
+        <value>Basis</value>
+        <id>310813</id>
+        <disabled>false</disabled>
+      </customfield_52805>
+      <customfield_46002/>
+      <customfield_15300/>
+      <customfield_19900/>
+      <customfield_10402/>
+      <customfield_62600/>
+      <customfield_41103/>
+      <customfield_64900/>
+      <customfield_64901/>
+      <customfield_30904/>
+      <customfield_53447/>
+      <customfield_52479/>
+      <customfield_34701/>
+      <customfield_10400/>
+      <customfield_15527/>
+      <customfield_36214/>
+      <customfield_12815>Cause:
+Problem:</customfield_12815>
+      <customfield_12814/>
+      <customfield_20317/>
+      <customfield_22612/>
+    </fields>
+    <renderedFields/>
+  </issues>
+  <issues>
+    <expand>operations,versionedRepresentations,editmeta,changelog,renderedFields</expand>
+    <id>18632428</id>
+    <self>https://devstack.vwgroup.com/jira/rest/api/2/issue/18632428</self>
+    <key>CFINJSD-5165</key>
+    <fields>
+      <customfield_25209/>
+      <customfield_42102/>
+      <customfield_65100/>
+      <customfield_17700/>
+      <customfield_52941/>
+      <customfield_15526/>
+      <resolution/>
+      <customfield_16613/>
+      <customfield_16612/>
+      <customfield_57600/>
+      <customfield_57601/>
+      <customfield_11714/>
+      <customfield_12807/>
+      <lastViewed/>
+      <customfield_18103/>
+      <customfield_66300/>
+      <customfield_66301/>
+      <customfield_53901/>
+      <customfield_36900/>
+      <labels>BASIS_VWITS</labels>
+      <labels>SOLMAN_VWITS</labels>
+      <labels>Security_VWITS</labels>
+      <customfield_53900/>
+      <aggregatetimeoriginalestimate/>
+      <issuelinks>
+        <id>19904255</id>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/issueLink/19904255</self>
+        <outwardIssue>
+          <id>20033800</id>
+          <key>CFINJSD-6204</key>
+          <self>https://devstack.vwgroup.com/jira/rest/api/2/issue/20033800</self>
+          <fields>
+            <summary>Increase description field length in CHARM request</summary>
+            <status>
+              <self>https://devstack.vwgroup.com/jira/rest/api/2/status/6</self>
+              <description>The issue is considered finished, the resolution is correct. Issues which are closed can be reopened.</description>
+              <iconUrl>https://devstack.vwgroup.com/jira/images/icons/statuses/closed.png</iconUrl>
+              <name>Closed</name>
+              <id>6</id>
+              <statusCategory>
+                <self>https://devstack.vwgroup.com/jira/rest/api/2/statuscategory/3</self>
+                <id>3</id>
+                <key>done</key>
+                <colorName>success</colorName>
+                <name>Done</name>
+              </statusCategory>
+            </status>
+            <priority>
+              <self>https://devstack.vwgroup.com/jira/rest/api/2/priority/10801</self>
+              <iconUrl>https://devstack.vwgroup.com/jira/images/icons/priorities/trivial.svg</iconUrl>
+              <name>Normal</name>
+              <id>10801</id>
+            </priority>
+            <issuetype>
+              <self>https://devstack.vwgroup.com/jira/rest/api/2/issuetype/10100</self>
+              <id>10100</id>
+              <description>A task that needs to be done.</description>
+              <iconUrl>https://devstack.vwgroup.com/jira/secure/viewavatar?size=xsmall&amp;avatarId=10318&amp;avatarType=issuetype</iconUrl>
+              <name>Task</name>
+              <subtask>false</subtask>
+              <avatarId>10318</avatarId>
+            </issuetype>
+          </fields>
+        </outwardIssue>
+        <type>
+          <id>14102</id>
+          <name>Analysed</name>
+          <inward>analyses</inward>
+          <outward>analysed by</outward>
+          <self>https://devstack.vwgroup.com/jira/rest/api/2/issueLinkType/14102</self>
+        </type>
+      </issuelinks>
+      <customfield_58000/>
+      <assignee>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=t20fp0r</self>
+        <name>t20fp0r</name>
+        <key>JIRAUSER383011</key>
+        <emailAddress>nidhi.sharma@volkswagen.co.in</emailAddress>
+        <avatarUrls>
+          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?avatarId=10349</_48x48>
+          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;avatarId=10349</_24x24>
+          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;avatarId=10349</_16x16>
+          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;avatarId=10349</_32x32>
+        </avatarUrls>
+        <displayName>Sharma, Nidhi (Digital Solutions IN I-DS-B)</displayName>
+        <active>true</active>
+        <timeZone>Europe/Berlin</timeZone>
       </assignee>
+      <components/>
+      <customfield_10600>{}</customfield_10600>
+      <customfield_13316/>
+      <customfield_14405/>
+      <customfield_21738/>
+      <customfield_45506/>
+      <customfield_45400/>
+      <customfield_45402/>
+      <customfield_45401/>
+      <subtasks>
+        <id>18760374</id>
+        <key>CFINJSD-5259</key>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/issue/18760374</self>
+        <fields>
+          <summary>Customization of the Transport request Description in Solman ZMMJ</summary>
+          <status>
+            <self>https://devstack.vwgroup.com/jira/rest/api/2/status/3</self>
+            <description>This issue is being actively worked on at the moment by the assignee.</description>
+            <iconUrl>https://devstack.vwgroup.com/jira/images/icons/status_custom_insmile.gif</iconUrl>
+            <name>In Progress</name>
+            <id>3</id>
+            <statusCategory>
+              <self>https://devstack.vwgroup.com/jira/rest/api/2/statuscategory/4</self>
+              <id>4</id>
+              <key>indeterminate</key>
+              <colorName>inprogress</colorName>
+              <name>In Progress</name>
+            </statusCategory>
+          </status>
+          <priority>
+            <self>https://devstack.vwgroup.com/jira/rest/api/2/priority/7</self>
+            <iconUrl>https://devstack.vwgroup.com/jira/images/icons/priorities/minor.svg</iconUrl>
+            <name>Minor</name>
+            <id>7</id>
+          </priority>
+          <issuetype>
+            <self>https://devstack.vwgroup.com/jira/rest/api/2/issuetype/10101</self>
+            <id>10101</id>
+            <description>The sub-task of the issue</description>
+            <iconUrl>https://devstack.vwgroup.com/jira/secure/viewavatar?size=xsmall&amp;avatarId=10316&amp;avatarType=issuetype</iconUrl>
+            <name>Sub-task</name>
+            <subtask>true</subtask>
+            <avatarId>10316</avatarId>
+          </issuetype>
+        </fields>
+      </subtasks>
+      <subtasks>
+        <id>18813678</id>
+        <key>CFINJSD-5307</key>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/issue/18813678</self>
+        <fields>
+          <summary>Technical User SMTMV4P Access for Import in V1D</summary>
+          <status>
+            <self>https://devstack.vwgroup.com/jira/rest/api/2/status/6</self>
+            <description>The issue is considered finished, the resolution is correct. Issues which are closed can be reopened.</description>
+            <iconUrl>https://devstack.vwgroup.com/jira/images/icons/statuses/closed.png</iconUrl>
+            <name>Closed</name>
+            <id>6</id>
+            <statusCategory>
+              <self>https://devstack.vwgroup.com/jira/rest/api/2/statuscategory/3</self>
+              <id>3</id>
+              <key>done</key>
+              <colorName>success</colorName>
+              <name>Done</name>
+            </statusCategory>
+          </status>
+          <priority>
+            <self>https://devstack.vwgroup.com/jira/rest/api/2/priority/7</self>
+            <iconUrl>https://devstack.vwgroup.com/jira/images/icons/priorities/minor.svg</iconUrl>
+            <name>Minor</name>
+            <id>7</id>
+          </priority>
+          <issuetype>
+            <self>https://devstack.vwgroup.com/jira/rest/api/2/issuetype/10101</self>
+            <id>10101</id>
+            <description>The sub-task of the issue</description>
+            <iconUrl>https://devstack.vwgroup.com/jira/secure/viewavatar?size=xsmall&amp;avatarId=10316&amp;avatarType=issuetype</iconUrl>
+            <name>Sub-task</name>
+            <subtask>true</subtask>
+            <avatarId>10316</avatarId>
+          </issuetype>
+        </fields>
+      </subtasks>
+      <subtasks>
+        <id>18946077</id>
+        <key>CFINJSD-5364</key>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/issue/18946077</self>
+        <fields>
+          <summary>Add missing Authorization for the user: BG_USER V4P:100</summary>
+          <status>
+            <self>https://devstack.vwgroup.com/jira/rest/api/2/status/6</self>
+            <description>The issue is considered finished, the resolution is correct. Issues which are closed can be reopened.</description>
+            <iconUrl>https://devstack.vwgroup.com/jira/images/icons/statuses/closed.png</iconUrl>
+            <name>Closed</name>
+            <id>6</id>
+            <statusCategory>
+              <self>https://devstack.vwgroup.com/jira/rest/api/2/statuscategory/3</self>
+              <id>3</id>
+              <key>done</key>
+              <colorName>success</colorName>
+              <name>Done</name>
+            </statusCategory>
+          </status>
+          <priority>
+            <self>https://devstack.vwgroup.com/jira/rest/api/2/priority/7</self>
+            <iconUrl>https://devstack.vwgroup.com/jira/images/icons/priorities/minor.svg</iconUrl>
+            <name>Minor</name>
+            <id>7</id>
+          </priority>
+          <issuetype>
+            <self>https://devstack.vwgroup.com/jira/rest/api/2/issuetype/10101</self>
+            <id>10101</id>
+            <description>The sub-task of the issue</description>
+            <iconUrl>https://devstack.vwgroup.com/jira/secure/viewavatar?size=xsmall&amp;avatarId=10316&amp;avatarType=issuetype</iconUrl>
+            <name>Sub-task</name>
+            <subtask>true</subtask>
+            <avatarId>10316</avatarId>
+          </issuetype>
+        </fields>
+      </subtasks>
+      <customfield_57606/>
+      <reporter>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=wrtkqz8</self>
+        <name>wrtkqz8</name>
+        <key>JIRAUSER216796</key>
+        <emailAddress>vishal.arora@cariad.technology</emailAddress>
+        <avatarUrls>
+          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?ownerId=JIRAUSER216796&amp;avatarId=82205</_48x48>
+          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;ownerId=JIRAUSER216796&amp;avatarId=82205</_24x24>
+          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;ownerId=JIRAUSER216796&amp;avatarId=82205</_16x16>
+          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;ownerId=JIRAUSER216796&amp;avatarId=82205</_32x32>
+        </avatarUrls>
+        <displayName>Arora, Vishal (FD-A)</displayName>
+        <active>true</active>
+        <timeZone>Europe/Berlin</timeZone>
+      </reporter>
+      <customfield_57602/>
+      <customfield_32203/>
+      <customfield_57603/>
+      <customfield_57604/>
+      <customfield_57605/>
+      <progress>
+        <progress>0</progress>
+        <total>0</total>
+      </progress>
+      <votes>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/issue/CFINJSD-5165/votes</self>
+        <votes>0</votes>
+        <hasVoted>false</hasVoted>
+      </votes>
+      <issuetype>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/issuetype/10100</self>
+        <id>10100</id>
+        <description>A task that needs to be done.</description>
+        <iconUrl>https://devstack.vwgroup.com/jira/secure/viewavatar?size=xsmall&amp;avatarId=10318&amp;avatarType=issuetype</iconUrl>
+        <name>Task</name>
+        <subtask>false</subtask>
+        <avatarId>10318</avatarId>
+      </issuetype>
+      <project>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/project/64103</self>
+        <id>64103</id>
+        <key>CFINJSD</key>
+        <name>CARIAD Finance Support Portal</name>
+        <projectTypeKey>service_desk</projectTypeKey>
+        <avatarUrls>
+          <_48x48>https://devstack.vwgroup.com/jira/secure/projectavatar?pid=64103&amp;avatarId=87443</_48x48>
+          <_24x24>https://devstack.vwgroup.com/jira/secure/projectavatar?size=small&amp;pid=64103&amp;avatarId=87443</_24x24>
+          <_16x16>https://devstack.vwgroup.com/jira/secure/projectavatar?size=xsmall&amp;pid=64103&amp;avatarId=87443</_16x16>
+          <_32x32>https://devstack.vwgroup.com/jira/secure/projectavatar?size=medium&amp;pid=64103&amp;avatarId=87443</_32x32>
+        </avatarUrls>
+      </project>
+      <customfield_15602/>
+      <customfield_37901/>
+      <customfield_11005/>
+      <customfield_52074/>
+      <customfield_10943/>
+      <customfield_25131/>
+      <customfield_62300/>
+      <resolutiondate/>
+      <customfield_25132/>
+      <customfield_60801/>
+      <customfield_60800/>
+      <customfield_25019/>
+      <watches>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/issue/CFINJSD-5165/watchers</self>
+        <watchCount>2</watchCount>
+        <isWatching>false</isWatching>
+      </watches>
+      <customfield_49103/>
+      <customfield_52615/>
+      <customfield_15703/>
+      <customfield_15704/>
+      <customfield_40400/>
+      <updated>2025-11-19T08:24:31.000+0100</updated>
+      <customfield_25701>&lt;i&gt;not set&lt;/i&gt;</customfield_25701>
+      <timeoriginalestimate/>
+      <customfield_52521/>
+      <description>{*}+Requirement+{*}{+}:{+} Activation of Enhanced Change Request Management action to release and automatically import the transports of copy (ToC) into the test system.
+
+                        Curtailing transports creations in the system when the same TR can be utilized for correction and additional requirements.
+
+Change Document : Normal Change (ZMMJ &amp; Z1MJ)
+
+Status : *To Be Tested*
+
+Profile : E0004                      
+
+           
+
+{*}+Existing Process+{*}: Presently transports of copy (ToC) are either imported into the test system from *Background job running* at the frequency 15 mins or from {*}Task list schedule import job for Transport requests{*}.
+
+ 
+
+*+Benefits+* : Automatic import of TOC instantneously while changing the status to “ {*}To Be Tested{*}”
+
+                  No dependency on Background job or Task list. There by removing the time dependency.
+
+ 
+
+{*}+Prerequisites+{*}: For the functionality to work appropriately following condition are required.
+
+ 
+
+*SMTMV4P* ** user to have following authorization role, ( Authorization)
+
+ZSAP_SOLMAN_READ_702
+
+ZSAP_SOLMAN_TMW_702
+
+The quality system to have the following authorization objects available. 
+
+S_CTS_ADMI with value IMPA and IMPT
+
+S_TRANSPRT with import activity</description>
+      <customfield_16912/>
+      <customfield_15702/>
+      <customfield_10005>2|iuvm4s:</customfield_10005>
+      <customfield_10006/>
+      <customfield_34300/>
+      <customfield_10802/>
+      <customfield_28302/>
+      <customfield_43005/>
+      <customfield_24500/>
+      <summary>Activation of Transport of copies in ZMMJ-Normal Change</summary>
+      <customfield_44113/>
+      <customfield_44114/>
+      <customfield_49003/>
+      <customfield_52753/>
+      <customfield_10000/>
+      <customfield_14601/>
+      <customfield_12300/>
+      <customfield_10244>
+        <count>0</count>
+        <statuses>
+          <id>0</id>
+          <name>PASS</name>
+          <description>The test run/iteration has passed</description>
+          <isFinal>true</isFinal>
+          <color>#95C160</color>
+          <isNative>true</isNative>
+          <statusCount>0</statusCount>
+          <statusPercent>0</statusPercent>
+        </statuses>
+        <statuses>
+          <id>3</id>
+          <name>FAIL</name>
+          <description>The test run/iteration has failed</description>
+          <isFinal>true</isFinal>
+          <color>#D45D52</color>
+          <isNative>true</isNative>
+          <statusCount>0</statusCount>
+          <statusPercent>0</statusPercent>
+        </statuses>
+        <statuses>
+          <id>4</id>
+          <name>ABORTED</name>
+          <description>The test run/iteration was aborted</description>
+          <isFinal>true</isFinal>
+          <color>#111111</color>
+          <isNative>true</isNative>
+          <statusCount>0</statusCount>
+          <statusPercent>0</statusPercent>
+        </statuses>
+        <statuses>
+          <id>1000</id>
+          <name>BLOCKED</name>
+          <description>The test run is blocked by another failed test</description>
+          <isFinal>true</isFinal>
+          <color>#FF7F27</color>
+          <isNative>false</isNative>
+          <statusCount>0</statusCount>
+          <statusPercent>0</statusPercent>
+        </statuses>
+        <statuses>
+          <id>2</id>
+          <name>EXECUTING</name>
+          <description>The test run/iteration is currently being executed</description>
+          <isFinal>false</isFinal>
+          <color>#F1E069</color>
+          <isNative>true</isNative>
+          <statusCount>0</statusCount>
+          <statusPercent>0</statusPercent>
+        </statuses>
+        <statuses>
+          <id>1001</id>
+          <name>PENDING_VALIDATION</name>
+          <description>The test run is pending validation</description>
+          <isFinal>false</isFinal>
+          <color>#000FFF</color>
+          <isNative>false</isNative>
+          <statusCount>0</statusCount>
+          <statusPercent>0</statusPercent>
+        </statuses>
+        <statuses>
+          <id>1</id>
+          <name>TODO</name>
+          <description>The test run/iteration has not started</description>
+          <isFinal>false</isFinal>
+          <color>#A2A6AE</color>
+          <isNative>true</isNative>
+          <statusCount>0</statusCount>
+          <statusPercent>0</statusPercent>
+        </statuses>
+      </customfield_10244>
+      <customfield_10004/>
+      <customfield_42608/>
+      <environment/>
+      <customfield_42607/>
+      <duedate>2025-03-31</duedate>
+      <customfield_10914/>
+      <customfield_61100/>
+      <customfield_40301/>
+      <customfield_40302/>
+      <customfield_40303/>
+      <customfield_40304/>
+      <customfield_21000></customfield_21000>
+      <customfield_56901/>
+      <customfield_56900/>
+      <customfield_15005/>
+      <fixVersions/>
+      <customfield_19600/>
+      <customfield_56904/>
+      <customfield_56903/>
+      <customfield_53515/>
+      <customfield_56902/>
+      <customfield_62901/>
+      <customfield_62902/>
+      <customfield_62903/>
+      <customfield_62101/>
+      <customfield_49806/>
+      <customfield_16320/>
+      <customfield_52410/>
+      <customfield_52531/>
+      <customfield_10220>2025-02-27</customfield_10220>
+      <customfield_52533/>
       <priority>
         <self>https://devstack.vwgroup.com/jira/rest/api/2/priority/10801</self>
         <iconUrl>https://devstack.vwgroup.com/jira/images/icons/priorities/trivial.svg</iconUrl>
         <name>Normal</name>
         <id>10801</id>
       </priority>
-      <updated>2025-11-19T02:00:36.000+0100</updated>
-      <labels>BASIS_VWITS</labels>
+      <customfield_10221/>
+      <customfield_13603/>
+      <customfield_10335/>
+      <customfield_10215/>
+      <customfield_10216/>
+      <customfield_10217/>
+      <customfield_10218/>
+      <timeestimate/>
+      <versions/>
+      <customfield_10219/>
+      <customfield_61801/>
       <status>
-        <self>https://devstack.vwgroup.com/jira/rest/api/2/status/6</self>
-        <description>The issue is considered finished, the resolution is correct. Issues which are closed can be reopened.</description>
-        <iconUrl>https://devstack.vwgroup.com/jira/images/icons/statuses/closed.png</iconUrl>
-        <name>Closed</name>
-        <id>6</id>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/status/3</self>
+        <description>This issue is being actively worked on at the moment by the assignee.</description>
+        <iconUrl>https://devstack.vwgroup.com/jira/images/icons/status_custom_insmile.gif</iconUrl>
+        <name>In Progress</name>
+        <id>3</id>
         <statusCategory>
-          <self>https://devstack.vwgroup.com/jira/rest/api/2/statuscategory/3</self>
-          <id>3</id>
-          <key>done</key>
-          <colorName>success</colorName>
-          <name>Done</name>
+          <self>https://devstack.vwgroup.com/jira/rest/api/2/statuscategory/4</self>
+          <id>4</id>
+          <key>indeterminate</key>
+          <colorName>inprogress</colorName>
+          <name>In Progress</name>
         </statusCategory>
       </status>
+      <customfield_10211/>
+      <customfield_16317/>
+      <customfield_16316/>
+      <customfield_50700/>
+      <customfield_10213/>
+      <customfield_59403/>
+      <customfield_10203/>
+      <customfield_10204/>
+      <customfield_10205/>
+      <customfield_59404/>
+      <customfield_10206/>
+      <customfield_10207 links='[object Object]'>
+        <id>296</id>
+        <name>Time to resolution</name>
+        <completedCycles/>
+        <ongoingCycle>
+          <startTime>
+            <iso8601>2025-03-12T10:41:35+0100</iso8601>
+            <jira>2025-03-12T10:41:35.167+0100</jira>
+            <friendly>12.03.2025 10:41</friendly>
+            <epochMillis>1741772495167</epochMillis>
+          </startTime>
+          <breachTime>
+            <iso8601>2025-03-19T10:41:35+0100</iso8601>
+            <jira>2025-03-19T10:41:35.167+0100</jira>
+            <friendly>19.03.2025 10:41</friendly>
+            <epochMillis>1742377295167</epochMillis>
+          </breachTime>
+          <breached>true</breached>
+          <paused>false</paused>
+          <withinCalendarHours>true</withinCalendarHours>
+          <goalDuration>
+            <millis>144000000</millis>
+            <friendly>40h</friendly>
+          </goalDuration>
+          <elapsedTime>
+            <millis>5180908028</millis>
+            <friendly>1,439h 8m</friendly>
+          </elapsedTime>
+          <remainingTime>
+            <millis>-5036908028</millis>
+            <friendly>-1,399h 8m</friendly>
+          </remainingTime>
+        </ongoingCycle>
+      </customfield_10207>
+      <aggregatetimeestimate/>
+      <customfield_10208 links='[object Object]'>
+        <id>564</id>
+        <name>Time to first response</name>
+        <completedCycles>
+          <startTime>
+            <iso8601>2025-03-12T10:41:35+0100</iso8601>
+            <jira>2025-03-12T10:41:35.167+0100</jira>
+            <friendly>12.03.2025 10:41</friendly>
+            <epochMillis>1741772495167</epochMillis>
+          </startTime>
+          <stopTime>
+            <iso8601>2025-03-19T08:26:33+0100</iso8601>
+            <jira>2025-03-19T08:26:33.673+0100</jira>
+            <friendly>19.03.2025 08:26</friendly>
+            <epochMillis>1742369193673</epochMillis>
+          </stopTime>
+          <breached>true</breached>
+          <goalDuration>
+            <millis>28800000</millis>
+            <friendly>8h</friendly>
+          </goalDuration>
+          <elapsedTime>
+            <millis>137904833</millis>
+            <friendly>38h 18m</friendly>
+          </elapsedTime>
+          <remainingTime>
+            <millis>-109104833</millis>
+            <friendly>-30h 18m</friendly>
+          </remainingTime>
+        </completedCycles>
+      </customfield_10208>
+      <customfield_57100/>
+      <customfield_45902/>
+      <customfield_25634/>
+      <customfield_62803/>
+      <customfield_62802/>
+      <customfield_25636>1.0</customfield_25636>
+      <creator>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=t20fp0r</self>
+        <name>t20fp0r</name>
+        <key>JIRAUSER383011</key>
+        <emailAddress>nidhi.sharma@volkswagen.co.in</emailAddress>
+        <avatarUrls>
+          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?avatarId=10349</_48x48>
+          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;avatarId=10349</_24x24>
+          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;avatarId=10349</_16x16>
+          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;avatarId=10349</_32x32>
+        </avatarUrls>
+        <displayName>Sharma, Nidhi (Digital Solutions IN I-DS-B)</displayName>
+        <active>true</active>
+        <timeZone>Europe/Berlin</timeZone>
+      </creator>
+      <customfield_49600/>
+      <customfield_64300/>
+      <customfield_51102/>
+      <customfield_14125/>
+      <customfield_62000/>
+      <customfield_16301/>
+      <customfield_51103/>
+      <customfield_16300/>
+      <customfield_14123/>
+      <aggregateprogress>
+        <progress>0</progress>
+        <total>0</total>
+      </aggregateprogress>
+      <customfield_16307/>
+      <customfield_10200/>
+      <customfield_10201/>
+      <customfield_10202/>
+      <customfield_61700/>
+      <customfield_40000/>
+      <timespent/>
+      <aggregatetimespent/>
+      <customfield_13700/>
+      <customfield_60401/>
+      <customfield_60400/>
+      <workratio>-1</workratio>
+      <customfield_20101/>
+      <created>2025-03-12T10:41:35.000+0100</created>
+      <customfield_52459/>
+      <customfield_13800/>
+      <customfield_61600/>
+      <customfield_52803/>
+      <customfield_52805/>
+      <customfield_46002/>
+      <customfield_15300/>
+      <customfield_19900/>
+      <customfield_10402/>
+      <customfield_62600/>
+      <customfield_41103/>
+      <customfield_64900/>
+      <customfield_64901/>
+      <customfield_30904/>
+      <customfield_53447/>
+      <customfield_52479/>
+      <customfield_34701/>
+      <customfield_10400/>
+      <customfield_15527/>
+      <customfield_36214/>
+      <customfield_12815/>
+      <customfield_12814/>
+      <customfield_20317/>
+      <customfield_22612/>
+    </fields>
+    <renderedFields/>
+  </issues>
+  <issues>
+    <expand>operations,versionedRepresentations,editmeta,changelog,renderedFields</expand>
+    <id>18760374</id>
+    <self>https://devstack.vwgroup.com/jira/rest/api/2/issue/18760374</self>
+    <key>CFINJSD-5259</key>
+    <fields>
+      <parent>
+        <id>18632428</id>
+        <key>CFINJSD-5165</key>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/issue/18632428</self>
+        <fields>
+          <summary>Activation of Transport of copies in ZMMJ-Normal Change</summary>
+          <status>
+            <self>https://devstack.vwgroup.com/jira/rest/api/2/status/3</self>
+            <description>This issue is being actively worked on at the moment by the assignee.</description>
+            <iconUrl>https://devstack.vwgroup.com/jira/images/icons/status_custom_insmile.gif</iconUrl>
+            <name>In Progress</name>
+            <id>3</id>
+            <statusCategory>
+              <self>https://devstack.vwgroup.com/jira/rest/api/2/statuscategory/4</self>
+              <id>4</id>
+              <key>indeterminate</key>
+              <colorName>inprogress</colorName>
+              <name>In Progress</name>
+            </statusCategory>
+          </status>
+          <priority>
+            <self>https://devstack.vwgroup.com/jira/rest/api/2/priority/10801</self>
+            <iconUrl>https://devstack.vwgroup.com/jira/images/icons/priorities/trivial.svg</iconUrl>
+            <name>Normal</name>
+            <id>10801</id>
+          </priority>
+          <issuetype>
+            <self>https://devstack.vwgroup.com/jira/rest/api/2/issuetype/10100</self>
+            <id>10100</id>
+            <description>A task that needs to be done.</description>
+            <iconUrl>https://devstack.vwgroup.com/jira/secure/viewavatar?size=xsmall&amp;avatarId=10318&amp;avatarType=issuetype</iconUrl>
+            <name>Task</name>
+            <subtask>false</subtask>
+            <avatarId>10318</avatarId>
+          </issuetype>
+        </fields>
+      </parent>
+      <customfield_25209/>
+      <customfield_42102/>
+      <customfield_65100/>
+      <customfield_17700/>
+      <customfield_52941/>
+      <customfield_15526/>
+      <resolution/>
+      <customfield_16613/>
+      <customfield_16612/>
+      <customfield_57600/>
+      <customfield_57601/>
+      <customfield_11714/>
+      <customfield_12807/>
+      <lastViewed/>
+      <customfield_18103/>
+      <customfield_66300/>
+      <customfield_66301/>
+      <customfield_53901/>
+      <customfield_36900/>
+      <labels>ABAP_APRIL</labels>
+      <labels>ABAP_CW15</labels>
+      <labels>ABAP_VWITS</labels>
+      <labels>OnVWITS</labels>
+      <labels>SOLMAN</labels>
+      <customfield_53900/>
+      <aggregatetimeoriginalestimate/>
+      <issuelinks/>
+      <customfield_58000/>
+      <assignee>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=eze58nz</self>
+        <name>eze58nz</name>
+        <key>JIRAUSER319340</key>
+        <emailAddress>ramnath.vivek.sambamurthy@volkswagen.co.in</emailAddress>
+        <avatarUrls>
+          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?ownerId=JIRAUSER319340&amp;avatarId=180318</_48x48>
+          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;ownerId=JIRAUSER319340&amp;avatarId=180318</_24x24>
+          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;ownerId=JIRAUSER319340&amp;avatarId=180318</_16x16>
+          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;ownerId=JIRAUSER319340&amp;avatarId=180318</_32x32>
+        </avatarUrls>
+        <displayName>Sambamurthy, Ramnath Vivek (Digital Solutions IN I-DS-B)</displayName>
+        <active>true</active>
+        <timeZone>Europe/Berlin</timeZone>
+      </assignee>
+      <components/>
+      <customfield_10600>{}</customfield_10600>
+      <customfield_13316/>
+      <customfield_14405/>
+      <customfield_21738/>
+      <customfield_45506/>
+      <customfield_45400/>
+      <customfield_45402/>
+      <customfield_45401/>
+      <subtasks/>
+      <customfield_57606/>
+      <reporter>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=d8kx6zh</self>
+        <name>d8kx6zh</name>
+        <key>JIRAUSER177168</key>
+        <emailAddress>mangesh.pandure@volkswagen.co.in</emailAddress>
+        <avatarUrls>
+          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?avatarId=10122</_48x48>
+          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;avatarId=10122</_24x24>
+          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;avatarId=10122</_16x16>
+          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;avatarId=10122</_32x32>
+        </avatarUrls>
+        <displayName>Pandure, Mangesh (Digital Solutions IN I-DS-B)</displayName>
+        <active>true</active>
+        <timeZone>Europe/Berlin</timeZone>
+      </reporter>
+      <customfield_57602/>
+      <customfield_32203/>
+      <customfield_57603/>
+      <customfield_57604/>
+      <customfield_57605/>
+      <progress>
+        <progress>0</progress>
+        <total>0</total>
+      </progress>
+      <votes>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/issue/CFINJSD-5259/votes</self>
+        <votes>0</votes>
+        <hasVoted>false</hasVoted>
+      </votes>
+      <issuetype>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/issuetype/10101</self>
+        <id>10101</id>
+        <description>The sub-task of the issue</description>
+        <iconUrl>https://devstack.vwgroup.com/jira/secure/viewavatar?size=xsmall&amp;avatarId=10316&amp;avatarType=issuetype</iconUrl>
+        <name>Sub-task</name>
+        <subtask>true</subtask>
+        <avatarId>10316</avatarId>
+      </issuetype>
+      <project>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/project/64103</self>
+        <id>64103</id>
+        <key>CFINJSD</key>
+        <name>CARIAD Finance Support Portal</name>
+        <projectTypeKey>service_desk</projectTypeKey>
+        <avatarUrls>
+          <_48x48>https://devstack.vwgroup.com/jira/secure/projectavatar?pid=64103&amp;avatarId=87443</_48x48>
+          <_24x24>https://devstack.vwgroup.com/jira/secure/projectavatar?size=small&amp;pid=64103&amp;avatarId=87443</_24x24>
+          <_16x16>https://devstack.vwgroup.com/jira/secure/projectavatar?size=xsmall&amp;pid=64103&amp;avatarId=87443</_16x16>
+          <_32x32>https://devstack.vwgroup.com/jira/secure/projectavatar?size=medium&amp;pid=64103&amp;avatarId=87443</_32x32>
+        </avatarUrls>
+      </project>
+      <customfield_15602/>
+      <customfield_37901/>
+      <customfield_11005/>
+      <customfield_52074/>
+      <customfield_10943/>
+      <customfield_25131/>
+      <customfield_62300/>
+      <resolutiondate/>
+      <customfield_25132/>
+      <customfield_60801/>
+      <customfield_60800/>
+      <customfield_25019/>
+      <watches>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/issue/CFINJSD-5259/watchers</self>
+        <watchCount>5</watchCount>
+        <isWatching>false</isWatching>
+      </watches>
+      <customfield_49103/>
+      <customfield_52615/>
+      <customfield_15703/>
+      <customfield_15704/>
+      <customfield_40400/>
+      <updated>2025-11-19T08:23:33.000+0100</updated>
+      <customfield_25701>&lt;i&gt;not set&lt;/i&gt;</customfield_25701>
+      <timeoriginalestimate/>
+      <customfield_52521/>
+      <description/>
+      <customfield_16912/>
+      <customfield_15702/>
+      <customfield_10005>2|ivh1oc:</customfield_10005>
+      <customfield_10006/>
+      <customfield_34300/>
+      <customfield_10802/>
+      <customfield_28302/>
+      <customfield_43005/>
+      <customfield_24500/>
+      <summary>Customization of the Transport request Description in Solman ZMMJ</summary>
+      <customfield_44113/>
+      <customfield_44114/>
+      <customfield_49003/>
+      <customfield_52753/>
+      <customfield_10000/>
+      <customfield_14601/>
+      <customfield_12300/>
+      <customfield_10004/>
+      <customfield_42608/>
+      <environment>Customization of the Transport request Description in Solman ZMMJ.
+Working with the ABAP team to implement: 2631552 - How to customize Description of Transport Request created in CHARM - Solution Manager.</environment>
+      <customfield_42607/>
+      <duedate/>
+      <customfield_10914/>
+      <customfield_61100>
+        <name>cgm-cfin-jsd-1st-levelsupport</name>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/group?groupname=cgm-cfin-jsd-1st-levelsupport</self>
+      </customfield_61100>
+      <customfield_40301/>
+      <customfield_40302/>
+      <customfield_40303/>
+      <customfield_40304/>
+      <customfield_21000></customfield_21000>
+      <customfield_56901/>
+      <customfield_56900/>
+      <customfield_15005/>
+      <fixVersions/>
+      <customfield_19600/>
+      <customfield_56904/>
+      <customfield_56903/>
+      <customfield_53515/>
+      <customfield_56902/>
+      <customfield_62901/>
+      <customfield_62902/>
+      <customfield_62903/>
+      <customfield_62101/>
+      <customfield_49806/>
+      <customfield_16320/>
+      <customfield_52410/>
+      <customfield_52531/>
+      <customfield_10220/>
+      <customfield_52533/>
+      <priority>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/priority/7</self>
+        <iconUrl>https://devstack.vwgroup.com/jira/images/icons/priorities/minor.svg</iconUrl>
+        <name>Minor</name>
+        <id>7</id>
+      </priority>
+      <customfield_10221/>
+      <customfield_13603/>
+      <customfield_10335/>
+      <customfield_10215/>
+      <customfield_10216/>
+      <customfield_10217/>
+      <customfield_10218/>
+      <timeestimate/>
+      <versions/>
+      <customfield_10219/>
+      <customfield_61801/>
+      <status>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/status/3</self>
+        <description>This issue is being actively worked on at the moment by the assignee.</description>
+        <iconUrl>https://devstack.vwgroup.com/jira/images/icons/status_custom_insmile.gif</iconUrl>
+        <name>In Progress</name>
+        <id>3</id>
+        <statusCategory>
+          <self>https://devstack.vwgroup.com/jira/rest/api/2/statuscategory/4</self>
+          <id>4</id>
+          <key>indeterminate</key>
+          <colorName>inprogress</colorName>
+          <name>In Progress</name>
+        </statusCategory>
+      </status>
+      <customfield_10211/>
+      <customfield_16317/>
+      <customfield_16316/>
+      <customfield_50700/>
+      <customfield_10213/>
+      <customfield_59403/>
+      <customfield_10203/>
+      <customfield_10204/>
+      <customfield_10205/>
+      <customfield_59404/>
+      <customfield_10206/>
+      <customfield_10207 links='[object Object]'>
+        <id>296</id>
+        <name>Time to resolution</name>
+        <completedCycles/>
+        <ongoingCycle>
+          <startTime>
+            <iso8601>2025-03-24T08:09:49+0100</iso8601>
+            <jira>2025-03-24T08:09:49.371+0100</jira>
+            <friendly>24.03.2025 08:09</friendly>
+            <epochMillis>1742800189371</epochMillis>
+          </startTime>
+          <breachTime>
+            <iso8601>2025-03-31T09:00:00+0200</iso8601>
+            <jira>2025-03-31T09:00:00.000+0200</jira>
+            <friendly>31.03.2025 09:00</friendly>
+            <epochMillis>1743404400000</epochMillis>
+          </breachTime>
+          <breached>true</breached>
+          <paused>false</paused>
+          <withinCalendarHours>true</withinCalendarHours>
+          <goalDuration>
+            <millis>144000000</millis>
+            <friendly>40h</friendly>
+          </goalDuration>
+          <elapsedTime>
+            <millis>4956603247</millis>
+            <friendly>1,376h 50m</friendly>
+          </elapsedTime>
+          <remainingTime>
+            <millis>-4812603247</millis>
+            <friendly>-1,336h 50m</friendly>
+          </remainingTime>
+        </ongoingCycle>
+      </customfield_10207>
+      <aggregatetimeestimate/>
+      <customfield_10208 links='[object Object]'>
+        <id>564</id>
+        <name>Time to first response</name>
+        <completedCycles>
+          <startTime>
+            <iso8601>2025-03-24T08:09:49+0100</iso8601>
+            <jira>2025-03-24T08:09:49.371+0100</jira>
+            <friendly>24.03.2025 08:09</friendly>
+            <epochMillis>1742800189371</epochMillis>
+          </startTime>
+          <stopTime>
+            <iso8601>2025-04-03T14:45:28+0200</iso8601>
+            <jira>2025-04-03T14:45:28.656+0200</jira>
+            <friendly>03.04.2025 14:45</friendly>
+            <epochMillis>1743684328656</epochMillis>
+          </stopTime>
+          <breached>true</breached>
+          <goalDuration>
+            <millis>28800000</millis>
+            <friendly>8h</friendly>
+          </goalDuration>
+          <elapsedTime>
+            <millis>251128656</millis>
+            <friendly>69h 45m</friendly>
+          </elapsedTime>
+          <remainingTime>
+            <millis>-222328656</millis>
+            <friendly>-61h 45m</friendly>
+          </remainingTime>
+        </completedCycles>
+      </customfield_10208>
+      <customfield_57100/>
+      <customfield_45902/>
+      <customfield_25634/>
+      <customfield_62803/>
+      <customfield_62802/>
+      <customfield_25636>3.0</customfield_25636>
+      <creator>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=t20fp0r</self>
+        <name>t20fp0r</name>
+        <key>JIRAUSER383011</key>
+        <emailAddress>nidhi.sharma@volkswagen.co.in</emailAddress>
+        <avatarUrls>
+          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?avatarId=10349</_48x48>
+          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;avatarId=10349</_24x24>
+          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;avatarId=10349</_16x16>
+          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;avatarId=10349</_32x32>
+        </avatarUrls>
+        <displayName>Sharma, Nidhi (Digital Solutions IN I-DS-B)</displayName>
+        <active>true</active>
+        <timeZone>Europe/Berlin</timeZone>
+      </creator>
+      <customfield_49600/>
+      <customfield_64300/>
+      <customfield_51102/>
+      <customfield_14125/>
+      <customfield_62000/>
+      <customfield_16301/>
+      <customfield_51103/>
+      <customfield_16300/>
+      <customfield_14123/>
+      <aggregateprogress>
+        <progress>0</progress>
+        <total>0</total>
+      </aggregateprogress>
+      <customfield_16307/>
+      <customfield_10200/>
+      <customfield_10201>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=ugehchm</self>
+        <name>ugehchm</name>
+        <key>JIRAUSER389659</key>
+        <emailAddress>vaibhav.pudage@volkswagen.co.in</emailAddress>
+        <avatarUrls>
+          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?avatarId=10122</_48x48>
+          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;avatarId=10122</_24x24>
+          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;avatarId=10122</_16x16>
+          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;avatarId=10122</_32x32>
+        </avatarUrls>
+        <displayName>Pudage, Vaibhav (Digital Solutions IN I-DS-B)</displayName>
+        <active>true</active>
+        <timeZone>Europe/Berlin</timeZone>
+      </customfield_10201>
+      <customfield_10201>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=wrtkqz8</self>
+        <name>wrtkqz8</name>
+        <key>JIRAUSER216796</key>
+        <emailAddress>vishal.arora@cariad.technology</emailAddress>
+        <avatarUrls>
+          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?ownerId=JIRAUSER216796&amp;avatarId=82205</_48x48>
+          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;ownerId=JIRAUSER216796&amp;avatarId=82205</_24x24>
+          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;ownerId=JIRAUSER216796&amp;avatarId=82205</_16x16>
+          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;ownerId=JIRAUSER216796&amp;avatarId=82205</_32x32>
+        </avatarUrls>
+        <displayName>Arora, Vishal (FD-A)</displayName>
+        <active>true</active>
+        <timeZone>Europe/Berlin</timeZone>
+      </customfield_10201>
+      <customfield_10201>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=eze58nz</self>
+        <name>eze58nz</name>
+        <key>JIRAUSER319340</key>
+        <emailAddress>ramnath.vivek.sambamurthy@volkswagen.co.in</emailAddress>
+        <avatarUrls>
+          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?ownerId=JIRAUSER319340&amp;avatarId=180318</_48x48>
+          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;ownerId=JIRAUSER319340&amp;avatarId=180318</_24x24>
+          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;ownerId=JIRAUSER319340&amp;avatarId=180318</_16x16>
+          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;ownerId=JIRAUSER319340&amp;avatarId=180318</_32x32>
+        </avatarUrls>
+        <displayName>Sambamurthy, Ramnath Vivek (Digital Solutions IN I-DS-B)</displayName>
+        <active>true</active>
+        <timeZone>Europe/Berlin</timeZone>
+      </customfield_10201>
+      <customfield_10201>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=fn13wrj</self>
+        <name>fn13wrj</name>
+        <key>JIRAUSER289411</key>
+        <emailAddress>dayakar.nakka@volkswagen.co.in</emailAddress>
+        <avatarUrls>
+          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?avatarId=10122</_48x48>
+          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;avatarId=10122</_24x24>
+          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;avatarId=10122</_16x16>
+          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;avatarId=10122</_32x32>
+        </avatarUrls>
+        <displayName>Nakka, Dayakar (Digital Solutions IN I-DS-B)</displayName>
+        <active>true</active>
+        <timeZone>Europe/Berlin</timeZone>
+      </customfield_10201>
+      <customfield_10201>
+        <self>https://devstack.vwgroup.com/jira/rest/api/2/user?username=gqcmzf1</self>
+        <name>gqcmzf1</name>
+        <key>JIRAUSER315856</key>
+        <emailAddress>rajesh.rane@volkswagen.co.in</emailAddress>
+        <avatarUrls>
+          <_48x48>https://devstack.vwgroup.com/jira/secure/useravatar?ownerId=JIRAUSER315856&amp;avatarId=119400</_48x48>
+          <_24x24>https://devstack.vwgroup.com/jira/secure/useravatar?size=small&amp;ownerId=JIRAUSER315856&amp;avatarId=119400</_24x24>
+          <_16x16>https://devstack.vwgroup.com/jira/secure/useravatar?size=xsmall&amp;ownerId=JIRAUSER315856&amp;avatarId=119400</_16x16>
+          <_32x32>https://devstack.vwgroup.com/jira/secure/useravatar?size=medium&amp;ownerId=JIRAUSER315856&amp;avatarId=119400</_32x32>
+        </avatarUrls>
+        <displayName>Rane, Rajesh (Digital Solutions IN I-DP)</displayName>
+        <active>true</active>
+        <timeZone>Asia/Kolkata</timeZone>
+      </customfield_10201>
+      <customfield_10202/>
+      <customfield_61700/>
+      <customfield_40000/>
+      <timespent/>
+      <aggregatetimespent/>
+      <customfield_60401/>
+      <customfield_60400/>
+      <workratio>-1</workratio>
+      <customfield_20101/>
+      <created>2025-03-24T08:09:49.000+0100</created>
+      <customfield_52459/>
+      <customfield_13800/>
+      <customfield_61600/>
+      <customfield_52803/>
+      <customfield_52805/>
+      <customfield_46002/>
+      <customfield_15300/>
+      <customfield_19900/>
+      <customfield_10402/>
+      <customfield_62600/>
+      <customfield_41103/>
+      <customfield_64900/>
+      <customfield_64901/>
+      <customfield_30904/>
+      <customfield_53447/>
+      <customfield_34701/>
+      <customfield_10400/>
+      <customfield_15527/>
+      <customfield_36214/>
+      <customfield_12815/>
+      <customfield_12814/>
+      <customfield_20317/>
+      <customfield_22612/>
     </fields>
     <renderedFields/>
   </issues>

@@ -6,6 +6,14 @@ TYPES: BEGIN OF ty_avatar_urls,
          32x32 TYPE string,
        END OF ty_avatar_urls.
 
+
+TYPES: BEGIN OF ty_subtask_fields,
+         summary   TYPE string,
+         status    TYPE ty_status,
+         priority  TYPE ty_priority,
+         issuetype TYPE ty_issuetype,
+       END OF ty_subtask_fields.
+
 TYPES: BEGIN OF ty_user,
          self          TYPE string,
          name          TYPE string,

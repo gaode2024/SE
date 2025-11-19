@@ -1,3 +1,25 @@
+DATA: lv_json TYPE string,
+      lr_data TYPE REF TO data.
+
+FIELD-SYMBOLS: <lt_table> TYPE table,
+               <ls_line> TYPE any,
+               <lv_field> TYPE any.
+
+" 示例JSON
+lv_json = '[{"name":"John","age":30},{"name":"Jane","age":25}]'.
+
+" 动态创建内表
+CREATE DATA lr_data TYPE TABLE OF ('ZPERSON').
+ASSIGN lr_data->* TO <lt_table>.
+
+" 解析JSON
+/ui5/cl_json=>deserialize(
+  EXPORTING
+    json = lv_json
+  CHANGING
+    data = <lt_table> ).
+
+
 SI_TICKETS_INFO_OUT
 ZCON_PFM_ODATA_SIMULATION_SRV
 

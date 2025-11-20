@@ -1,3 +1,21 @@
+REPORT z_date_conversion.
+
+DATA: lv_date_string TYPE string VALUE '2025-11-27',
+      lv_dats TYPE dats.
+
+START-OF-SELECTION.
+  " 方法1：使用 CONVERT DATE
+  CONVERT DATE lv_date_string INTO DATE lv_dats.
+  WRITE: / '转换后的日期:', lv_dats DD/MM/YYYY.
+
+  " 验证转换结果
+  IF lv_dats IS NOT INITIAL.
+    WRITE: / '转换成功!'.
+  ELSE.
+    WRITE: / '转换失败!'.
+  ENDIF.
+
+
 DATA: lv_json TYPE string,
       lr_data TYPE REF TO data.
 

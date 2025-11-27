@@ -1,11 +1,17 @@
 Structure: ZFM_COMMIT_OUT_S
-Function Module:ZFM_DERIVE_COMMIT
+Function Module: ZFM_DERIVE_COMMIT
 
 Structure: ZFM_ACTUAL_OUT_S
-Function Module:ZFM_DERIVE_ACTUAL
+Function Module: ZFM_DERIVE_ACTUAL
 
 Class: ZCL_ZCON_ODATA_FM_FM_S_DPC_EXT
 Method: /IWBEP/IF_MGW_APPL_SRV_RUNTIME~GET_EXPANDED_ENTITYSET
+Odata Project: ZCON_ODATA_FM_FM_SUM_REPORT
+
+Class: ZDE_CL_CON_CPM_MP_MULTI_UTIL
+Method: GET_RESULT_DATA
+Odata Project: ZCON_CPM_ODATA_MP_MULTI_RPT
+
 
 HierarchySet: {"PortfolioId":"","PortfolioType":"","ProjectType":"","PlanField":"","Data":"[{\"objectid\":\"SP017\",\"objectname\":\"IDS 5 CHN\",\"objectguid\":\"Z3VonhpGH9CIsGCSxeXuRA==\",\"parentguid\":\"Z3VonhpGH9CIsGCJ+YduRA==\",\"objecttype\":\"RBH\",\"isleaf\":\"\",\"hierarchylevel\":4,\"currency\":\"EUR\",\"unit\":\"JHR\",\"editable\":false,\"versionid\":\"V102\"}]"}
 

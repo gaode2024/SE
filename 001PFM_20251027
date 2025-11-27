@@ -1,3 +1,12 @@
+Structure: ZFM_COMMIT_OUT_S
+Function Module:ZFM_DERIVE_COMMIT
+
+Structure: ZFM_ACTUAL_OUT_S
+Function Module:ZFM_DERIVE_ACTUAL
+
+Class: ZCL_ZCON_ODATA_FM_FM_S_DPC_EXT
+Method: /IWBEP/IF_MGW_APPL_SRV_RUNTIME~GET_EXPANDED_ENTITYSET
+
 HierarchySet: {"PortfolioId":"","PortfolioType":"","ProjectType":"","PlanField":"","Data":"[{\"objectid\":\"SP017\",\"objectname\":\"IDS 5 CHN\",\"objectguid\":\"Z3VonhpGH9CIsGCSxeXuRA==\",\"parentguid\":\"Z3VonhpGH9CIsGCJ+YduRA==\",\"objecttype\":\"RBH\",\"isleaf\":\"\",\"hierarchylevel\":4,\"currency\":\"EUR\",\"unit\":\"JHR\",\"editable\":false,\"versionid\":\"V102\"}]"}
 
 lv_dats = lv_date_string+0(4) && lv_date_string+5(2) && lv_date_string+8(2).

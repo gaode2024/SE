@@ -1,3 +1,19 @@
+Error analysis
+    Section "PUBLIC" of the interface of class CL_RPM_OBJ_MANAGERwas changed at
+     program
+    runtime. This resulted in inconsistencies.
+    Program "/RPM/CL_DOC_SAVE_FROM_RPM_FW==CP" uses interface version
+     20251201065321.
+    Program "CL_RPM_OBJ_MANAGER============CP" uses interface version
+     20251201065315.
+    Internal mode started at 20251201065321.
+
+
+
+How to correct the error
+    Try to restart the program.
+
+
 CL_BADI_CACHE_HANDLER
 CL_EX_WORKORDER_UPDATE
 

@@ -1,3 +1,54 @@
+@EndUserText.label: 'Mapping Role for C_MasterProject'
+@MappingRole: true 
+define role C_MasterProject {
+    grant select on C_MasterProject
+    where ( _MpAuthList.MstrProjAccessPrflIsChecked <> 'X' OR 
+                        
+                          ( (MasterProjectType) = aspect pfcg_auth ( /CPD/OAUTH, ACTVT = '94', /CPD/MP_TY) and
+                             _MpAuthList.MstrProjAccessPrflIsChecked = 'X' and 
+                             (MasterProject,
+                             _MpAuthList.UserIsInvolved,
+                             MasterProjectType,
+                             MasterProjectOrganization,
+                             MasterProjectIsConfidential) =  aspect pfcg_auth ( /CPD/MP,
+                                                                     /CPD/MP_ID,
+                                                                     /CPD/MP_IN,
+                                                                     /CPD/MP_TY,
+                                                                     /CPD/MP_OR,
+                                                                     /CPD/MP_CF,
+                                                                      ACTVT='03') 
+                             ) or  
+                             
+                             ( _MpAuthList.MstrProjAccessPrflIsChecked = 'X' and _MpAuthList.UserIsInvolved = 'I' and
+                                (MasterProject,
+                                 MasterProjectType,
+                                 MasterProjectOrganization,
+                                 MasterProjectIsConfidential)=  aspect pfcg_auth ( /CPD/MP,
+                                                                     /CPD/MP_ID,
+                                                                     /CPD/MP_IN = 'I',
+                                                                      /CPD/MP_TY,
+                                                                     /CPD/MP_OR,
+                                                                     /CPD/MP_CF,
+                                                                     ACTVT='03') )
+                           
+     and ( FinancialPlanScenario)=
+     aspect pfcg_auth (    /CPD/FPH,
+                        /CPD/FP_PS ,
+                        actvt = '03')
+     and ( _EmployeeInternalID.AuthorizationGroup )=
+     aspect pfcg_auth( B_BUPA_GRP,
+                       BEGRU,
+                       actvt = '03')
+     and ( _Customer.AuthorizationGroup )= 
+     aspect pfcg_auth( F_KNA1_BED,
+                       BRGRU,
+                       actvt = '03'));
+    
+}
+
+
+
+
 https://vhriav1qci.sap.cariad.eu.sap.cloud.vwgroup.com:44300/sap/bc/ui5_ui5/sap/zcon_fri_simvc/index.html
 
 Error analysis

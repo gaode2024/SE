@@ -1,3 +1,11 @@
+" 创建版本连续性物化视图
+CREATE VIEW zview_version_continuity AS
+SELECT version_id,
+       LAG(version_id) OVER (ORDER BY version_id) as prev_version,
+       LEAD(version_id) OVER (ORDER BY version_id) as next_version
+FROM zproject_table;
+
+
 @EndUserText.label: 'Mapping Role for C_MasterProject'
 @MappingRole: true 
 define role C_MasterProject {
